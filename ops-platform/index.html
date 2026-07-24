@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>知识管理后台</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', -apple-system, sans-serif; background: #f0f2f5; color: #333; font-size: 14px; }
+    #app { height: 100vh; display: flex; flex-direction: column; }
+
+    .app-header {
+      height: 52px; background: #fff; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px;
+      border-bottom: 1px solid #eee; flex-shrink: 0; z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; }
+    .logo-icon { width: 30px; height: 30px; }
+    .logo-text { font-size: 16px; font-weight: 600; color: #e74c3c; letter-spacing: 1px; }
+    .user-area { display: flex; align-items: center; gap: 6px; color: #666; font-size: 13px; cursor: pointer; }
+
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* Sidebar */
+    .sidebar { width: 160px; background: #fff; border-right: 1px solid #eee; flex-shrink: 0; overflow-y: auto; }
+    .menu-item {
+      display: flex; align-items: center; gap: 8px; padding: 13px 18px;
+      font-size: 14px; color: #555; cursor: default; user-select: none; transition: all .15s;
+    }
+    .menu-item.clickable { cursor: pointer; }
+    .menu-item.clickable:hover { background: #fff5f5; color: #e74c3c; }
+    .menu-item.active { background: #e74c3c; color: #fff; }
+    .menu-item.disabled { color: #bbb; }
+    .menu-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    .main-content { flex: 1; overflow-y: auto; padding: 16px 20px; background: #f0f2f5; }
+
+    /* ========== List Page ========== */
+    .page-card { background: #fff; border-radius: 4px; padding: 16px 20px; }
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .toolbar .el-input { width: 220px !important; flex-shrink: 0; }
+    .toolbar .el-select { width: 110px !important; flex-shrink: 0; }
+    .toolbar .el-button { flex-shrink: 0; }
+    .toolbar-right { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
+    .selected-tip { font-size: 13px; color: #999; margin-bottom: 10px; }
+
+    .status-badge { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 12px; }
+    .status-badge.pending { background: #fff7e6; color: #fa8c16; border: 1px solid #ffe0b2; }
+    .status-badge.done { background: #e8f5e9; color: #4caf50; border: 1px solid #c8e6c9; }
+    .type-text { color: #e74c3c; font-size: 13px; }
+    .feedback-badge { display: inline-block; padding: 1px 6px; border-radius: 2px; font-size: 12px; background: #e8eaf6; color: #3f51b5; }
+    .ai-badge { display: inline-block; padding: 1px 6px; border-radius: 2px; font-size: 12px; background: #fce4ec; color: #e91e63; }
+    .op-link { color: #1890ff; cursor: pointer; font-size: 13px; margin-right: 6px; }
+    .op-link:hover { text-decoration: underline; }
+    .op-link.red { color: #f5222d; }
+    .op-link.disabled { color: #c0c4cc; cursor: not-allowed; pointer-events: none; }
+    .op-link.disabled:hover { text-decoration: none; }
+
+    /* ========== Detail Page – Split Layout ========== */
+    .main-content.detail-mode { overflow: hidden; padding: 0; }
+    .detail-split-layout {
+      display: flex; height: 100%; min-height: calc(100vh - 52px);
+      background: #f0f2f5; position: relative;
+    }
+    .detail-main {
+      flex: 1; min-width: 0; overflow-y: auto;
+      background: #fff; margin: 16px 0 16px 20px; border-radius: 4px;
+    }
+    .detail-wrap {
+      padding: 24px 28px; min-height: 100%;
+      display: flex; flex-direction: column;
+    }
+    .detail-proc-panel {
+      width: 640px; flex-shrink: 0; display: flex; flex-direction: column;
+      background: #fff; margin: 16px 20px 16px 0; border-radius: 4px;
+      border: 1px solid #eee; overflow: hidden;
+      transition: width .28s ease, margin .28s ease, opacity .28s ease;
+    }
+    .detail-proc-panel.collapsed {
+      width: 0; margin-right: 0; border: none; opacity: 0; pointer-events: none;
+    }
+    .proc-panel-expand-btn {
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      writing-mode: vertical-rl; letter-spacing: 2px;
+      background: #e74c3c; color: #fff;
+      border: none; border-radius: 6px 0 0 6px; padding: 14px 8px;
+      font-size: 13px; cursor: pointer; z-index: 5;
+      box-shadow: -2px 0 8px rgba(231,76,60,.2);
+    }
+    .proc-panel-expand-btn:hover { background: #d94434; }
+    .detail-question { font-size: 18px; font-weight: 600; color: #222; margin-bottom: 16px; line-height: 1.5; }
+    .detail-meta-row { display: flex; gap: 24px; font-size: 13px; color: #888; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+    .detail-meta-row .val { color: #333; }
+    .detail-meta-row .lbl { color: #888; }
+    .detail-meta-row .ai-meta-end { margin-left: auto; }
+    .detail-meta-row a { color: #1890ff; text-decoration: none; }
+    .detail-meta-row a:hover { text-decoration: underline; }
+
+    .detail-tabs .el-tabs__item { font-size: 14px; }
+    .detail-tabs .el-tabs__item.is-active { font-weight: 600; }
+
+    .answer-area {
+      background: #fafafa; border: 1px solid #f0f0f0; border-radius: 6px;
+      padding: 20px 24px; line-height: 1.9; font-size: 14px; color: #333;
+      margin-bottom: 20px; min-height: 180px;
+    }
+    .answer-area .bot-avatar {
+      width: 30px; height: 30px; border-radius: 50%; background: #e0e7ff;
+      display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;
+    }
+    .answer-area h3 { font-size: 15px; margin: 14px 0 6px; color: #222; font-weight: 600; }
+    .answer-area ul, .answer-area ol { padding-left: 18px; margin: 6px 0; }
+    .answer-area li { margin: 3px 0; }
+    .answer-area p { margin: 6px 0; }
+
+    /* Top meta: AI Diagnosis + User Feedback inline */
+    .top-diag-row { display: flex; align-items: center; gap: 16px; font-size: 13px; color: #888; margin-bottom: 6px; flex-wrap: wrap; }
+    .top-diag-row .lbl { color: #888; }
+    .ai-chip {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px;
+      border-radius: 3px; font-size: 13px; cursor: pointer; transition: all .15s;
+      background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a;
+    }
+    .ai-chip:hover { box-shadow: 0 2px 6px rgba(0,0,0,.1); background: #ffcdd2; }
+    .fb-chip {
+      display: inline-flex; align-items: center; padding: 2px 10px;
+      border-radius: 3px; font-size: 13px;
+      background: #e8eaf6; color: #283593; border: 1px solid #9fa8da;
+    }
+    .empty-val { color: #ccc; font-size: 13px; }
+
+    .detail-meta-row .ai-meta-item { display: inline-flex; align-items: center; gap: 6px; }
+
+    .ai-drawer-head {
+      padding: 16px 22px; background: linear-gradient(135deg, #5b6abf, #7e57c2);
+      color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .ai-drawer-head h4 { font-size: 16px; font-weight: 600; }
+    .ai-drawer-body { padding: 22px 24px; overflow-y: auto; flex: 1; }
+    .ai-type-line { font-size: 14px; color: #333; margin-bottom: 4px; }
+    .ai-time-line { font-size: 12px; color: #999; margin-bottom: 18px; }
+
+    .step-list { margin-bottom: 20px; }
+    .step-row { display: flex; gap: 14px; margin-bottom: 16px; }
+    .step-circle {
+      width: 26px; height: 26px; border-radius: 50%; background: #1890ff;
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .step-body { flex: 1; }
+    .step-body .t { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
+    .step-body .d { font-size: 13px; color: #666; line-height: 1.6; }
+
+    .fix-box {
+      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px; padding: 16px 18px;
+    }
+    .fix-box h5 { font-size: 14px; color: #389e0d; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .fix-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid #e8e8e8; gap: 10px;
+    }
+    .fix-row:last-child { border-bottom: none; }
+    .fix-row .txt { flex: 1; font-size: 13px; color: #333; line-height: 1.6; }
+    .fix-type-badge {
+      display: inline-block; padding: 1px 7px; border-radius: 3px;
+      font-size: 11px; font-weight: 600; margin-right: 6px; vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .fix-type-badge.bug { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+    .fix-type-badge.knowledge { background: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+
+    /* Process Record (legacy) */
+    .proc-record {
+      margin-bottom: 20px; padding: 14px 18px;
+      background: #e6f7ff; border: 1px solid #91d5ff; border-radius: 6px;
+    }
+    .proc-record h5 { font-size: 14px; color: #0050b3; margin-bottom: 8px; }
+    .proc-record .pr-row { font-size: 13px; color: #333; margin-bottom: 4px; display: flex; gap: 6px; }
+    .proc-record .pr-row .lbl { color: #888; min-width: 65px; }
+
+    /* Operation Log (compact) */
+    .op-log {
+      margin-bottom: 16px; background: #fafbfc; border: 1px solid #e8e8e8;
+      border-radius: 6px; padding: 8px 12px;
+    }
+    .op-log-head {
+      display: flex; align-items: center; gap: 8px; padding: 4px 0 6px;
+      border-bottom: 1px dashed #e8e8e8; margin-bottom: 4px;
+    }
+    .op-log-title { font-size: 13px; font-weight: 600; color: #333; }
+    .op-log-count { font-size: 12px; color: #999; }
+    .op-log-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 4px; font-size: 12px; line-height: 1.5;
+      border-bottom: 1px dashed #f0f0f0;
+    }
+    .op-log-row:last-child { border-bottom: none; }
+    .op-log-idx { color: #999; font-size: 12px; min-width: 24px; flex-shrink: 0; }
+    .op-log-content {
+      flex: 1; color: #333; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+    }
+    .op-log-meta { color: #999; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+
+    /* Bottom Bar (sticky to viewport) */
+    .detail-footer {
+      position: sticky; bottom: 0; z-index: 10;
+      margin: auto -28px 0; padding: 14px 28px;
+      background: #fff; border-top: 1px solid #eee;
+      box-shadow: 0 -2px 8px rgba(0,0,0,.04);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-left { font-size: 13px; color: #555; line-height: 1.9; }
+    .footer-left a { color: #1890ff; text-decoration: none; cursor: pointer; }
+    .footer-left a:hover { text-decoration: underline; }
+    .footer-right { display: flex; align-items: center; gap: 14px; }
+    .footer-nav { font-size: 13px; color: #999; display: flex; align-items: center; gap: 6px; }
+    .footer-nav a { color: #1890ff; cursor: pointer; text-decoration: none; }
+    .footer-nav a:hover { text-decoration: underline; }
+
+    /* Knowledge Modal */
+    .km-layout { display: flex; gap: 20px; }
+    .km-left { width: 190px; flex-shrink: 0; }
+    .km-left .sec-title { font-size: 13px; color: #333; margin-bottom: 10px; }
+    .km-type-card {
+      display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+      border: 2px solid #eee; border-radius: 6px; cursor: pointer;
+      transition: all .15s; margin-bottom: 8px;
+    }
+    .km-type-card.sel { border-color: #e74c3c; background: #fff5f5; }
+    .km-type-card .km-icon {
+      width: 34px; height: 34px; border-radius: 6px; background: #fff7e6;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .km-type-card .km-name { font-size: 13px; font-weight: 500; color: #333; }
+    .km-type-card .km-desc { font-size: 11px; color: #999; margin-top: 1px; }
+    .km-right { flex: 1; }
+
+    /* Unified Dialog – task cards */
+    .task-section-title {
+      font-size: 15px; font-weight: 600; color: #333; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .task-section-title .bar { display: inline-block; width: 4px; height: 16px; border-radius: 2px; }
+    .task-card {
+      border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 12px;
+      overflow: hidden; transition: border-color .2s;
+    }
+    .task-card.knowledge { border-left: 3px solid #1890ff; }
+    .task-card.bug { border-left: 3px solid #fa8c16; }
+    .task-card.record { border-left: 3px solid #52c41a; }
+    .task-card-head {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      background: #fafafa; cursor: pointer; user-select: none;
+    }
+    .task-card-head:hover { background: #f5f5f5; }
+    .task-tag { padding: 1px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .task-tag.knowledge { background: #e6f7ff; color: #1890ff; }
+    .task-tag.bug { background: #fff7e6; color: #fa8c16; }
+    .task-tag.record { background: #f6ffed; color: #52c41a; }
+    .task-card-text { flex: 1; font-size: 13px; color: #333; line-height: 1.5; }
+    .task-card-arrow { font-size: 12px; color: #999; transition: transform .2s; }
+    .task-card-arrow.open { transform: rotate(90deg); }
+    .task-card-body { padding: 16px 18px; border-top: 1px solid #f0f0f0; background: #fff; }
+    .task-done-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #52c41a; }
+
+    .manual-add-bar {
+      display: flex; align-items: center; gap: 6px; padding: 10px 0;
+      color: #1890ff; font-size: 13px; cursor: pointer; user-select: none;
+    }
+    .manual-add-bar:hover { color: #40a9ff; }
+    .manual-record-card {
+      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px;
+      padding: 12px 16px; margin-bottom: 8px; position: relative;
+    }
+    .manual-record-card .mr-line { font-size: 13px; color: #333; margin-bottom: 4px; }
+    .manual-record-card .mr-label { color: #888; }
+
+    .proc-drawer-head {
+      padding: 14px 22px; background: #fff; color: #333;
+      border-bottom: 1px solid #eee;
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .proc-drawer-head h4 {
+      font-size: 16px; font-weight: 600; color: #e74c3c;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .proc-drawer-head .collapse-btn {
+      color: #666; font-size: 13px; cursor: pointer; padding: 4px 10px;
+      border-radius: 4px; transition: all .15s;
+    }
+    .proc-drawer-head .collapse-btn:hover { background: #fff5f5; color: #e74c3c; }
+    .proc-drawer-body { padding: 18px 22px; overflow-y: auto; flex: 1; background: #fafbfc; }
+    .proc-drawer-foot {
+      padding: 12px 22px; border-top: 1px solid #eee; background: #fff;
+      display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0;
+    }
+
+    /* Collapsible block */
+    .col-block { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+    .col-block-head {
+      display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+      cursor: pointer; user-select: none; background: #fafafa; transition: background .15s;
+    }
+    .col-block-head:hover { background: #f5f5f5; }
+    .col-block-title { font-size: 14px; font-weight: 600; color: #333; flex: 1; display: flex; align-items: center; gap: 8px; }
+    .col-block-title .bar { display: inline-block; width: 3px; height: 14px; border-radius: 2px; background: #722ed1; }
+    .col-block-toggle { font-size: 12px; color: #999; transition: transform .2s; }
+    .col-block-toggle.open { transform: rotate(90deg); }
+    .col-block-body { padding: 16px 18px; border-top: 1px solid #f0f0f0; }
+
+    /* Manual action bar (legacy) */
+    .manual-actions {
+      display: flex; gap: 10px; margin: 12px 0 14px;
+    }
+    .manual-action-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 14px; border-radius: 6px; cursor: pointer; user-select: none;
+      font-size: 13px; font-weight: 500; transition: all .15s;
+      border: 1px dashed #d9d9d9; background: #fff; color: #555;
+    }
+    .manual-action-btn:hover { border-color: #1890ff; color: #1890ff; background: #f0f8ff; }
+    .manual-action-btn .icon { font-size: 14px; }
+
+    /* Process Tabs */
+    .proc-tabs .el-tabs__item { font-size: 14px; padding: 0 18px; }
+    .proc-tabs .el-tabs__item.is-active { font-weight: 600; }
+    .proc-tabs .el-tabs__nav-wrap::after { background-color: #f0f0f0; }
+
+    .fade-enter-active, .fade-leave-active { transition: all .25s ease; }
+    .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-6px); }
+
+    /* ========== Ask / Stats pages ========== */
+    .filter-card { background: #fff; border-radius: 4px; padding: 14px 16px; margin-bottom: 14px; }
+    .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .filter-row .el-date-editor { width: 260px !important; }
+    .filter-row .el-select { width: 140px !important; }
+    .filter-row .el-input { width: 200px !important; }
+    .stat-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .stat-card { background: #fff; border-radius: 4px; padding: 16px 18px; }
+    .stat-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .stat-card-title { font-size: 15px; font-weight: 600; color: #333; }
+    .stat-card-sub { font-size: 13px; color: #999; margin-left: 8px; font-weight: 400; }
+    .stat-card-body { display: flex; align-items: center; gap: 16px; min-height: 220px; }
+    .chart-box { flex: 1; height: 220px; min-width: 0; }
+    .chart-legend { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; min-width: 110px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-val { font-weight: 600; color: #333; }
+    .ask-table-card { background: #fff; border-radius: 4px; padding: 16px 18px; }
+    .ask-table-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .ask-q-link { color: #1890ff; cursor: pointer; }
+    .ask-q-link:hover { text-decoration: underline; }
+    .ask-detail-meta {
+      display: flex; flex-wrap: wrap; gap: 16px 24px; padding: 12px 16px;
+      background: #fafafa; border-radius: 6px; margin-bottom: 16px; font-size: 13px; color: #888;
+    }
+    .ask-detail-meta .val { color: #333; }
+    .ask-chat { display: flex; flex-direction: column; gap: 14px; padding: 4px 0 12px; }
+    .ask-msg { display: flex; gap: 10px; max-width: 92%; }
+    .ask-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .ask-msg.ai { align-self: flex-start; }
+    .ask-avatar {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;
+    }
+    .ask-msg.user .ask-avatar { background: #e74c3c; color: #fff; }
+    .ask-msg.ai .ask-avatar { background: #e8eaf6; color: #3f51b5; }
+    .ask-bubble {
+      padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; color: #333;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .ask-msg.user .ask-bubble { background: #fff1f0; border: 1px solid #ffccc7; border-top-right-radius: 2px; }
+    .ask-msg.ai .ask-bubble { background: #f5f7fa; border: 1px solid #ebeef5; border-top-left-radius: 2px; }
+    .ask-msg-time { font-size: 11px; color: #bbb; margin-top: 4px; }
+    .ask-msg.user .ask-msg-time { text-align: right; }
+    .fb-like { color: #52c41a; }
+    .fb-dislike { color: #ff4d4f; }
+    .fb-none { color: #999; }
+    .fb-ignore { color: #faad14; }
+    .chart-panel { background: #fff; border-radius: 4px; padding: 14px 16px; margin-bottom: 14px; }
+    .chart-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .chart-panel-title { font-size: 15px; font-weight: 600; color: #333; }
+    .chart-panel-more { font-size: 13px; color: #1890ff; cursor: pointer; }
+    .chart-panel-more:hover { text-decoration: underline; }
+    .chart-panel-body { width: 100%; height: 300px; }
+    .chart-panel-body.sm { height: 320px; }
+    .stats-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 1100px) {
+      .stat-cards, .stats-grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- ===== Header ===== -->
+  <header class="app-header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="8" fill="#e74c3c"/>
+        <path d="M11 20.5l6 6 12-12" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">知识管理后台</span>
+    </div>
+    <div class="user-area">天翼云科技有... ▾</div>
+  </header>
+
+  <div class="app-body">
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar">
+      <div v-for="m in menus" :key="m.key"
+        class="menu-item"
+        :class="{
+          active: activeMenu === m.key,
+          clickable: isMenuEnabled(m.key),
+          disabled: !isMenuEnabled(m.key)
+        }"
+        @click="switchMenu(m.key)">
+        <span class="menu-icon">{{ m.icon }}</span>{{ m.label }}
+      </div>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main-content" :class="{ 'detail-mode': activeMenu === 'todo' && view === 'detail' }">
+
+      <!-- ===================== List Page ===================== -->
+      <div v-if="activeMenu === 'todo' && view === 'list'" class="page-card">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <el-input v-model="kw" placeholder="请输入关键字查询" clearable style="width:220px"></el-input>
+          <span style="color:#666;font-size:13px;flex-shrink:0">状态：</span>
+          <el-select v-model="statusFilter" style="width:110px">
+            <el-option label="全部" value="全部"></el-option>
+            <el-option label="待处理" value="待处理"></el-option>
+            <el-option label="已处理" value="已处理"></el-option>
+          </el-select>
+          <el-button type="primary" @click="page=1">🔍 查询</el-button>
+          <div class="toolbar-right">
+            <el-button>批量转派</el-button>
+            <el-button type="danger">批量删除</el-button>
+          </div>
+        </div>
+        <div class="selected-tip">已选{{ sel.length }}项</div>
+
+        <!-- Table -->
+        <el-table :data="pagedList" border @selection-change="sel=$event" @row-click="openDetail"
+          :row-style="{cursor:'pointer'}" :header-cell-style="{background:'#fafafa',color:'#333',fontSize:'13px'}">
+          <el-table-column type="selection" width="38"></el-table-column>
+          <el-table-column label="问题" min-width="180">
+            <template #default="{row}"><span style="color:#333">{{ row.question }}</span></template>
+          </el-table-column>
+          <el-table-column label="问题类型" width="80" align="center">
+            <template #default="{row}"><span class="type-text">{{ row.qType }}</span></template>
+          </el-table-column>
+          <el-table-column label="时间" width="155" prop="time"></el-table-column>
+          <el-table-column label="状态" width="80" align="center">
+            <template #default="{row}">
+              <span class="status-badge" :class="row.status==='已处理'?'done':'pending'">{{ row.status }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户反馈" width="110">
+            <template #default="{row}">
+              <span v-if="row.userFB" class="feedback-badge">{{ row.userFB }}</span>
+              <span v-else style="color:#999;font-size:12px">未反馈</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="AI 诊断" width="120">
+            <template #default="{row}">
+              <span v-if="row.aiDiag" class="ai-badge">{{ row.aiDiag }}</span>
+              <span v-else style="color:#ccc;font-size:12px">诊断中...</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="提问人" width="70" prop="asker"></el-table-column>
+          <el-table-column label="提问部门" width="120" prop="dept"></el-table-column>
+          <el-table-column label="来源智能体" width="120">
+            <template #default="{row}">
+              <span v-if="row.source && row.source !== '暂无'" style="color:#e91e63">{{ row.source }}</span>
+              <span v-else style="color:#ccc;font-size:12px">暂无</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="140" fixed="right">
+            <template #default="{row}">
+              <span class="op-link" :class="{disabled: row.status==='已处理'}" @click.stop="row.status!=='已处理' && openDetail(row)">处理</span>
+              <span class="op-link" :class="{disabled: row.status==='已处理'}" @click.stop>转派</span>
+              <span class="op-link red" :class="{disabled: row.status==='已处理'}" @click.stop>删除</span>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- Pagination -->
+        <div style="display:flex;justify-content:flex-end;margin-top:14px">
+          <el-pagination v-model:current-page="page" :page-size="pgSize" :total="filtered.length"
+            layout="total, sizes, prev, pager, next, jumper" :page-sizes="[10,20,50]"
+            @size-change="pgSize=$event;page=1" small></el-pagination>
+        </div>
+      </div>
+
+      <!-- ===================== Detail Page (Split) ===================== -->
+      <div v-if="activeMenu === 'todo' && view === 'detail'" class="detail-split-layout">
+        <!-- 展开按钮（面板收起时显示） -->
+        <button v-if="!procPanelOpen" class="proc-panel-expand-btn" @click="expandProcPanel(true)">运营处理 ▸</button>
+
+        <!-- 左侧：待办详情 -->
+        <div class="detail-main">
+          <div class="detail-wrap">
+
+        <!-- Question title -->
+        <div class="detail-question">{{ cur.question }}</div>
+
+        <!-- 反馈人 + 反馈时间 + 用户反馈 + AI 诊断 + 来源智能体 -->
+        <div class="detail-meta-row">
+          <span>反馈人：<span class="val">{{ cur.asker }}</span></span>
+          <span>反馈时间：<span class="val">{{ cur.time }}</span></span>
+          <span>用户反馈：<span v-if="cur.userFB" class="fb-chip">{{ cur.userFB }}</span><span v-else style="color:#999;font-size:13px">未反馈</span></span>
+          <span class="ai-meta-item">
+            <span class="lbl">AI 诊断：</span>
+            <span v-if="cur.aiDiag" class="ai-chip" @click="focusAiSection">{{ cur.aiDiag }} ▸</span>
+            <span v-else class="empty-val">诊断中...</span>
+          </span>
+          <span>来源智能体：<a href="javascript:;">{{ cur.source || '暂无' }}</a></span>
+          <span v-if="cur.fromChannel">渠道：<span class="val">{{ cur.fromChannel }}</span></span>
+        </div>
+
+        <!-- Tabs -->
+        <el-tabs v-model="tab" class="detail-tabs">
+          <el-tab-pane label="回答内容" name="answer"></el-tab-pane>
+          <el-tab-pane label="相关问答记录" name="records"></el-tab-pane>
+        </el-tabs>
+
+        <!-- Tab: Answer -->
+        <div v-if="tab==='answer'">
+          <div class="answer-area">
+            <div class="bot-avatar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#5c6bc0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+            <div v-html="cur.answerHtml"></div>
+          </div>
+        </div>
+        <div v-if="tab==='records'">
+          <div v-if="(cur.qaMessages||[]).length" class="ask-chat" style="padding:8px 0 16px">
+            <div v-for="(m, i) in cur.qaMessages" :key="'qa'+i" class="ask-msg" :class="m.role">
+              <div class="ask-avatar">{{ m.role === 'user' ? (cur.asker||'用').slice(0,1) : (cur.source||'AI').slice(0,1) }}</div>
+              <div>
+                <div class="ask-bubble">{{ m.content }}</div>
+                <div class="ask-msg-time">{{ m.time }}</div>
+              </div>
+            </div>
+          </div>
+          <el-empty v-else description="暂无相关问答记录" :image-size="80"></el-empty>
+        </div>
+
+        <!-- 运营处理日志 -->
+        <div v-if="(cur.records||[]).length" class="op-log">
+          <div class="op-log-head">
+            <span class="op-log-title">📒 运营处理日志</span>
+            <span class="op-log-count">共 {{ cur.records.length }} 条</span>
+            <el-tag v-if="cur.status==='已处理'" type="success" size="small" style="margin-left:auto">已处理</el-tag>
+          </div>
+          <div v-for="(r,ri) in cur.records" :key="'pr'+ri" class="op-log-row">
+            <span class="op-log-idx">#{{ ri+1 }}</span>
+            <el-tag size="small" :type="r.kind==='knowledge'?'primary':'success'" style="flex-shrink:0">{{ r.kind==='knowledge'?'新增知识':'处理记录' }}</el-tag>
+            <span class="op-log-content" :title="r.summary">{{ r.summary }}</span>
+            <span class="op-log-meta">{{ r.handler }} · {{ r.time }}</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="detail-footer">
+          <div></div>
+          <div class="footer-right">
+            <el-button @click="backToList()">取消</el-button>
+            <el-button v-if="cur.status!=='已处理'" type="primary" @click="submitDetail">处理完成</el-button>
+            <div class="footer-nav">
+              <a @click="navItem(-1)">上一条</a>
+              {{ curIdx+1 }}/{{ list.length }}
+              <a @click="navItem(1)">下一条</a>
+            </div>
+          </div>
+        </div>
+        </div>
+        </div>
+
+        <!-- 右侧：运营处理面板（默认展开，收起后缩回） -->
+        <div class="detail-proc-panel" :class="{ collapsed: !procPanelOpen }">
+          <div class="proc-drawer-head">
+            <h4>🛠️ 运营处理</h4>
+            <span class="collapse-btn" @click="collapseProcPanel">收起 ◂</span>
+          </div>
+
+          <div class="proc-drawer-body">
+
+            <!-- AI 诊断详情（可收起） -->
+            <div class="col-block">
+              <div class="col-block-head" @click="aiSectionExpanded = !aiSectionExpanded">
+                <div class="col-block-title">
+                  <span class="bar"></span>
+                  AI 诊断详情
+                  <span v-if="cur.aiDiag" class="ai-badge" style="font-size:12px;margin-left:4px">{{ cur.aiDiag }}</span>
+                </div>
+                <span style="font-size:12px;color:#999;margin-right:8px">{{ aiSectionExpanded ? '点击收起' : '点击展开' }}</span>
+                <span class="col-block-toggle" :class="{open: aiSectionExpanded}">▶</span>
+              </div>
+
+              <div v-if="aiSectionExpanded" class="col-block-body">
+                <div class="ai-type-line">诊断类型：<span class="ai-badge" style="font-size:13px">{{ cur.aiDiag }}</span></div>
+                <div class="ai-time-line">诊断时间：{{ cur.diagTime || '2026-05-15 14:30:22' }}</div>
+
+                <div style="font-size:14px;font-weight:600;color:#333;margin:10px 0 12px">📋 分析步骤</div>
+                <div class="step-list">
+                  <div v-for="(s,i) in (cur.steps||[])" :key="i" class="step-row">
+                    <div class="step-circle">{{ i+1 }}</div>
+                    <div class="step-body">
+                      <div class="t">{{ s.title }}</div>
+                      <div class="d">{{ s.desc }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="fix-box">
+                  <h5>✅ 修复建议</h5>
+                  <div v-for="(f,i) in (cur.fixes||[])" :key="i" class="fix-row">
+                    <div class="txt">
+                      <span class="fix-type-badge" :class="getFixTypeMeta(f.type).cls">{{ getFixTypeMeta(f.type).label }}</span>
+                      {{ i+1 }}. {{ f.text }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 运营处理 -->
+            <div v-if="cur.status!=='已处理'" class="col-block">
+              <div class="col-block-head" style="cursor:default">
+                <div class="col-block-title">
+                  <span class="bar" style="background:#1890ff"></span>
+                  运营处理
+                  <span v-if="(cur.records||[]).length" style="font-size:12px;color:#52c41a;font-weight:400">（已添加 {{ cur.records.length }} 条记录）</span>
+                </div>
+              </div>
+
+              <div class="col-block-body" style="padding:8px 18px 16px">
+                <el-tabs v-model="procTab" class="proc-tabs">
+                  <!-- Tab 1: 新增知识 -->
+                  <el-tab-pane label="新增知识" name="knowledge">
+                    <div class="km-layout" style="margin-top:8px">
+                      <div class="km-left">
+                        <div class="sec-title">请选择知识类型</div>
+                        <div v-for="kt in kmTypes" :key="kt.val"
+                          class="km-type-card" :class="{sel: kmEntry.type === kt.val}" @click="kmEntry.type = kt.val">
+                          <div class="km-icon">{{ kt.icon }}</div>
+                          <div>
+                            <div class="km-name">{{ kt.label }}</div>
+                            <div class="km-desc">{{ kt.desc }}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="km-right">
+                        <el-form label-width="80px">
+                          <el-form-item label="问题" required>
+                            <el-input v-model="kmEntry.question" placeholder="请输入问题" maxlength="500" show-word-limit></el-input>
+                          </el-form-item>
+                          <el-form-item label="回答" required>
+                            <el-input v-model="kmEntry.answer" type="textarea" :rows="4" placeholder="请输入回答内容"></el-input>
+                          </el-form-item>
+                          <el-form-item label="相似问题">
+                            <div v-for="(q,qi) in kmEntry.simQ" :key="qi" style="display:flex;gap:6px;margin-bottom:6px;width:100%">
+                              <el-input v-model="kmEntry.simQ[qi]" placeholder="请输入" maxlength="500"></el-input>
+                              <el-button text type="danger" @click="kmEntry.simQ.splice(qi,1)">—</el-button>
+                              <el-button text type="primary" @click="kmEntry.simQ.push('')">+</el-button>
+                            </div>
+                          </el-form-item>
+                          <el-form-item label="知识来源">
+                            <el-input v-model="kmEntry.source" placeholder="请输入" maxlength="500"></el-input>
+                          </el-form-item>
+                          <el-form-item label="知识目录" required>
+                            <el-select v-model="kmEntry.catalog" placeholder="请选择" style="width:100%">
+                              <el-option label="常见问题" value="faq"></el-option>
+                              <el-option label="业务知识" value="biz"></el-option>
+                              <el-option label="技术文档" value="tech"></el-option>
+                              <el-option label="操作指南" value="guide"></el-option>
+                            </el-select>
+                          </el-form-item>
+                          <el-form-item label="是否共享" required>
+                            <el-radio-group v-model="kmEntry.shared">
+                              <el-radio value="pub">公开</el-radio>
+                              <el-radio value="apply">依申请使用</el-radio>
+                              <el-radio value="priv">私密</el-radio>
+                            </el-radio-group>
+                          </el-form-item>
+                        </el-form>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+
+                  <!-- Tab 2: 添加处理记录 -->
+                  <el-tab-pane label="添加处理记录" name="record">
+                    <el-form label-width="80px" style="margin-top:10px">
+                      <el-form-item label="处理结果" required>
+                        <el-input v-model="recordEntry.result" type="textarea" :rows="6" placeholder="请输入处理结果..."></el-input>
+                      </el-form-item>
+                      <el-form-item label="处理人">
+                        <el-input :model-value="currentUser" disabled></el-input>
+                      </el-form-item>
+                    </el-form>
+                  </el-tab-pane>
+                </el-tabs>
+
+                <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #f0f0f0">
+                  <el-button @click="resetCurrentTab">重置</el-button>
+                  <el-button type="primary" @click="saveCurrentTab">保存</el-button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 已处理状态提示 -->
+            <div v-if="cur.status==='已处理'" style="text-align:center;padding:20px;color:#52c41a;background:#f6ffed;border:1px solid #b7eb8f;border-radius:6px">
+              ✓ 该待办已处理完成
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== 提问记录 ===================== -->
+      <div v-if="activeMenu === 'ask'">
+        <div class="filter-card">
+          <div class="filter-row">
+            <el-date-picker v-model="askDateRange" type="daterange" range-separator="至"
+              start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"></el-date-picker>
+            <el-select v-model="askDept" clearable placeholder="部门: 请选择">
+              <el-option v-for="d in askDeptOptions" :key="d" :label="d" :value="d"></el-option>
+            </el-select>
+            <el-select v-model="askFeedback" placeholder="反馈: 全部">
+              <el-option label="反馈: 全部" value="全部"></el-option>
+              <el-option label="点赞" value="点赞"></el-option>
+              <el-option label="点踩" value="点踩"></el-option>
+              <el-option label="无反馈" value="无反馈"></el-option>
+              <el-option label="忽略" value="忽略"></el-option>
+            </el-select>
+            <el-select v-model="askSource" clearable placeholder="选择来源">
+              <el-option label="知识库问答" value="知识库问答"></el-option>
+              <el-option label="数字员工对话" value="数字员工对话"></el-option>
+              <el-option label="智能体广场" value="智能体广场"></el-option>
+            </el-select>
+            <el-input v-model="askKw" clearable placeholder="请输入问题关键字查询"></el-input>
+            <el-select v-model="askSpeaker" clearable filterable placeholder="请选择发言人">
+              <el-option v-for="s in askSpeakerOptions" :key="s" :label="s" :value="s"></el-option>
+            </el-select>
+            <el-select v-model="askAgent" clearable filterable placeholder="请选择智能体">
+              <el-option v-for="a in askAgentOptions" :key="a" :label="a" :value="a"></el-option>
+            </el-select>
+            <el-button @click="resetAskFilter">重置</el-button>
+            <el-button type="primary" @click="queryAsk">🔍 查询</el-button>
+            <el-button @click="exportAsk">导出</el-button>
+          </div>
+        </div>
+
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-card-head">
+              <div class="stat-card-title">提问统计<span class="stat-card-sub">共 {{ askFeedbackTotal }} 次</span></div>
+            </div>
+            <div class="stat-card-body">
+              <div ref="askFeedbackChartEl" class="chart-box"></div>
+              <div class="chart-legend">
+                <div v-for="item in askFeedbackStats" :key="item.name" class="legend-item">
+                  <span class="legend-dot" :style="{background: item.color}"></span>
+                  <span>{{ item.name }}</span>
+                  <span class="legend-val">{{ item.value }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-head">
+              <div class="stat-card-title">Token统计<span class="stat-card-sub">合计 {{ askTokenTotal }} 亿</span></div>
+              <div style="display:flex;gap:8px">
+                <el-select v-model="tokenAgent" clearable placeholder="请选择智能体" size="small" style="width:130px!important">
+                  <el-option v-for="a in askAgentOptions" :key="a" :label="a" :value="a"></el-option>
+                </el-select>
+                <el-date-picker v-model="tokenDateRange" type="daterange" range-separator="至"
+                  start-placeholder="开始日期" end-placeholder="结束日期" size="small"
+                  value-format="YYYY-MM-DD" style="width:220px!important"></el-date-picker>
+              </div>
+            </div>
+            <div class="stat-card-body">
+              <div ref="askTokenChartEl" class="chart-box"></div>
+              <div class="chart-legend">
+                <div class="legend-item" style="margin-bottom:4px">
+                  <span>总 Tokens</span>
+                  <span class="legend-val" style="color:#e74c3c">{{ askTokenTotal }} 亿</span>
+                </div>
+                <div v-for="item in askTokenStats" :key="item.name" class="legend-item">
+                  <span class="legend-dot" :style="{background: item.color}"></span>
+                  <span>{{ item.name }}</span>
+                  <span class="legend-val">{{ item.value }} 亿</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ask-table-card">
+          <div class="ask-table-title">提问记录 <span style="color:#999;font-weight:400;font-size:13px">({{ filteredAskList.length }})</span></div>
+          <el-table :data="pagedAskList" border
+            :header-cell-style="{background:'#fafafa',color:'#333',fontSize:'13px'}">
+            <el-table-column label="问题" min-width="220" show-overflow-tooltip>
+              <template #default="{row}">
+                <span class="ask-q-link" @click="openAskDetail(row)">{{ row.question }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="反馈" width="90" align="center">
+              <template #default="{row}">
+                <span :class="{
+                  'fb-like': row.feedback==='点赞',
+                  'fb-dislike': row.feedback==='点踩',
+                  'fb-none': row.feedback==='无反馈',
+                  'fb-ignore': row.feedback==='忽略'
+                }">{{ row.feedback }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="时间" width="170" prop="time"></el-table-column>
+            <el-table-column label="提问来源" width="120" prop="source"></el-table-column>
+            <el-table-column label="提问人" width="90" prop="asker"></el-table-column>
+            <el-table-column label="提问部门" width="130" prop="dept" show-overflow-tooltip></el-table-column>
+            <el-table-column label="发言人" width="100" prop="speaker"></el-table-column>
+            <el-table-column label="智能体" width="110" prop="agent">
+              <template #default="{row}">{{ row.agent || '-' }}</template>
+            </el-table-column>
+            <el-table-column label="管理操作" width="180" fixed="right">
+              <template #default="{row}">
+                <span class="op-link" @click="setAskFeedback(row, '点赞')">点赞</span>
+                <span class="op-link" @click="setAskFeedback(row, '点踩')">点踩</span>
+                <span class="op-link" @click="setAskFeedback(row, '忽略')">忽略</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <el-pagination v-model:current-page="askPage" :page-size="askPgSize" :total="filteredAskList.length"
+              layout="total, sizes, prev, pager, next, jumper" :page-sizes="[10,20,50]"
+              @size-change="askPgSize=$event;askPage=1" small></el-pagination>
+          </div>
+        </div>
+
+        <el-drawer v-model="askDetailVisible" title="问答详情" size="560px" destroy-on-close>
+          <template v-if="askCur">
+            <div class="ask-detail-meta">
+              <span>提问人：<span class="val">{{ askCur.asker }}</span></span>
+              <span>提问部门：<span class="val">{{ askCur.dept || '-' }}</span></span>
+              <span>时间：<span class="val">{{ askCur.time }}</span></span>
+              <span>来源：<span class="val">{{ askCur.source }}</span></span>
+              <span>发言人：<span class="val">{{ askCur.speaker }}</span></span>
+              <span>智能体：<span class="val">{{ askCur.agent || '暂无' }}</span></span>
+              <span>反馈：
+                <span :class="{
+                  'fb-like': askCur.feedback==='点赞',
+                  'fb-dislike': askCur.feedback==='点踩',
+                  'fb-none': askCur.feedback==='无反馈',
+                  'fb-ignore': askCur.feedback==='忽略'
+                }">{{ askCur.feedback }}</span>
+              </span>
+            </div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333">用户与 AI 问答记录</div>
+            <div class="ask-chat">
+              <div v-for="(m, i) in askCur.messages" :key="i" class="ask-msg" :class="m.role">
+                <div class="ask-avatar">{{ m.role === 'user' ? (askCur.asker||'用').slice(0,1) : (askCur.speaker||'AI').slice(0,1) }}</div>
+                <div>
+                  <div class="ask-bubble">{{ m.content }}</div>
+                  <div class="ask-msg-time">{{ m.time }}</div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </el-drawer>
+      </div>
+
+      <!-- ===================== 统计分析 ===================== -->
+      <div v-if="activeMenu === 'stat'">
+        <div class="filter-card">
+          <div class="filter-row">
+            <el-date-picker v-model="statDateRange" type="daterange" range-separator="至"
+              start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"></el-date-picker>
+            <el-select v-model="statDept" clearable placeholder="部门: 请选择">
+              <el-option v-for="d in askDeptOptions" :key="d" :label="d" :value="d"></el-option>
+            </el-select>
+            <el-button @click="resetStatFilter">重置</el-button>
+            <el-button type="primary" @click="queryStat">🔍 查询</el-button>
+          </div>
+        </div>
+
+        <div class="chart-panel">
+          <div class="chart-panel-head">
+            <div class="chart-panel-title">智能体使用统计（次数）</div>
+            <span class="chart-panel-more" @click="openAgentUsageMore">查看更多</span>
+          </div>
+          <div ref="agentUsageChartEl" class="chart-panel-body"></div>
+        </div>
+
+        <div class="chart-panel">
+          <div class="chart-panel-head">
+            <div class="chart-panel-title">待办统计</div>
+            <span class="chart-panel-more" @click="openTodoMore">查看更多</span>
+          </div>
+          <div ref="todoStatChartEl" class="chart-panel-body"></div>
+        </div>
+
+        <div class="stats-grid-2">
+          <div class="chart-panel" style="margin-bottom:0">
+            <div class="chart-panel-head">
+              <div class="chart-panel-title">提问活跃度排行-部门</div>
+              <span class="chart-panel-more" @click="openDeptMore">查看更多</span>
+            </div>
+            <div ref="deptActivityChartEl" class="chart-panel-body sm"></div>
+          </div>
+          <div class="chart-panel" style="margin-bottom:0">
+            <div class="chart-panel-head">
+              <div class="chart-panel-title">提问活跃度排行-个人</div>
+              <span class="chart-panel-more" @click="openPersonMore">查看更多</span>
+            </div>
+            <div ref="personActivityChartEl" class="chart-panel-body sm"></div>
+          </div>
+        </div>
+
+        <el-dialog v-model="statMoreVisible" :title="statMoreTitle" width="640px">
+          <el-table :data="statMoreData" border size="small"
+            :header-cell-style="{background:'#fafafa',color:'#333'}">
+            <el-table-column label="排名" width="70" type="index"></el-table-column>
+            <el-table-column label="名称" prop="name"></el-table-column>
+            <el-table-column label="数量" prop="count" width="120"></el-table-column>
+          </el-table>
+        </el-dialog>
+
+        <!-- 智能体使用统计 · 查看更多 -->
+        <el-dialog v-model="agentMoreVisible" title="智能体使用统计" width="920px" destroy-on-close>
+          <div class="filter-row" style="margin-bottom:14px">
+            <span style="color:#666;font-size:13px;flex-shrink:0">日期区间</span>
+            <el-date-picker v-model="agentMoreDateRange" type="daterange" range-separator="-"
+              start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+              style="width:260px!important"></el-date-picker>
+            <el-input v-model="agentMoreKw" clearable placeholder="请输入智能体名称" style="width:200px!important"></el-input>
+            <el-button @click="resetAgentMoreFilter">重置</el-button>
+            <el-button type="primary" @click="queryAgentMore">🔍 查询</el-button>
+            <el-button type="primary" link @click="exportAgentMore">导出</el-button>
+          </div>
+          <el-table :data="pagedAgentMoreList" border
+            :header-cell-style="{background:'#fafafa',color:'#333',fontSize:'13px'}">
+            <el-table-column label="名称" prop="name" min-width="140" show-overflow-tooltip></el-table-column>
+            <el-table-column label="所属部门" prop="dept" width="140" show-overflow-tooltip></el-table-column>
+            <el-table-column label="使用次数" prop="count" width="100" align="right"></el-table-column>
+            <el-table-column label="用户数" prop="users" width="90" align="right"></el-table-column>
+            <el-table-column label="token 总量" prop="tokens" width="120" align="right">
+              <template #default="{row}">{{ formatTokens(row.tokens) }}</template>
+            </el-table-column>
+            <el-table-column label="点赞数" prop="likes" width="90" align="right"></el-table-column>
+            <el-table-column label="点踩数" prop="dislikes" width="90" align="right"></el-table-column>
+            <el-table-column label="无反馈" prop="noFeedback" width="90" align="right"></el-table-column>
+          </el-table>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <el-pagination v-model:current-page="agentMorePage" :page-size="agentMorePgSize"
+              :total="filteredAgentMoreList.length"
+              layout="total, prev, pager, next" :page-sizes="[10,20]"
+              @size-change="agentMorePgSize=$event;agentMorePage=1" small></el-pagination>
+          </div>
+        </el-dialog>
+
+        <!-- 待办统计 · 查看更多 -->
+        <el-dialog v-model="todoMoreVisible" title="待办统计" width="920px" destroy-on-close>
+          <div class="filter-row" style="margin-bottom:14px">
+            <span style="color:#666;font-size:13px;flex-shrink:0">日期区间</span>
+            <el-date-picker v-model="todoMoreDateRange" type="daterange" range-separator="-"
+              start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+              style="width:260px!important"></el-date-picker>
+            <el-input v-model="todoMoreDeptKw" clearable placeholder="请输入部门名称" style="width:200px!important"></el-input>
+            <el-button @click="resetTodoMoreFilter">重置</el-button>
+            <el-button type="primary" @click="queryTodoMore">🔍 查询</el-button>
+            <el-button type="primary" link @click="exportTodoMore">导出</el-button>
+          </div>
+          <el-table :data="pagedTodoMoreList" border
+            :header-cell-style="{background:'#fafafa',color:'#333',fontSize:'13px'}">
+            <el-table-column label="姓名" prop="name" width="110"></el-table-column>
+            <el-table-column label="所属部门" prop="dept" min-width="140" show-overflow-tooltip></el-table-column>
+            <el-table-column label="待办数" prop="pending" width="100" align="right"></el-table-column>
+            <el-table-column label="已处理数" prop="done" width="100" align="right"></el-table-column>
+            <el-table-column label="绑定智能体" prop="agents" min-width="200" show-overflow-tooltip>
+              <template #default="{row}">{{ row.agents || '-' }}</template>
+            </el-table-column>
+          </el-table>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <el-pagination v-model:current-page="todoMorePage" :page-size="todoMorePgSize"
+              :total="filteredTodoMoreList.length"
+              layout="total, prev, pager, next"
+              @current-change="todoMorePage=$event" small></el-pagination>
+          </div>
+        </el-dialog>
+
+        <!-- 提问活跃度排行-部门 · 查看更多 -->
+        <el-dialog v-model="deptMoreVisible" title="提问活跃度排行-部门" width="720px" destroy-on-close>
+          <div class="filter-row" style="margin-bottom:14px">
+            <span style="color:#666;font-size:13px;flex-shrink:0">日期区间</span>
+            <el-date-picker v-model="deptMoreDateRange" type="daterange" range-separator="-"
+              start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+              style="width:260px!important"></el-date-picker>
+            <el-button @click="resetDeptMoreFilter">重置</el-button>
+            <el-button type="primary" @click="queryDeptMore">🔍 查询</el-button>
+            <el-button type="primary" link @click="exportDeptMore">导出</el-button>
+          </div>
+          <el-table :data="pagedDeptMoreList" border
+            :header-cell-style="{background:'#fafafa',color:'#333',fontSize:'13px'}">
+            <el-table-column label="部门名称" prop="name" min-width="200" align="center" show-overflow-tooltip></el-table-column>
+            <el-table-column label="提问次数" prop="askCount" width="160" align="center"></el-table-column>
+          </el-table>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <el-pagination v-model:current-page="deptMorePage" :page-size="deptMorePgSize"
+              :total="deptMoreList.length"
+              layout="prev, pager, next"
+              @current-change="deptMorePage=$event" small></el-pagination>
+          </div>
+        </el-dialog>
+
+        <!-- 提问活跃度排行-个人 · 查看更多 -->
+        <el-dialog v-model="personMoreVisible" title="提问活跃度排行-个人" width="820px" destroy-on-close>
+          <div class="filter-row" style="margin-bottom:14px">
+            <span style="color:#666;font-size:13px;flex-shrink:0">日期区间</span>
+            <el-date-picker v-model="personMoreDateRange" type="daterange" range-separator="-"
+              start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+              style="width:240px!important"></el-date-picker>
+            <el-select v-model="personMoreDept" clearable placeholder="部门选择" style="width:160px!important">
+              <el-option v-for="d in askDeptOptions" :key="d" :label="d" :value="d"></el-option>
+            </el-select>
+            <el-input v-model="personMoreNameKw" clearable placeholder="请输入姓名" style="width:160px!important"></el-input>
+            <el-button @click="resetPersonMoreFilter">重置</el-button>
+            <el-button type="primary" @click="queryPersonMore">🔍 查询</el-button>
+            <el-button type="primary" link @click="exportPersonMore">导出</el-button>
+          </div>
+          <el-table :data="pagedPersonMoreList" border
+            :header-cell-style="{background:'#fafafa',color:'#333',fontSize:'13px'}">
+            <el-table-column label="名称" prop="name" width="120" align="center"></el-table-column>
+            <el-table-column label="所属部门" prop="dept" min-width="160" align="center" show-overflow-tooltip></el-table-column>
+            <el-table-column label="提问次数" prop="askCount" width="140" align="center"></el-table-column>
+          </el-table>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <el-pagination v-model:current-page="personMorePage" :page-size="personMorePgSize"
+              :total="filteredPersonMoreList.length"
+              layout="prev, pager, next"
+              @current-change="personMorePage=$event" small></el-pagination>
+          </div>
+        </el-dialog>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, computed, reactive, watch, nextTick, onMounted, onBeforeUnmount } = Vue;
+
+createApp({
+  setup() {
+    /* ---- Sidebar ---- */
+    const menus = [
+      { key:'todo', label:'我的待办', icon:'📋' },
+      { key:'kb-m', label:'知识库管理', icon:'📁' },
+      { key:'op',   label:'操作记录', icon:'🔄' },
+      { key:'kb',   label:'知识库', icon:'📚' },
+      { key:'stat', label:'统计分析', icon:'📊' },
+      { key:'ask',  label:'提问记录', icon:'💬' },
+      { key:'ppl',  label:'人员管理', icon:'👥' },
+    ];
+    const enabledMenus = new Set(['todo', 'ask', 'stat']);
+    const activeMenu = ref('todo');
+    const isMenuEnabled = (key) => enabledMenus.has(key);
+
+    function switchMenu(key) {
+      if (!isMenuEnabled(key)) return;
+      activeMenu.value = key;
+      if (key === 'todo') view.value = 'list';
+      if (key === 'ask') nextTick(() => renderAskCharts());
+      if (key === 'stat') nextTick(() => renderStatCharts());
+    }
+
+    /* ---- Data ---- */
+    const list = ref([
+      { id:1,  question:'我要拉一个会', qType:'点踩', time:'2026-05-13 17:28:54', status:'待处理', asker:'王婷', dept:'数据运营中心',
+        userFB:'耗时长', aiDiag:'能力有缺失', source:'暂无',
+        answerHtml:`<p>"网元（Network Element, NE）"是通信与网络领域的核心概念，指网络中具备独立功能、可被管理的最小逻辑单元或物理设备。它通常是构成复杂网络架构的基础组件，负责特定任务的执行与数据流转的控制。以下从定义、分类、作用及实际应用场景展开详解：</p>
+          <h3>一、网元的定义与核心特征</h3>
+          <p><strong>1. 基本定义</strong></p>
+          <ul><li><strong>标准定义（ITU-T）：</strong>在电信管理网（TMN）中，网元是网络中可被单独监控、配置和维护的实体，如路由器、交换机、基站等。</li>
+          <li><strong>扩展理解：</strong>随着NFV（网络功能虚拟化）和SDN（软件定义网络）发展，网元不再局限于硬件设备，也可以是虚拟化的逻辑模块（如虚拟防火墙、云化核心网功能）。</li></ul>
+          <p><strong>2. 关键特征</strong></p>
+          <ul><li><strong>功能性：</strong>每个网元承担明确的功能（如数据转发、信号处理）。</li>
+          <li><strong>可管理性：</strong>支持通过网管系统（NMS）进行配置、监控和故障诊断。</li>
+          <li><strong>互联性：</strong>通过标准协议（如TCP/IP、SNMP）与其他网元协同工作。</li></ul>
+          <h3>二、网元的分类与常见示例</h3>
+          <p><strong>1. 按网络层级划分</strong></p>`,
+        steps:[
+          {title:'问题意图识别', desc:'用户提问"我要拉一个会"，意图为发起/预约会议。系统需要理解"拉会"为口语化表达。'},
+          {title:'知识库检索', desc:'在现有知识库中检索"会议预约"、"拉会"等关键词，未找到直接匹配的知识条目。'},
+          {title:'回答质量评估', desc:'系统生成了通用的会议发起指南，但缺少公司内部具体的会议预约系统入口和操作流程。'},
+          {title:'诊断结论', desc:'知识库中缺少"会议预约"相关的业务知识条目，导致回答不够精准和实用。建议新增知识问答。'},
+        ],
+        fixes:[
+          {text:'在知识库中新增"会议预约操作流程"知识问答，包含OA系统中会议预约的详细步骤', type:'knowledge'},
+          {text:'补充"拉会"等口语化表达作为相似问题，提升语义匹配准确率', type:'knowledge'},
+        ],
+        records:[],
+      },
+      { id:2, question:'天翼云（2026）55号文件是什么内容？', qType:'点踩', time:'2026-04-23 09:06:44', status:'待处理', asker:'王樟贤', dept:'业务拓展中心',
+        userFB:'结果不准确', aiDiag:'知识库缺失', source:'暂无',
+        answerHtml:`<p>关于天翼云（2026）55号文件的查询结果如下：</p><p>抱歉，当前知识库中暂未收录该文件的具体内容。建议您联系行政部门或在OA系统文件管理中查询。</p>`,
+        steps:[{title:'问题意图识别', desc:'用户查询特定编号的文件内容，属于精确信息检索类问题。'},{title:'知识库检索', desc:'在知识库中未检索到"天翼云（2026）55号文件"相关内容。'},{title:'诊断结论', desc:'知识库中缺少该文件信息，属于知识库覆盖不足。建议将该文件录入知识库。'}],
+        fixes:[{text:'将天翼云（2026）55号文件内容录入知识库，建立文件编号索引', type:'knowledge'},{text:'建立文件类问题的检索通道，支持按文件编号精确查询', type:'record'}],
+        records:[],
+      },
+      { id:3, question:'天翼云（2026）55号', qType:'点踩', time:'2026-04-23 09:06:38', status:'已处理', asker:'王樟贤', dept:'业务拓展中心',
+        userFB:'', aiDiag:'上下文关联错误', source:'暂无',
+        answerHtml:`<p>您好，您的提问信息不完整，无法确定具体需求。请问您是想了解天翼云（2026）55号文件的内容吗？</p>`,
+        steps:[{title:'问题意图识别', desc:'用户输入不完整，仅提供了文件编号片段，意图不明确。'},{title:'上下文分析', desc:'检查该用户的历史对话记录，发现用户前一条问题为"天翼云（2026）55号文件是什么内容"，本次提问应为上下文关联。'},{title:'诊断结论', desc:'系统未能正确关联上下文，将用户的简短追问当作独立问题处理。属于上下文关联能力不足。'}],
+        fixes:[{text:'优化多轮对话的上下文关联能力，识别用户简短追问与前序对话的关系', type:'bug'}],
+        records:[{ kind:'record', handler:'李运营', time:'2026-04-24 10:30:00', summary:'已提交Bug工单，优化多轮对话上下文关联能力，工单号 BUG-2026-0423' }],
+      },
+      { id:4, question:'如何更换oa手机号', qType:'点踩', time:'2026-04-17 07:30:44', status:'待处理', asker:'张强', dept:'数据库产品线',
+        userFB:'方案模板化', aiDiag:'方案模板化', source:'暂无',
+        answerHtml:`<p>更换OA手机号的操作步骤：</p><ol><li>登录OA系统</li><li>进入个人设置</li><li>找到手机号修改入口</li><li>输入新手机号并验证</li></ol><p>如有问题请联系IT部门。</p>`,
+        steps:[{title:'问题意图识别', desc:'用户需要更换OA系统绑定的手机号码。'},{title:'回答质量评估', desc:'回答过于模板化，缺少具体的OA系统截图和详细操作路径。'},{title:'诊断结论', desc:'回答内容为通用模板，缺乏针对性。需要补充具体的操作指南。'}],
+        fixes:[{text:'更新知识库中"OA手机号更换"条目，补充详细操作路径和截图说明', type:'record'}],
+        records:[],
+      },
+      { id:5, question:'如何更换oa手机号', qType:'点踩', time:'2026-04-17 07:30:30', status:'待处理', asker:'张强', dept:'数据库产品线',
+        userFB:'耗时长', aiDiag:'耗时长', source:'暂无',
+        answerHtml:`<p>更换OA手机号，请参考以下步骤...</p><p>（生成回答耗时过长）</p>`,
+        steps:[{title:'性能分析', desc:'该问答的响应时间为15.3秒，远超正常响应时间（3-5秒）。'},{title:'原因分析', desc:'模型推理过程中触发了多次知识库检索，且部分检索超时重试。'},{title:'诊断结论', desc:'属于性能问题，回答生成时间过长影响用户体验。'}],
+        fixes:[{text:'优化"OA手机号更换"类问题的知识检索路径，减少不必要的多轮检索', type:'bug'}],
+        records:[],
+      },
+      { id:6, question:'我要预定会议', qType:'点踩', time:'2026-04-13 15:15:01', status:'待处理', asker:'郑鑫彬', dept:'审计部',
+        userFB:'答非所问', aiDiag:'知识库缺失', source:'暂无',
+        answerHtml:`<p>关于会议预定，您可以通过以下方式操作：</p><p>请联系行政部门进行会议室预约。</p>`,
+        steps:[{title:'问题意图识别', desc:'用户需要预定会议，可能指预约会议室或发起会议邀请。'},{title:'知识库检索', desc:'知识库中未找到"会议预定"相关的操作指南。'},{title:'诊断结论', desc:'缺少会议预定流程的知识条目，需要新增SQL数据集或知识问答。'}],
+        fixes:[{text:'新增"会议预定操作流程"知识问答，包含会议室预约系统的使用说明', type:'knowledge'},{text:'新增会议室查询SQL数据集，支持查看会议室可用状态', type:'knowledge'}],
+        records:[],
+      },
+      { id:7, question:'如何解决token销售亏损问题？', qType:'点踩', time:'2026-04-01 00:15:59', status:'待处理', asker:'黄创光', dept:'数字化运营部',
+        userFB:'', aiDiag:'输出幻觉', source:'暂无',
+        answerHtml:`<p>关于token销售亏损问题的解决方案如下：</p><p>1. 调整定价策略... 2. 优化成本结构...</p><p>（注：包含部分不准确信息）</p>`,
+        steps:[{title:'问题意图识别', desc:'用户咨询token销售亏损的解决方案，属于业务策略类问题。'},{title:'回答质量评估', desc:'回答中包含虚假不存在的数据引用和策略建议，与实际业务情况不符。'},{title:'诊断结论', desc:'模型产生了幻觉输出，生成了看似合理但实际不准确的内容。'}],
+        fixes:[{text:'在知识库中添加token销售相关的准确业务数据和策略文档', type:'knowledge'},{text:'针对业务敏感问题增加事实校验环节，减少幻觉输出', type:'bug'}],
+        records:[],
+      },
+      { id:8, question:'如何解决token销售亏损问题？', qType:'点踩', time:'2026-03-31 10:19:53', status:'待处理', asker:'黄创光', dept:'数字化运营部',
+        userFB:'结果不准确', aiDiag:'结果不准确', source:'暂无',
+        answerHtml:`<p>token销售亏损问题分析...</p><p>（回答内容与实际数据不符）</p>`,
+        steps:[{title:'知识库检索', desc:'检索到相关知识条目，但数据已过期。'},{title:'诊断结论', desc:'知识库中的数据未及时更新，导致回答结果不准确。需要更新相关知识卡片。'}],
+        fixes:[{text:'更新知识库中token销售相关的数据信息，确保数据时效性', type:'record'}],
+        records:[],
+      },
+      { id:9, question:'员工体检的流程是怎样的', qType:'点踩', time:'2026-03-27 19:54:01', status:'待处理', asker:'曹亚慧', dept:'基础测试与质量中心',
+        userFB:'交互体验差', aiDiag:'内容渲染问题', source:'暂无',
+        answerHtml:`<p>员工体检流程如下：</p><p>1. 人事部发布体检通知<br>2. 员工选择体检套餐<br>（回答过程中出现中断）<br><br>...</p>`,
+        steps:[{title:'回答质量评估', desc:'回答过程中出现内容渲染中断，部分文字重复输出。'},{title:'诊断结论', desc:'属于内容渲染问题，回答过程中输出中断导致内容不完整。'}],
+        fixes:[{text:'排查输出中断的技术原因，修复渲染流程中的异常', type:'bug'}],
+        records:[],
+      },
+      { id:10, question:'天翼云员工体检可以给父母加体检吗', qType:'点踩', time:'2026-03-27 19:53:28', status:'待处理', asker:'曹亚慧', dept:'基础测试与质量中心',
+        userFB:'', aiDiag:'能力有缺失', source:'暂无', fromChannel:'知识库问答',
+        answerHtml:`<p>关于员工体检是否可以为父母加体检的问题：</p><p>目前暂无相关政策信息，建议联系人力资源部门咨询。</p>`,
+        steps:[{title:'知识库检索', desc:'知识库中缺少员工福利政策（体检相关）的详细信息。'},{title:'诊断结论', desc:'知识库覆盖不足，缺少员工体检政策类知识，导致无法准确回答。'}],
+        fixes:[{text:'新增员工体检政策知识问答，包含体检范围、家属体检政策等信息', type:'knowledge'}],
+        records:[],
+      },
+      /* ---- 数字员工来源点踩 ---- */
+      { id:11, question:'客户工单已经超期两天了，怎么催办？', qType:'点踩', time:'2026-07-14 09:12:00', status:'待处理', asker:'宇雷', dept:'客户服务部',
+        userFB:'结果不准确', aiDiag:'知识库缺失', source:'小翼·客服', fromChannel:'数字员工对话',
+        answerHtml:`<p>您可以在督办系统中按「超期」筛选后发起催办。我已为您检索到相关操作手册。</p><p>具体步骤：登录督办系统 → 筛选超期工单 → 勾选后点击催办。</p>`,
+        steps:[
+          {title:'问题意图识别', desc:'用户咨询超期工单催办流程，属于客服业务操作类问题。'},
+          {title:'知识库检索', desc:'数字员工「小翼·客服」检索到通用催办说明，但缺少当前版本督办系统截图与入口路径。'},
+          {title:'回答质量评估', desc:'回答步骤偏笼统，未给出具体菜单路径与权限说明，用户判定结果不准确。'},
+          {title:'诊断结论', desc:'客服知识库缺少最新督办催办 SOP，建议新增知识问答并同步至数字员工技能。'},
+        ],
+        fixes:[
+          {text:'新增「超期工单催办操作流程」知识问答，包含督办系统入口、截图与权限说明', type:'knowledge'},
+          {text:'将催办口语化问法（催单、超时催办）补充为相似问题', type:'knowledge'},
+        ],
+        qaMessages:[
+          { role:'user', content:'客户工单已经超期两天了，怎么催办？', time:'09:12' },
+          { role:'ai', content:'您可以在督办系统中按「超期」筛选后发起催办。我已为您检索到相关操作手册。', time:'09:13' },
+          { role:'user', content:'具体点哪个菜单？我这边找不到', time:'09:14' },
+          { role:'ai', content:'请进入「督办中心 > 工单列表」，筛选状态为超期后勾选催办。如仍无入口，可能是权限未开通。', time:'09:15' },
+        ],
+        records:[],
+      },
+      { id:12, question:'帮我汇总昨天未关闭的工单并自动结单', qType:'点踩', time:'2026-07-13 08:05:22', status:'待处理', asker:'王丽君', dept:'客户服务部',
+        userFB:'答非所问', aiDiag:'能力有缺失', source:'小翼·客服', fromChannel:'数字员工对话',
+        answerHtml:`<p>已为您说明工单结单的一般原则：确认客户问题已解决后，在工单系统中点击结单并填写处理说明。</p>`,
+        steps:[
+          {title:'问题意图识别', desc:'用户希望批量汇总未关闭工单并自动结单，属于自动化任务诉求。'},
+          {title:'能力评估', desc:'数字员工当前仅返回人工结单说明，未调用工单汇总接口，也未引导创建定时任务。'},
+          {title:'诊断结论', desc:'缺少「批量结单 / 定时汇总」能力与知识，回答与用户诉求偏离。'},
+        ],
+        fixes:[
+          {text:'新增「未关闭工单汇总与自动结单」知识问答，并说明可走定时任务创建路径', type:'knowledge'},
+          {text:'补充数字员工技能：对接工单系统查询与结单能力', type:'bug'},
+        ],
+        qaMessages:[
+          { role:'user', content:'帮我汇总昨天未关闭的工单并自动结单', time:'08:05' },
+          { role:'ai', content:'工单结单一般需要确认问题已解决后手动操作。您可以在工单系统中筛选未关闭工单后逐条结单。', time:'08:05' },
+          { role:'user', content:'我要的是自动汇总和结单，不是手动', time:'08:06' },
+          { role:'ai', content:'抱歉，当前暂不支持自动批量结单，建议联系运营配置定时任务。', time:'08:07' },
+        ],
+        records:[],
+      },
+      { id:13, question:'集团翼办怎么登录，待办在哪里？', qType:'点踩', time:'2026-07-12 16:40:00', status:'待处理', asker:'张部长', dept:'经营分析部',
+        userFB:'方案模板化', aiDiag:'方案模板化', source:'小翼·文档', fromChannel:'数字员工对话',
+        answerHtml:`<p>登录后进入个人首页即可查看待办与邮件模块，详细步骤见使用手册。</p><ol><li>打开翼办</li><li>登录账号</li><li>查看首页待办</li></ol>`,
+        steps:[
+          {title:'问题意图识别', desc:'用户询问集团翼办登录方式与待办入口。'},
+          {title:'回答质量评估', desc:'回答过于模板化，缺少具体 URL、SSO 入口与截图指引。'},
+          {title:'诊断结论', desc:'数字员工文档知识条目过粗，需补充详细操作路径。'},
+        ],
+        fixes:[
+          {text:'更新「集团翼办登录与待办」知识条目，补充入口地址、截图与常见登录失败处理', type:'record'},
+        ],
+        qaMessages:[
+          { role:'user', content:'集团翼办怎么登录，待办在哪里？', time:'16:40' },
+          { role:'ai', content:'登录后进入个人首页即可查看待办与邮件模块，详细步骤见使用手册。', time:'16:42' },
+        ],
+        records:[],
+      },
+      { id:14, question:'本月报销进度汇总一下，按部门拆分', qType:'点踩', time:'2026-07-11 14:22:10', status:'待处理', asker:'王丽君', dept:'财务共享中心',
+        userFB:'耗时长', aiDiag:'耗时长', source:'小翼·财务', fromChannel:'数字员工对话',
+        answerHtml:`<p>正在为您汇总本月报销进度……</p><p>（生成回答耗时约 18 秒）本月已提交 28 单，已通过 21 单，审批中 5 单，驳回 2 单。</p>`,
+        steps:[
+          {title:'性能分析', desc:'数字员工「小翼·财务」汇总报销数据耗时 18 秒，超过正常阈值。'},
+          {title:'原因分析', desc:'多次跨系统拉取报销明细且无缓存，导致响应过慢。'},
+          {title:'诊断结论', desc:'属于性能问题，需优化数据查询路径或预聚合。'},
+        ],
+        fixes:[
+          {text:'优化报销汇总查询，增加部门维度预聚合缓存', type:'bug'},
+          {text:'补充「报销进度按部门汇总」标准回答模板，缩短二次生成时间', type:'knowledge'},
+        ],
+        qaMessages:[
+          { role:'user', content:'本月报销进度汇总一下，按部门拆分', time:'14:22' },
+          { role:'ai', content:'本月已提交 28 单，已通过 21 单，审批中 5 单，驳回 2 单。按部门：财务共享 12、数字化运营 8、客服 8。', time:'14:22' },
+        ],
+        records:[],
+      },
+      { id:15, question:'服务器磁盘使用率超过 90% 怎么处理？', qType:'点踩', time:'2026-07-10 11:18:42', status:'待处理', asker:'王芳', dept:'IT运维部',
+        userFB:'', aiDiag:'结果不准确', source:'小翼·运维', fromChannel:'数字员工对话',
+        answerHtml:`<p>磁盘告警处理建议：清理日志、删除临时文件，必要时扩容。详细见运维手册第 3 章。</p>`,
+        steps:[
+          {title:'知识库检索', desc:'检索到通用磁盘清理建议，但引用的手册章节号与现行版本不符。'},
+          {title:'诊断结论', desc:'知识卡片数据过期，导致回答结果不准确。'},
+        ],
+        fixes:[
+          {text:'更新「磁盘告警处理」知识卡片，对齐现行运维手册章节与命令示例', type:'record'},
+        ],
+        qaMessages:[
+          { role:'user', content:'服务器磁盘使用率超过 90% 怎么处理？', time:'11:18' },
+          { role:'ai', content:'建议先清理 /var/log 下过期日志，再检查大文件占用；必要时提单扩容工单。', time:'11:19' },
+          { role:'user', content:'手册第3章好像没有这个内容了', time:'11:20' },
+          { role:'ai', content:'抱歉，手册版本可能已更新，请以最新《磁盘告警处理手册 v2.1》为准。', time:'11:20' },
+        ],
+        records:[],
+      },
+      { id:16, question:'帮我生成一份本周客服周报大纲', qType:'点踩', time:'2026-07-09 09:30:00', status:'待处理', asker:'宇雷', dept:'客户服务部',
+        userFB:'交互体验差', aiDiag:'内容渲染问题', source:'小翼·文档', fromChannel:'数字员工对话',
+        answerHtml:`<p>本周客服周报大纲：</p><p>1. 工单量概览<br>2. 重点问题<br>（输出中断）<br>2. 重点问题<br>3. ...</p>`,
+        steps:[
+          {title:'回答质量评估', desc:'生成周报大纲时出现内容重复与渲染中断。'},
+          {title:'诊断结论', desc:'属于内容渲染问题，影响用户阅读体验。'},
+        ],
+        fixes:[
+          {text:'排查数字员工文档生成链路的流式输出中断问题', type:'bug'},
+        ],
+        qaMessages:[
+          { role:'user', content:'帮我生成一份本周客服周报大纲', time:'09:30' },
+          { role:'ai', content:'本周客服周报大纲：\n1. 工单量概览\n2. 重点问题\n2. 重点问题\n3. ...', time:'09:31' },
+        ],
+        records:[],
+      },
+    ]);
+
+    /* ---- List state ---- */
+    const view = ref('list');
+    const kw = ref('');
+    const statusFilter = ref('全部');
+    const sel = ref([]);
+    const page = ref(1);
+    const pgSize = ref(20);
+
+    const filtered = computed(() => {
+      let r = list.value;
+      if (kw.value) {
+        const s = kw.value.toLowerCase();
+        r = r.filter(x =>
+          x.question.toLowerCase().includes(s)
+          || x.asker.includes(s)
+          || (x.source || '').toLowerCase().includes(s)
+          || (x.dept || '').includes(s)
+        );
+      }
+      if (statusFilter.value && statusFilter.value !== '全部') r = r.filter(x => x.status === statusFilter.value);
+      return r;
+    });
+    const pagedList = computed(() => {
+      const s = (page.value - 1) * pgSize.value;
+      return filtered.value.slice(s, s + pgSize.value);
+    });
+
+    /* ---- Detail state ---- */
+    const cur = ref({});
+    const curIdx = ref(0);
+    const tab = ref('answer');
+    const procPanelOpen = ref(true);
+    const aiSectionExpanded = ref(true);
+
+    function backToList() {
+      activeMenu.value = 'todo';
+      view.value = 'list';
+    }
+
+    function openDetail(row) {
+      cur.value = row;
+      curIdx.value = list.value.findIndex(x => x.id === row.id);
+      activeMenu.value = 'todo';
+      view.value = 'detail';
+      tab.value = 'answer';
+      procPanelOpen.value = true;
+      aiSectionExpanded.value = true;
+      if (!Array.isArray(cur.value.records)) cur.value.records = [];
+      prefillProcForm(cur.value);
+    }
+
+    function navItem(d) {
+      const ni = curIdx.value + d;
+      if (ni >= 0 && ni < list.value.length) {
+        curIdx.value = ni;
+        cur.value = list.value[ni];
+        tab.value = 'answer';
+        prefillProcForm(cur.value);
+      }
+    }
+
+    function collapseProcPanel() {
+      procPanelOpen.value = false;
+    }
+
+    function expandProcPanel(expandAi) {
+      procPanelOpen.value = true;
+      if (expandAi !== false) aiSectionExpanded.value = true;
+    }
+
+    function focusAiSection() {
+      procPanelOpen.value = !procPanelOpen.value;
+    }
+
+    function submitDetail() {
+      ElementPlus.ElMessageBox.confirm(
+        '提交后，该待办状态将会转变为已处理，且后续不可再处理。确认提交？',
+        '处理完成确认',
+        {
+          confirmButtonText: '确认提交',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+        cur.value.status = '已处理';
+        ElementPlus.ElMessage.success('处理完成');
+        backToList();
+      }).catch(() => {});
+    }
+
+    /* ---- Unified Process Drawer ---- */
+    const currentUser = '运营管理员';
+
+    const procTab = ref('knowledge');
+    const kmEntry = reactive({
+      type: 'qa', question: '', answer: '',
+      simQ: [''], source: '', catalog: '', shared: 'pub',
+    });
+    const recordEntry = reactive({ result: '' });
+
+    const kmTypes = [
+      { val:'qa', label:'知识问答', desc:'常见问题解答（FAQ）...', icon:'📄' },
+      { val:'sql', label:'SQL 数据集', desc:'结构化数据查询...', icon:'🗃️' },
+      { val:'term', label:'业务术语', desc:'专业术语释义...', icon:'📖' },
+    ];
+
+    function resetKmEntry() {
+      kmEntry.type = 'qa';
+      kmEntry.question = '';
+      kmEntry.answer = '';
+      kmEntry.simQ = [''];
+      kmEntry.source = '';
+      kmEntry.catalog = '';
+      kmEntry.shared = 'pub';
+    }
+
+    function resetRecordEntry() {
+      recordEntry.result = '';
+    }
+
+    function extractQuoted(text) {
+      const m = String(text || '').match(/[""「『]([^""」』]+)[""」』]/);
+      return m ? m[1] : '';
+    }
+
+    function inferKmType(text) {
+      if (/SQL\s*数据集/i.test(text)) return 'sql';
+      if (/业务术语/.test(text)) return 'term';
+      return 'qa';
+    }
+
+    function inferCatalog(text, question) {
+      const s = `${text}${question}`;
+      if (/操作|流程|步骤|指南|预约/.test(s)) return 'guide';
+      if (/技术|文档|文件|索引/.test(s)) return 'tech';
+      if (/业务|政策|福利|数据/.test(s)) return 'biz';
+      return 'faq';
+    }
+
+    function getFixTypeMeta(type) {
+      if (type === 'bug') return { label: 'Bug 类型', cls: 'bug' };
+      return { label: '知识类型', cls: 'knowledge' };
+    }
+
+    function prefillProcForm(item) {
+      resetKmEntry();
+      resetRecordEntry();
+
+      const fixes = item.fixes || [];
+      if (!fixes.length) {
+        procTab.value = 'knowledge';
+        kmEntry.question = item.question || '';
+        return;
+      }
+
+      const firstFix = fixes[0];
+      if (firstFix.type === 'knowledge') {
+        procTab.value = 'knowledge';
+        const knowledgeFixes = fixes.filter(f => f.type === 'knowledge');
+        const primary = knowledgeFixes[0];
+        kmEntry.type = inferKmType(primary.text);
+        kmEntry.question = item.question || '';
+        kmEntry.answer = primary.text;
+        kmEntry.catalog = inferCatalog(primary.text, item.question);
+        kmEntry.source = 'AI 诊断建议';
+        kmEntry.shared = 'pub';
+        const simQs = knowledgeFixes.slice(1)
+          .map(f => extractQuoted(f.text) || f.text)
+          .filter(Boolean);
+        kmEntry.simQ = simQs.length ? simQs : [''];
+      } else {
+        procTab.value = 'record';
+        const actionFixes = fixes.filter(f => f.type === 'record' || f.type === 'bug');
+        const lines = (actionFixes.length ? actionFixes : fixes)
+          .map((f, i) => `${i + 1}. ${f.text}`);
+        recordEntry.result = item.aiDiag
+          ? `【AI 诊断：${item.aiDiag}】\n${lines.join('\n')}`
+          : lines.join('\n');
+      }
+    }
+
+    function openDrawer(aiExpanded) {
+      expandProcPanel(aiExpanded !== false);
+    }
+
+    function resetCurrentTab() {
+      prefillProcForm(cur.value);
+    }
+
+    function saveCurrentTab() {
+      if (!Array.isArray(cur.value.records)) cur.value.records = [];
+
+      if (procTab.value === 'knowledge') {
+        if (!kmEntry.question.trim() || !kmEntry.answer.trim()) {
+          ElementPlus.ElMessage.warning('请填写问题和回答');
+          return;
+        }
+        if (!kmEntry.catalog) {
+          ElementPlus.ElMessage.warning('请选择知识目录');
+          return;
+        }
+        const label = kmTypes.find(k => k.val === kmEntry.type)?.label || '知识';
+        cur.value.records.push({
+          kind: 'knowledge',
+          summary: `[新增${label}] ${kmEntry.question}`,
+          handler: currentUser,
+          time: new Date().toLocaleString('zh-CN'),
+          payload: { ...kmEntry, simQ: [...kmEntry.simQ] },
+        });
+        resetKmEntry();
+        ElementPlus.ElMessage.success('知识已提交');
+      } else {
+        if (!recordEntry.result.trim()) {
+          ElementPlus.ElMessage.warning('请填写处理结果');
+          return;
+        }
+        cur.value.records.push({
+          kind: 'record',
+          summary: recordEntry.result,
+          handler: currentUser,
+          time: new Date().toLocaleString('zh-CN'),
+        });
+        resetRecordEntry();
+        ElementPlus.ElMessage.success('处理记录已提交');
+      }
+    }
+
+    function removeRecord(idx) {
+      ElementPlus.ElMessageBox.confirm('确认删除该条处理记录？', '提示', { type: 'warning' })
+        .then(() => {
+          cur.value.records.splice(idx, 1);
+          ElementPlus.ElMessage.success('已删除');
+        })
+        .catch(() => {});
+    }
+
+    /* ---- 提问记录 ---- */
+    const askDateRange = ref(null);
+    const askDept = ref('');
+    const askFeedback = ref('全部');
+    const askSource = ref('');
+    const askKw = ref('');
+    const askSpeaker = ref('');
+    const askAgent = ref('');
+    const askPage = ref(1);
+    const askPgSize = ref(10);
+    const tokenAgent = ref('');
+    const tokenDateRange = ref(null);
+    const askFeedbackChartEl = ref(null);
+    const askTokenChartEl = ref(null);
+    let askFeedbackChart = null;
+    let askTokenChart = null;
+
+    const askDeptOptions = ['数据运营中心', '业务拓展中心', '数字化运营部', '审计部', '数据库产品线', '基础测试与质量中心', '客户服务部'];
+    const askSpeakerOptions = ['翼答', '小翼·客服', '小翼·文档', '小翼·智能助手'];
+    const askAgentOptions = ['翼答', '小翼·客服', '小翼·文档', '小翼·智能助手', '诊断助手'];
+
+    const askList = ref([
+      { id:1, question:'帮我查一下2023年的合同', feedback:'无反馈', time:'2025-02-28 10:02:25', source:'知识库问答', asker:'严菌', speaker:'翼答', agent:'', dept:'数据运营中心',
+        messages:[
+          { role:'user', content:'帮我查一下2023年的合同', time:'2025-02-28 10:02:25' },
+          { role:'ai', content:'已为您检索到 2023 年相关合同 12 份，主要包括采购合同、服务框架协议等。您可以说明合同编号或对方单位名称，我再帮您精确定位。', time:'2025-02-28 10:02:28' },
+          { role:'user', content:'有没有和某某科技签的那份？', time:'2025-02-28 10:03:10' },
+          { role:'ai', content:'检索到《2023年某某科技技术服务合同》（编号 HT-2023-088），签署日期 2023-06-15。如需全文预览，请前往合同管理系统查看。', time:'2025-02-28 10:03:15' },
+        ]},
+      { id:2, question:'帮我查一下2023年的合同', feedback:'点赞', time:'2025-02-28 10:02:25', source:'知识库问答', asker:'严菌', speaker:'翼答', agent:'', dept:'数据运营中心',
+        messages:[
+          { role:'user', content:'帮我查一下2023年的合同', time:'2025-02-28 10:02:25' },
+          { role:'ai', content:'已为您找到 2023 年度合同清单，共 12 份。其中已归档 10 份，审批中 2 份。需要我按部门或金额筛选吗？', time:'2025-02-28 10:02:30' },
+        ]},
+      { id:3, question:'帮我查一下2023年的合同', feedback:'无反馈', time:'2025-02-28 10:02:25', source:'知识库问答', asker:'王丽君', speaker:'翼答', agent:'', dept:'业务拓展中心',
+        messages:[
+          { role:'user', content:'帮我查一下2023年的合同', time:'2025-02-28 10:02:25' },
+          { role:'ai', content:'根据您的权限，可查看业务拓展中心 2023 年合同 5 份。详细列表已整理如下，可按需导出。', time:'2025-02-28 10:02:32' },
+        ]},
+      { id:4, question:'我要拉一个会', feedback:'点踩', time:'2026-05-13 17:28:54', source:'知识库问答', asker:'王婷', speaker:'翼答', agent:'翼答', dept:'数据运营中心',
+        messages:[
+          { role:'user', content:'我要拉一个会', time:'2026-05-13 17:28:54' },
+          { role:'ai', content:'您可以通过 OA 系统「会议预约」模块发起会议。以下是通用步骤：1. 登录 OA；2. 进入会议预约；3. 选择时间和参会人。', time:'2026-05-13 17:29:01' },
+          { role:'user', content:'公司内部具体入口在哪？', time:'2026-05-13 17:29:40' },
+          { role:'ai', content:'抱歉，当前知识库暂未收录公司内部会议系统的具体入口说明，建议联系行政部门确认。', time:'2026-05-13 17:29:48' },
+        ]},
+      { id:5, question:'天翼云（2026）55号文件是什么内容？', feedback:'点踩', time:'2026-04-23 09:06:44', source:'知识库问答', asker:'王樟贤', speaker:'翼答', agent:'诊断助手', dept:'业务拓展中心',
+        messages:[
+          { role:'user', content:'天翼云（2026）55号文件是什么内容？', time:'2026-04-23 09:06:44' },
+          { role:'ai', content:'抱歉，当前知识库中暂未收录该文件的具体内容。建议您联系行政部门或在 OA 系统文件管理中查询。', time:'2026-04-23 09:06:50' },
+        ]},
+      { id:6, question:'如何更换oa手机号', feedback:'忽略', time:'2026-04-17 07:30:44', source:'数字员工对话', asker:'张强', speaker:'小翼·客服', agent:'小翼·客服', dept:'数据库产品线',
+        messages:[
+          { role:'user', content:'如何更换oa手机号', time:'2026-04-17 07:30:44' },
+          { role:'ai', content:'更换 OA 手机号步骤：\n1. 登录 OA 系统\n2. 进入个人设置\n3. 找到手机号修改入口\n4. 输入新手机号并验证\n如有问题请联系 IT 部门。', time:'2026-04-17 07:30:52' },
+        ]},
+      { id:7, question:'我要预定会议', feedback:'无反馈', time:'2026-04-13 15:15:01', source:'智能体广场', asker:'郑鑫彬', speaker:'小翼·文档', agent:'小翼·文档', dept:'审计部',
+        messages:[
+          { role:'user', content:'我要预定会议', time:'2026-04-13 15:15:01' },
+          { role:'ai', content:'关于会议预定，您可以通过行政部门进行会议室预约。如需发起线上会议，也可使用腾讯会议企业版。', time:'2026-04-13 15:15:08' },
+        ]},
+      { id:8, question:'如何解决token销售亏损问题？', feedback:'点赞', time:'2026-04-01 00:15:59', source:'知识库问答', asker:'黄创光', speaker:'翼答', agent:'翼答', dept:'数字化运营部',
+        messages:[
+          { role:'user', content:'如何解决token销售亏损问题？', time:'2026-04-01 00:15:59' },
+          { role:'ai', content:'可从三方面着手：1. 调整定价与套餐结构；2. 优化模型调用成本；3. 按业务线做用量监控与预警。建议结合近 3 个月销售与成本明细再细化方案。', time:'2026-04-01 00:16:10' },
+          { role:'user', content:'有没有现成的分析模板？', time:'2026-04-01 00:17:00' },
+          { role:'ai', content:'有的，经营分析部维护了《Token 成本与收入分析模板》，可在知识库「经营分析」目录下载。', time:'2026-04-01 00:17:08' },
+        ]},
+      { id:9, question:'员工体检的流程是怎样的', feedback:'点踩', time:'2026-03-27 19:54:01', source:'知识库问答', asker:'曹亚慧', speaker:'翼答', agent:'', dept:'基础测试与质量中心',
+        messages:[
+          { role:'user', content:'员工体检的流程是怎样的', time:'2026-03-27 19:54:01' },
+          { role:'ai', content:'员工体检流程如下：\n1. 人事部发布体检通知\n2. 员工选择体检套餐\n（回答过程中出现中断）\n...', time:'2026-03-27 19:54:20' },
+        ]},
+      { id:10, question:'天翼云员工体检可以给父母加体检吗', feedback:'无反馈', time:'2026-03-27 19:53:28', source:'数字员工对话', asker:'曹亚慧', speaker:'小翼·智能助手', agent:'小翼·智能助手', dept:'基础测试与质量中心',
+        messages:[
+          { role:'user', content:'天翼云员工体检可以给父母加体检吗', time:'2026-03-27 19:53:28' },
+          { role:'ai', content:'目前暂无相关政策信息，建议联系人力资源部门咨询家属体检政策。', time:'2026-03-27 19:53:35' },
+        ]},
+      { id:11, question:'服务器磁盘告警怎么处理？', feedback:'点赞', time:'2026-03-20 11:12:08', source:'知识库问答', asker:'严菌', speaker:'翼答', agent:'翼答', dept:'客户服务部',
+        messages:[
+          { role:'user', content:'服务器磁盘告警怎么处理？', time:'2026-03-20 11:12:08' },
+          { role:'ai', content:'处理建议：\n1. 确认告警主机与挂载点\n2. 清理日志/临时文件\n3. 必要时扩容磁盘\n4. 在监控平台关闭或确认告警\n详细步骤见《磁盘告警处理手册》。', time:'2026-03-20 11:12:18' },
+        ]},
+      { id:12, question:'本月报销进度汇总一下', feedback:'忽略', time:'2026-03-18 09:40:00', source:'智能体广场', asker:'王丽君', speaker:'小翼·文档', agent:'小翼·文档', dept:'数字化运营部',
+        messages:[
+          { role:'user', content:'本月报销进度汇总一下', time:'2026-03-18 09:40:00' },
+          { role:'ai', content:'本月报销：已提交 28 单，已通过 21 单，审批中 5 单，驳回 2 单。总金额约 18.6 万。需要按部门拆分吗？', time:'2026-03-18 09:40:12' },
+        ]},
+    ]);
+
+    const askDetailVisible = ref(false);
+    const askCur = ref(null);
+
+    function openAskDetail(row) {
+      askCur.value = row;
+      askDetailVisible.value = true;
+    }
+
+    const askFeedbackStats = [
+      { name:'点赞', value:200, color:'#52c41a' },
+      { name:'点踩', value:100, color:'#ff4d4f' },
+      { name:'无反馈', value:100, color:'#bfbfbf' },
+      { name:'忽略', value:100, color:'#faad14' },
+    ];
+    const askTokenStats = [
+      { name:'输入', value:1.4, color:'#1677ff' },
+      { name:'输出', value:0.7, color:'#13c2c2' },
+    ];
+    const askFeedbackTotal = computed(() => askFeedbackStats.reduce((s, i) => s + i.value, 0));
+    const askTokenTotal = computed(() => askTokenStats.reduce((s, i) => s + i.value, 0).toFixed(1));
+
+    const filteredAskList = computed(() => {
+      let r = askList.value;
+      if (askDept.value) r = r.filter(x => x.dept === askDept.value);
+      if (askFeedback.value !== '全部') r = r.filter(x => x.feedback === askFeedback.value);
+      if (askSource.value) r = r.filter(x => x.source === askSource.value);
+      if (askSpeaker.value) r = r.filter(x => x.speaker === askSpeaker.value);
+      if (askAgent.value) r = r.filter(x => x.agent === askAgent.value);
+      if (askKw.value.trim()) {
+        const s = askKw.value.trim().toLowerCase();
+        r = r.filter(x => x.question.toLowerCase().includes(s));
+      }
+      if (askDateRange.value && askDateRange.value.length === 2) {
+        const [start, end] = askDateRange.value;
+        r = r.filter(x => x.time.slice(0, 10) >= start && x.time.slice(0, 10) <= end);
+      }
+      return r;
+    });
+    const pagedAskList = computed(() => {
+      const s = (askPage.value - 1) * askPgSize.value;
+      return filteredAskList.value.slice(s, s + askPgSize.value);
+    });
+
+    function resetAskFilter() {
+      askDateRange.value = null;
+      askDept.value = '';
+      askFeedback.value = '全部';
+      askSource.value = '';
+      askKw.value = '';
+      askSpeaker.value = '';
+      askAgent.value = '';
+      askPage.value = 1;
+    }
+    function queryAsk() {
+      askPage.value = 1;
+      ElementPlus.ElMessage.success('已按条件查询');
+    }
+    function exportAsk() {
+      ElementPlus.ElMessage.success('导出成功');
+    }
+    function setAskFeedback(row, fb) {
+      row.feedback = fb;
+      ElementPlus.ElMessage.success(`已标记为${fb}`);
+    }
+
+    function renderPie(el, data, valueSuffix) {
+      if (!el) return null;
+      const chart = echarts.init(el);
+      chart.setOption({
+        tooltip: { trigger: 'item', formatter: `{b}: {c}${valueSuffix || ''} ({d}%)` },
+        series: [{
+          type: 'pie',
+          radius: ['48%', '72%'],
+          center: ['50%', '50%'],
+          avoidLabelOverlap: true,
+          itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+          label: { formatter: '{d}%', fontSize: 12 },
+          data: data.map(d => ({ name: d.name, value: d.value, itemStyle: { color: d.color } })),
+        }],
+      });
+      return chart;
+    }
+
+    function renderAskCharts() {
+      if (askFeedbackChart) { askFeedbackChart.dispose(); askFeedbackChart = null; }
+      if (askTokenChart) { askTokenChart.dispose(); askTokenChart = null; }
+      askFeedbackChart = renderPie(askFeedbackChartEl.value, askFeedbackStats);
+      askTokenChart = renderPie(askTokenChartEl.value, askTokenStats, '亿');
+    }
+
+    /* ---- 统计分析 ---- */
+    const statDateRange = ref(null);
+    const statDept = ref('');
+    const agentUsageChartEl = ref(null);
+    const todoStatChartEl = ref(null);
+    const deptActivityChartEl = ref(null);
+    const personActivityChartEl = ref(null);
+    let agentUsageChart = null;
+    let todoStatChart = null;
+    let deptActivityChart = null;
+    let personActivityChart = null;
+    const statMoreVisible = ref(false);
+    const statMoreTitle = ref('');
+    const statMoreData = ref([]);
+
+    const agentUsageData = [
+      { name:'XX智能体', count:520 }, { name:'翼答', count:480 }, { name:'小翼·客服', count:420 },
+      { name:'小翼·文档', count:380 }, { name:'诊断助手', count:340 }, { name:'小翼·财务', count:300 },
+      { name:'小翼·运维', count:260 }, { name:'小翼·人事', count:220 }, { name:'小翼·审计', count:180 },
+      { name:'小翼·营销', count:150 }, { name:'小翼·法务', count:130 }, { name:'小翼·分析', count:110 },
+      { name:'值13', count:95 }, { name:'值14', count:80 }, { name:'值15', count:70 },
+      { name:'值16', count:60 }, { name:'值17', count:50 }, { name:'值18', count:40 }, { name:'值19', count:30 },
+    ];
+
+    const agentUsageDetailList = ref([
+      { name:'XX智能体', dept:'数据运营中心', count:520, users:186, tokens:12560000, likes:120, dislikes:18, noFeedback:80 },
+      { name:'翼答', dept:'数字化运营部', count:480, users:210, tokens:9800000, likes:150, dislikes:22, noFeedback:95 },
+      { name:'小翼·客服', dept:'客户服务部', count:420, users:168, tokens:8600000, likes:98, dislikes:35, noFeedback:70 },
+      { name:'小翼·文档', dept:'经营分析部', count:380, users:142, tokens:7200000, likes:86, dislikes:14, noFeedback:55 },
+      { name:'诊断助手', dept:'数字化运营部', count:340, users:95, tokens:5400000, likes:60, dislikes:28, noFeedback:40 },
+      { name:'小翼·财务', dept:'财务共享中心', count:300, users:88, tokens:6100000, likes:72, dislikes:12, noFeedback:48 },
+      { name:'小翼·运维', dept:'IT运维部', count:260, users:76, tokens:4500000, likes:55, dislikes:20, noFeedback:36 },
+      { name:'小翼·人事', dept:'人力资源部', count:220, users:64, tokens:3200000, likes:48, dislikes:9, noFeedback:30 },
+      { name:'小翼·审计', dept:'审计部', count:180, users:42, tokens:2800000, likes:35, dislikes:11, noFeedback:22 },
+      { name:'小翼·营销', dept:'业务拓展中心', count:150, users:58, tokens:2100000, likes:40, dislikes:8, noFeedback:25 },
+      { name:'小翼·法务', dept:'法务部', count:130, users:36, tokens:1900000, likes:28, dislikes:6, noFeedback:18 },
+      { name:'小翼·分析', dept:'经营分析部', count:110, users:45, tokens:1600000, likes:32, dislikes:5, noFeedback:20 },
+    ]);
+
+    const agentMoreVisible = ref(false);
+    const agentMoreDateRange = ref(null);
+    const agentMoreKw = ref('');
+    const agentMorePage = ref(1);
+    const agentMorePgSize = ref(10);
+    const agentMoreQueryTick = ref(0);
+
+    const filteredAgentMoreList = computed(() => {
+      void agentMoreQueryTick.value;
+      let r = agentUsageDetailList.value;
+      if (agentMoreKw.value.trim()) {
+        const s = agentMoreKw.value.trim().toLowerCase();
+        r = r.filter(x => x.name.toLowerCase().includes(s));
+      }
+      return r;
+    });
+    const pagedAgentMoreList = computed(() => {
+      const s = (agentMorePage.value - 1) * agentMorePgSize.value;
+      return filteredAgentMoreList.value.slice(s, s + agentMorePgSize.value);
+    });
+
+    function formatTokens(n) {
+      if (n >= 100000000) return (n / 100000000).toFixed(2) + ' 亿';
+      if (n >= 10000) return (n / 10000).toFixed(1) + ' 万';
+      return String(n);
+    }
+    function openAgentUsageMore() {
+      agentMoreKw.value = '';
+      agentMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
+      agentMorePage.value = 1;
+      agentMoreVisible.value = true;
+    }
+    function resetAgentMoreFilter() {
+      agentMoreDateRange.value = null;
+      agentMoreKw.value = '';
+      agentMorePage.value = 1;
+      agentMoreQueryTick.value++;
+    }
+    function queryAgentMore() {
+      agentMorePage.value = 1;
+      agentMoreQueryTick.value++;
+      ElementPlus.ElMessage.success('已按条件查询');
+    }
+    function exportAgentMore() {
+      ElementPlus.ElMessage.success('导出成功');
+    }
+
+    const todoStatData = [
+      { name:'张三', count:420 }, { name:'李四', count:380 }, { name:'王五', count:340 },
+      { name:'赵六', count:300 }, { name:'值5', count:260 }, { name:'值6', count:230 },
+      { name:'值7', count:200 }, { name:'值8', count:170 }, { name:'值9', count:150 },
+      { name:'值10', count:130 }, { name:'值11', count:110 }, { name:'值12', count:95 },
+      { name:'值13', count:80 }, { name:'值14', count:70 }, { name:'值15', count:60 },
+      { name:'值16', count:50 }, { name:'值17', count:40 }, { name:'值18', count:30 }, { name:'值19', count:20 },
+    ];
+
+    const todoDetailList = ref([
+      { name:'李怡悦', dept:'数据运营中心', pending:86, done:120, agents:'小翼·客服, 翼答' },
+      { name:'段问薇', dept:'客户服务部', pending:72, done:98, agents:'小翼·客服' },
+      { name:'胡允', dept:'数字化运营部', pending:65, done:88, agents:'诊断助手, 翼答' },
+      { name:'张三', dept:'经营分析部', pending:58, done:140, agents:'小翼·文档, 小翼·分析' },
+      { name:'李四', dept:'财务共享中心', pending:52, done:110, agents:'小翼·财务' },
+      { name:'王五', dept:'IT运维部', pending:48, done:95, agents:'小翼·运维' },
+      { name:'赵六', dept:'人力资源部', pending:42, done:76, agents:'小翼·人事' },
+      { name:'钱七', dept:'审计部', pending:38, done:60, agents:'小翼·审计' },
+      { name:'孙八', dept:'业务拓展中心', pending:35, done:55, agents:'小翼·营销' },
+      { name:'周九', dept:'法务部', pending:30, done:48, agents:'小翼·法务' },
+      { name:'吴十', dept:'数据运营中心', pending:28, done:70, agents:'-' },
+      { name:'郑十一', dept:'客户服务部', pending:24, done:66, agents:'小翼·客服, 诊断助手' },
+      { name:'王丽君', dept:'财务共享中心', pending:22, done:58, agents:'小翼·财务' },
+      { name:'宇雷', dept:'客户服务部', pending:20, done:90, agents:'小翼·客服' },
+      { name:'严菌', dept:'数据运营中心', pending:18, done:45, agents:'翼答' },
+    ]);
+
+    const todoMoreVisible = ref(false);
+    const todoMoreDateRange = ref(null);
+    const todoMoreDeptKw = ref('');
+    const todoMorePage = ref(1);
+    const todoMorePgSize = ref(10);
+    const todoMoreQueryTick = ref(0);
+
+    const filteredTodoMoreList = computed(() => {
+      void todoMoreQueryTick.value;
+      let r = todoDetailList.value;
+      if (todoMoreDeptKw.value.trim()) {
+        const s = todoMoreDeptKw.value.trim();
+        r = r.filter(x => x.dept.includes(s));
+      }
+      return r;
+    });
+    const pagedTodoMoreList = computed(() => {
+      const s = (todoMorePage.value - 1) * todoMorePgSize.value;
+      return filteredTodoMoreList.value.slice(s, s + todoMorePgSize.value);
+    });
+
+    function openTodoMore() {
+      todoMoreDeptKw.value = '';
+      todoMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
+      todoMorePage.value = 1;
+      todoMoreVisible.value = true;
+    }
+    function resetTodoMoreFilter() {
+      todoMoreDateRange.value = null;
+      todoMoreDeptKw.value = '';
+      todoMorePage.value = 1;
+      todoMoreQueryTick.value++;
+    }
+    function queryTodoMore() {
+      todoMorePage.value = 1;
+      todoMoreQueryTick.value++;
+      ElementPlus.ElMessage.success('已按条件查询');
+    }
+    function exportTodoMore() {
+      ElementPlus.ElMessage.success('导出成功');
+    }
+
+    const deptActivityData = [
+      { name:'客户服务部', count:680 }, { name:'数字化运营部', count:520 }, { name:'财务共享中心', count:460 },
+      { name:'人力资源部', count:380 }, { name:'IT运维部', count:320 }, { name:'经营分析部', count:280 },
+      { name:'审计部', count:220 }, { name:'值8', count:180 }, { name:'值9', count:140 }, { name:'值10', count:100 },
+    ];
+
+    const deptMoreList = ref([
+      { name:'客户服务部', askCount:8462 },
+      { name:'数字化运营部', askCount:8871 },
+      { name:'财务共享中心', askCount:5486 },
+      { name:'人力资源部', askCount:5193 },
+      { name:'IT运维部', askCount:3893 },
+      { name:'经营分析部', askCount:3696 },
+      { name:'审计部', askCount:3411 },
+      { name:'综合管理部', askCount:3247 },
+      { name:'业务拓展中心', askCount:1895 },
+      { name:'法务部', askCount:1419 },
+      { name:'数据运营中心', askCount:1280 },
+      { name:'基础测试与质量中心', askCount:980 },
+      { name:'数据库产品线', askCount:860 },
+      { name:'渠道拓展部', askCount:720 },
+      { name:'产品运营部', askCount:640 },
+    ]);
+
+    const deptMoreVisible = ref(false);
+    const deptMoreDateRange = ref(null);
+    const deptMorePage = ref(1);
+    const deptMorePgSize = ref(10);
+
+    const pagedDeptMoreList = computed(() => {
+      const s = (deptMorePage.value - 1) * deptMorePgSize.value;
+      return deptMoreList.value.slice(s, s + deptMorePgSize.value);
+    });
+
+    function openDeptMore() {
+      deptMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
+      deptMorePage.value = 1;
+      deptMoreVisible.value = true;
+    }
+    function resetDeptMoreFilter() {
+      deptMoreDateRange.value = null;
+      deptMorePage.value = 1;
+    }
+    function queryDeptMore() {
+      deptMorePage.value = 1;
+      ElementPlus.ElMessage.success('已按条件查询');
+    }
+    function exportDeptMore() {
+      ElementPlus.ElMessage.success('导出成功');
+    }
+
+    const personActivityData = [
+      { name:'宇雷', count:72 }, { name:'张部长', count:65 }, { name:'李主管', count:58 },
+      { name:'王丽君', count:52 }, { name:'严菌', count:45 }, { name:'王芳', count:38 },
+      { name:'赵六', count:32 }, { name:'值8', count:26 }, { name:'值9', count:20 }, { name:'值10', count:15 },
+    ];
+
+    const personMoreList = ref([
+      { name:'李怡悦', dept:'数据运营中心', askCount:8272 },
+      { name:'段问薇', dept:'客户服务部', askCount:1760 },
+      { name:'胡允', dept:'数字化运营部', askCount:9546 },
+      { name:'宇雷', dept:'客户服务部', askCount:6820 },
+      { name:'张部长', dept:'经营分析部', askCount:5340 },
+      { name:'李主管', dept:'人力资源部', askCount:4120 },
+      { name:'王丽君', dept:'财务共享中心', askCount:3980 },
+      { name:'严菌', dept:'数据运营中心', askCount:3560 },
+      { name:'王芳', dept:'审计部', askCount:2890 },
+      { name:'赵六', dept:'IT运维部', askCount:2450 },
+      { name:'钱七', dept:'业务拓展中心', askCount:1980 },
+      { name:'孙八', dept:'法务部', askCount:1640 },
+      { name:'周九', dept:'综合管理部', askCount:1320 },
+      { name:'吴十', dept:'数据库产品线', askCount:980 },
+      { name:'郑十一', dept:'基础测试与质量中心', askCount:760 },
+    ]);
+
+    const personMoreVisible = ref(false);
+    const personMoreDateRange = ref(null);
+    const personMoreDept = ref('');
+    const personMoreNameKw = ref('');
+    const personMorePage = ref(1);
+    const personMorePgSize = ref(10);
+    const personMoreQueryTick = ref(0);
+
+    const filteredPersonMoreList = computed(() => {
+      void personMoreQueryTick.value;
+      let r = personMoreList.value;
+      if (personMoreDept.value) r = r.filter(x => x.dept === personMoreDept.value);
+      if (personMoreNameKw.value.trim()) {
+        const s = personMoreNameKw.value.trim();
+        r = r.filter(x => x.name.includes(s));
+      }
+      return r;
+    });
+    const pagedPersonMoreList = computed(() => {
+      const s = (personMorePage.value - 1) * personMorePgSize.value;
+      return filteredPersonMoreList.value.slice(s, s + personMorePgSize.value);
+    });
+
+    function openPersonMore() {
+      personMoreDept.value = '';
+      personMoreNameKw.value = '';
+      personMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
+      personMorePage.value = 1;
+      personMoreVisible.value = true;
+    }
+    function resetPersonMoreFilter() {
+      personMoreDateRange.value = null;
+      personMoreDept.value = '';
+      personMoreNameKw.value = '';
+      personMorePage.value = 1;
+      personMoreQueryTick.value++;
+    }
+    function queryPersonMore() {
+      personMorePage.value = 1;
+      personMoreQueryTick.value++;
+      ElementPlus.ElMessage.success('已按条件查询');
+    }
+    function exportPersonMore() {
+      ElementPlus.ElMessage.success('导出成功');
+    }
+
+    function resetStatFilter() {
+      statDateRange.value = null;
+      statDept.value = '';
+    }
+    function queryStat() {
+      ElementPlus.ElMessage.success('已按条件刷新统计');
+      nextTick(() => renderStatCharts());
+    }
+    function openStatMore(title, data) {
+      statMoreTitle.value = title;
+      statMoreData.value = data;
+      statMoreVisible.value = true;
+    }
+
+    function renderBar(el, data, color, horizontal) {
+      if (!el) return null;
+      const chart = echarts.init(el);
+      const names = data.map(d => d.name);
+      const values = data.map(d => d.count);
+      if (horizontal) {
+        chart.setOption({
+          tooltip: { trigger: 'axis' },
+          grid: { left: 90, right: 24, top: 16, bottom: 28 },
+          xAxis: { type: 'value' },
+          yAxis: { type: 'category', data: names.slice().reverse(), axisLabel: { fontSize: 12 } },
+          series: [{ type: 'bar', data: values.slice().reverse(), itemStyle: { color, borderRadius: [0, 4, 4, 0] }, barMaxWidth: 18 }],
+        });
+      } else {
+        chart.setOption({
+          tooltip: { trigger: 'axis' },
+          grid: { left: 48, right: 16, top: 24, bottom: 56 },
+          xAxis: { type: 'category', data: names, axisLabel: { rotate: 30, fontSize: 11 } },
+          yAxis: { type: 'value' },
+          series: [{ type: 'bar', data: values, itemStyle: { color, borderRadius: [4, 4, 0, 0] }, barMaxWidth: 28 }],
+        });
+      }
+      return chart;
+    }
+
+    function renderStatCharts() {
+      [agentUsageChart, todoStatChart, deptActivityChart, personActivityChart].forEach(c => c && c.dispose());
+      agentUsageChart = renderBar(agentUsageChartEl.value, agentUsageData, '#fa8c16', false);
+      todoStatChart = renderBar(todoStatChartEl.value, todoStatData, '#1677ff', false);
+      deptActivityChart = renderBar(deptActivityChartEl.value, deptActivityData, '#1677ff', true);
+      personActivityChart = renderBar(personActivityChartEl.value, personActivityData, '#1677ff', true);
+    }
+
+    function resizeCharts() {
+      [askFeedbackChart, askTokenChart, agentUsageChart, todoStatChart, deptActivityChart, personActivityChart]
+        .forEach(c => c && c.resize());
+    }
+
+    onMounted(() => window.addEventListener('resize', resizeCharts));
+    onBeforeUnmount(() => window.removeEventListener('resize', resizeCharts));
+
+    watch(activeMenu, (v) => {
+      if (v === 'ask') nextTick(() => renderAskCharts());
+      if (v === 'stat') nextTick(() => renderStatCharts());
+    });
+
+    return {
+      menus, activeMenu, isMenuEnabled, switchMenu,
+      list, view, kw, statusFilter, sel, page, pgSize,
+      filtered, pagedList,
+      cur, curIdx, tab,
+      procPanelOpen, aiSectionExpanded, currentUser,
+      backToList, openDetail, navItem, submitDetail,
+      collapseProcPanel, expandProcPanel, focusAiSection,
+      procTab, kmEntry, recordEntry, kmTypes,
+      openDrawer, saveCurrentTab, resetCurrentTab, removeRecord,
+      getFixTypeMeta,
+      // ask
+      askDateRange, askDept, askFeedback, askSource, askKw, askSpeaker, askAgent,
+      askPage, askPgSize, tokenAgent, tokenDateRange,
+      askDeptOptions, askSpeakerOptions, askAgentOptions,
+      askFeedbackStats, askTokenStats, askFeedbackTotal, askTokenTotal,
+      filteredAskList, pagedAskList,
+      askFeedbackChartEl, askTokenChartEl,
+      askDetailVisible, askCur, openAskDetail,
+      resetAskFilter, queryAsk, exportAsk, setAskFeedback,
+      // stat
+      statDateRange, statDept,
+      agentUsageChartEl, todoStatChartEl, deptActivityChartEl, personActivityChartEl,
+      agentUsageData, todoStatData, deptActivityData, personActivityData,
+      statMoreVisible, statMoreTitle, statMoreData,
+      agentMoreVisible, agentMoreDateRange, agentMoreKw, agentMorePage, agentMorePgSize,
+      filteredAgentMoreList, pagedAgentMoreList,
+      formatTokens, openAgentUsageMore, resetAgentMoreFilter, queryAgentMore, exportAgentMore,
+      todoMoreVisible, todoMoreDateRange, todoMoreDeptKw, todoMorePage, todoMorePgSize,
+      filteredTodoMoreList, pagedTodoMoreList,
+      openTodoMore, resetTodoMoreFilter, queryTodoMore, exportTodoMore,
+      deptMoreVisible, deptMoreDateRange, deptMorePage, deptMorePgSize,
+      deptMoreList, pagedDeptMoreList,
+      openDeptMore, resetDeptMoreFilter, queryDeptMore, exportDeptMore,
+      personMoreVisible, personMoreDateRange, personMoreDept, personMoreNameKw,
+      personMorePage, personMorePgSize, filteredPersonMoreList, pagedPersonMoreList,
+      openPersonMore, resetPersonMoreFilter, queryPersonMore, exportPersonMore,
+      resetStatFilter, queryStat, openStatMore,
+    };
+  },
+}).use(ElementPlus).mount('#app');
+</script>
+</body>
+</html>

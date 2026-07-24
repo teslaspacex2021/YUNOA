@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会议详情 · 部门会议通知</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #eef1f6;
+      line-height: 1.5;
+    }
+
+    .page-header {
+      position: relative;
+      height: 72px;
+      background: url('header-banner-bg.png') center / cover no-repeat;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    }
+    .page-header .logo { height: 40px; }
+    .page-header .nav-title {
+      margin-left: auto;
+      color: #fff;
+      font-size: 15px;
+      opacity: .92;
+      letter-spacing: 1px;
+    }
+
+    .page-wrap {
+      max-width: 1100px;
+      margin: 8px auto 40px;
+      padding: 0 16px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .toolbar .spacer { flex: 1; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-outline {
+      background: #fff;
+      border-color: #b8d4f0;
+      color: #1a5a9e;
+    }
+    .btn-outline:hover { background: #f0f7ff; }
+    .btn-primary {
+      background: #1677ff;
+      border-color: #1677ff;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #4096ff; }
+
+    .form-panel {
+      background: #fff;
+      border: 1px solid #b8d4f0;
+      box-shadow: 0 1px 6px rgba(0,80,160,.08);
+    }
+
+    .section-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(90deg, #d6e8f8 0%, #e8f2fb 100%);
+      border-bottom: 1px solid #b8d4f0;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a5a9e;
+    }
+
+    .doc-header {
+      padding: 20px 24px 12px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .doc-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: #c0392b;
+      letter-spacing: 4px;
+      margin-bottom: 14px;
+    }
+    .doc-subtitle {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      font-size: 13px;
+      color: #666;
+    }
+    .doc-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      background: #e6f4ff;
+      border: 1px solid #91caff;
+      border-radius: 3px;
+      color: #1677ff;
+      font-weight: 600;
+    }
+
+    .form-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .form-table td {
+      border: 1px solid #d9e6f2;
+      padding: 0;
+      vertical-align: middle;
+    }
+    .form-table .label-cell {
+      width: 120px;
+      min-width: 120px;
+      background: #f7fafd;
+      text-align: center;
+      padding: 10px 8px;
+      color: #444;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .form-table .value-cell {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #333;
+      word-break: break-word;
+    }
+
+    .urgency-tag {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .urgency-tag.normal { color: #389e0d; border-color: #b7eb8f; background: #f6ffed; }
+    .urgency-tag.urgent { color: #d46b08; border-color: #ffd591; background: #fff7e6; }
+    .urgency-tag.critical { color: #cf1322; border-color: #ffa39e; background: #fff1f0; }
+
+    .location-item {
+      padding: 4px 0;
+    }
+    .location-item + .location-item {
+      border-top: 1px dashed #e8e8e8;
+      margin-top: 4px;
+      padding-top: 8px;
+    }
+
+    .agenda-content {
+      min-height: 80px;
+      line-height: 1.7;
+    }
+    .agenda-content p { margin: 0 0 6px; }
+    .agenda-content ul, .agenda-content ol { margin: 0 0 6px 1.4em; }
+
+    .aone-box {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #f0f7ff;
+      border: 1px solid #91caff;
+      border-radius: 2px;
+      color: #1677c7;
+      font-size: 13px;
+    }
+    .aone-box strong { color: #0958d9; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+    .empty-state h2 {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <img class="logo" src="ogo.png" alt="天翼云科技有限公司">
+    <span class="nav-title">部门会议通知 · 会议详情</span>
+  </header>
+
+  <div class="page-wrap">
+    <div class="toolbar" id="toolbar" style="display:none">
+      <a class="btn btn-outline" href="portal.html">← 返回门户</a>
+      <a class="btn btn-outline" href="index.html">会议列表</a>
+      <a class="btn btn-outline" href="flow-record.html" id="flowLink">流转记录</a>
+      <span class="spacer"></span>
+      <a class="btn btn-primary" href="#" id="processBtn" style="display:none">进入办理</a>
+    </div>
+
+    <div class="form-panel" id="detailPanel" style="display:none">
+      <div class="section-bar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H2V3zm0 4h12v2H2V7zm0 4h8v2H2v-2z"/></svg>
+        会议详情单
+      </div>
+
+      <div class="doc-header">
+        <div class="doc-title">部门会议通知</div>
+        <div class="doc-subtitle">
+          <span>制发单位：天翼云科技有限公司 · <span id="deptName">—</span></span>
+          <span>当前环节：<span class="doc-badge" id="stepBadge">—</span></span>
+        </div>
+      </div>
+
+      <table class="form-table">
+        <tbody>
+          <tr>
+            <td class="label-cell">文　　号</td>
+            <td class="value-cell" id="docNo">—</td>
+            <td class="label-cell">缓　　急</td>
+            <td class="value-cell" id="urgency">—</td>
+            <td class="label-cell">会议类型</td>
+            <td class="value-cell" id="meetingCategory">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">会议名称</td>
+            <td class="value-cell" colspan="5" id="meetingTitle">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">主　　送</td>
+            <td class="value-cell" colspan="5" id="mainDept">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">会议形式</td>
+            <td class="value-cell" colspan="5" id="meetingFormat">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">会议时间</td>
+            <td class="value-cell" colspan="5">
+              <div id="meetingTime">—</div>
+              <div class="aone-box" id="aoneBox" style="display:none"></div>
+            </td>
+          </tr>
+          <tr id="locationRow">
+            <td class="label-cell">会议地点</td>
+            <td class="value-cell" colspan="5" id="locations">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">会议内容及议程</td>
+            <td class="value-cell" colspan="5">
+              <div class="agenda-content" id="agenda">—</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="label-cell">参会人员</td>
+            <td class="value-cell" colspan="5" id="participants">—</td>
+          </tr>
+          <tr id="onlineAttendeeRow">
+            <td class="label-cell">线上参会人员</td>
+            <td class="value-cell" colspan="5" id="onlineAttendees">—</td>
+          </tr>
+          <tr id="onsiteAttendeeRow">
+            <td class="label-cell">现场参会人员</td>
+            <td class="value-cell" colspan="5" id="onsiteAttendees">—</td>
+          </tr>
+          <tr>
+            <td class="label-cell">主办部门</td>
+            <td class="value-cell" id="hostDept">—</td>
+            <td class="label-cell">拟 稿 人</td>
+            <td class="value-cell" id="drafter">—</td>
+            <td class="label-cell">拟稿日期</td>
+            <td class="value-cell" id="draftDate">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-panel empty-state" id="emptyPanel" style="display:none">
+      <h2>未找到会议详情</h2>
+      <p>请从会议列表进入，或确认会议是否已被删除。</p>
+      <p style="margin-top:16px"><a class="btn btn-outline" href="index.html">返回列表</a></p>
+    </div>
+  </div>
+
+  <script>
+  const MEETING_LIST_KEY = 'meetingListData';
+  const FORM_DATA_KEY = 'meetingNoticeFormData';
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtDateTime(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  function urgencyClass(u) {
+    if (u === '特急') return 'critical';
+    if (u === '加急') return 'urgent';
+    return 'normal';
+  }
+
+  function formatLabel(val) {
+    return val && String(val).trim() ? val : '—';
+  }
+
+  function migrateHtmlPath(href) {
+    if (!href || typeof href !== 'string') return href;
+    return href
+      .replace(/部门会议通知审批\.html/g, 'meeting-notice-approval.html')
+      .replace(/部门会议通知表单\.html/g, 'meeting-notice-form.html')
+      .replace(/会议室预定\.html/g, 'room-booking.html')
+      .replace(/流转记录\.html/g, 'flow-record.html')
+      .replace(/会议详情\.html/g, 'meeting-detail.html')
+      .replace(/门户\.html/g, 'portal.html');
+  }
+
+  function loadMeetingById(id) {
+    let meeting = null;
+    try {
+      const raw = localStorage.getItem(MEETING_LIST_KEY);
+      if (raw) {
+        const list = JSON.parse(raw);
+        meeting = list.find(m => m.id === id) || null;
+      }
+    } catch (_) {}
+
+    if (id === 'draft-current') {
+      try {
+        const formRaw = sessionStorage.getItem(FORM_DATA_KEY);
+        if (formRaw) {
+          const data = JSON.parse(formRaw);
+          if (data.meetingName) {
+            meeting = {
+              ...(meeting || {}),
+              id: 'draft-current',
+              title: data.meetingName,
+              urgency: data.urgency || meeting?.urgency || '普通',
+              docNo: meeting?.docNo || '天翼云会议〔2026〕号',
+              dept: data.hostDept || meeting?.dept || '数字化运营部',
+              hostDept: data.hostDept || meeting?.hostDept || meeting?.dept || '数字化运营部',
+              drafter: meeting?.drafter || '超级管理员',
+              draftDate: (data.submittedAt || meeting?.draftDate || new Date().toISOString()).slice(0, 10),
+              meetingStart: data.meetingStart || meeting?.meetingStart,
+              meetingEnd: data.meetingEnd || meeting?.meetingEnd,
+              step: meeting?.step || (data.submittedAt ? '发起人部门领导' : '起草中'),
+              meetingFormat: data.meetingFormat || data.meetingType || meeting?.meetingFormat || 'offline',
+              meetingCategory: data.meetingCategory || meeting?.meetingCategory || '',
+              mainDept: data.mainDept || meeting?.mainDept || '',
+              locations: data.locations || meeting?.locations || (data.location ? [data.location] : []),
+              agenda: data.agenda || data.agendaText || meeting?.agenda || '',
+              aoneMeetingId: data.aoneMeetingId || meeting?.aoneMeetingId || '',
+              aoneMeetingNo: data.aoneMeetingNo || meeting?.aoneMeetingNo || '',
+              onlineAttendees: data.onlineAttendees || meeting?.onlineAttendees || '',
+              onsiteAttendees: data.onsiteAttendees || meeting?.onsiteAttendees || '',
+              participants: data.participants || meeting?.participants || '',
+              processHref: meeting?.processHref || 'meeting-notice-form.html',
+            };
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (meeting?.processHref) {
+      meeting.processHref = migrateHtmlPath(meeting.processHref);
+    }
+
+    return meeting;
+  }
+
+  function renderLocations(locations, isOnline) {
+    const row = document.getElementById('locationRow');
+    if (isOnline) {
+      row.style.display = 'none';
+      return;
+    }
+    row.style.display = '';
+    const list = (locations || []).filter(Boolean);
+    if (!list.length) {
+      document.getElementById('locations').textContent = '—';
+      return;
+    }
+    document.getElementById('locations').innerHTML = list
+      .map(loc => `<div class="location-item">${escapeHtml(loc)}</div>`)
+      .join('');
+  }
+
+  function renderAgenda(html) {
+    const el = document.getElementById('agenda');
+    if (!html || !String(html).trim()) {
+      el.textContent = '—';
+      return;
+    }
+    if (/<[a-z][\s\S]*>/i.test(html)) {
+      el.innerHTML = html;
+    } else {
+      el.innerHTML = escapeHtml(html).replace(/\n/g, '<br>');
+    }
+  }
+
+  function parseProcessHref(href) {
+    if (!href) return null;
+    try {
+      const url = new URL(href, location.href);
+      const file = url.pathname.split('/').pop() || '';
+      return {
+        file,
+        mode: url.searchParams.get('mode') || (file === 'meeting-notice-approval.html' ? 'approve' : 'draft'),
+        step: url.searchParams.get('step') || '',
+        dept: url.searchParams.get('dept') || '',
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function isApprovalMeeting(meeting) {
+    if (!meeting || meeting.step === '办结') return false;
+    const href = migrateHtmlPath(meeting.processHref || '');
+    if (!href || href.includes('meeting-detail.html')) return false;
+    const parsed = parseProcessHref(href);
+    if (!parsed) return false;
+    return parsed.mode === 'approve' || parsed.file === 'meeting-notice-approval.html';
+  }
+
+  function stripHtmlText(html) {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || '').trim();
+  }
+
+  function meetingToFormData(meeting) {
+    const locations = Array.isArray(meeting.locations)
+      ? meeting.locations
+      : (meeting.location ? String(meeting.location).split(/[；;]+/).map(s => s.trim()).filter(Boolean) : []);
+    return {
+      urgency: meeting.urgency || '普通',
+      meetingName: meeting.title || '',
+      mainDept: meeting.mainDept || '',
+      hostDept: meeting.hostDept || meeting.dept || '',
+      meetingFormat: meeting.meetingFormat || 'offline',
+      meetingType: meeting.meetingFormat || 'offline',
+      meetingCategory: meeting.meetingCategory || '',
+      meetingStart: meeting.meetingStart || '',
+      meetingEnd: meeting.meetingEnd || '',
+      locations,
+      location: locations.join('；'),
+      agenda: meeting.agenda || '',
+      agendaText: stripHtmlText(meeting.agenda || ''),
+      onlineAttendees: meeting.onlineAttendees || '',
+      onsiteAttendees: meeting.onsiteAttendees || '',
+      participants: meeting.participants || '',
+      aoneMeetingId: meeting.aoneMeetingId || null,
+      aoneMeetingNo: meeting.aoneMeetingNo || null,
+      deptAssignments: meeting.deptAssignments || {},
+      submittedAt: meeting.draftDate || new Date().toISOString().slice(0, 10),
+    };
+  }
+
+  function buildProcessUrl(meeting) {
+    let href = migrateHtmlPath(meeting.processHref || '');
+    if (!href) return null;
+    const parsed = parseProcessHref(href);
+    if (parsed?.file === 'meeting-notice-approval.html') {
+      const step = parsed.step || 'deptLeader';
+      href = `meeting-notice-form.html?mode=approve&step=${encodeURIComponent(step)}`;
+      if (parsed.dept) href += `&dept=${encodeURIComponent(parsed.dept)}`;
+    }
+    const url = new URL(href, location.href);
+    if (!url.searchParams.get('id') && meeting.id) {
+      url.searchParams.set('id', meeting.id);
+    }
+    return `${url.pathname}${url.search}`;
+  }
+
+  function seedFormDataFromMeeting(meeting) {
+    try {
+      sessionStorage.setItem(FORM_DATA_KEY, JSON.stringify(meetingToFormData(meeting)));
+    } catch (_) {}
+  }
+
+  function renderMeeting(meeting) {
+    document.getElementById('toolbar').style.display = 'flex';
+    document.getElementById('detailPanel').style.display = 'block';
+    document.getElementById('emptyPanel').style.display = 'none';
+
+    document.title = `${meeting.title} · 会议详情`;
+
+    document.getElementById('deptName').textContent = meeting.hostDept || meeting.dept || '—';
+    document.getElementById('stepBadge').textContent = meeting.step || '—';
+    document.getElementById('docNo').textContent = meeting.docNo || '—';
+
+    const urgencyEl = document.getElementById('urgency');
+    const u = meeting.urgency || '普通';
+    urgencyEl.innerHTML = `<span class="urgency-tag ${urgencyClass(u)}">${escapeHtml(u)}</span>`;
+
+    document.getElementById('meetingCategory').textContent = formatLabel(meeting.meetingCategory);
+    document.getElementById('meetingTitle').textContent = meeting.title || '—';
+    document.getElementById('mainDept').textContent = formatLabel(meeting.mainDept);
+
+    const isOnline = meeting.meetingFormat === 'online';
+    document.getElementById('meetingFormat').textContent = isOnline ? '线上会议' : '线下会议';
+    renderLocations(meeting.locations, isOnline);
+
+    const timeStart = fmtDateTime(meeting.meetingStart);
+    const timeEnd = fmtDateTime(meeting.meetingEnd);
+    document.getElementById('meetingTime').textContent =
+      timeStart === '—' ? '—' : `${timeStart} — ${timeEnd}`;
+
+    const aoneBox = document.getElementById('aoneBox');
+    const aoneNo = meeting.aoneMeetingNo || meeting.aoneMeetingId;
+    if (aoneNo) {
+      aoneBox.style.display = 'block';
+      aoneBox.innerHTML = `已预定 AOne 会议号：<strong>${escapeHtml(aoneNo)}</strong>`;
+    } else {
+      aoneBox.style.display = 'none';
+    }
+
+    renderAgenda(meeting.agenda);
+
+    document.getElementById('participants').textContent = formatLabel(meeting.participants);
+    document.getElementById('onlineAttendees').textContent = formatLabel(meeting.onlineAttendees);
+
+    const onsiteRow = document.getElementById('onsiteAttendeeRow');
+    if (isOnline) {
+      onsiteRow.style.display = 'none';
+    } else {
+      onsiteRow.style.display = '';
+      document.getElementById('onsiteAttendees').textContent = formatLabel(meeting.onsiteAttendees);
+    }
+
+    document.getElementById('hostDept').textContent = formatLabel(meeting.hostDept || meeting.dept);
+    document.getElementById('drafter').textContent = formatLabel(meeting.drafter);
+    document.getElementById('draftDate').textContent = formatLabel(meeting.draftDate);
+
+    document.getElementById('processBtn').style.display = 'none';
+  }
+
+  function init() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (!id) {
+      document.getElementById('emptyPanel').style.display = 'block';
+      return;
+    }
+    const meeting = loadMeetingById(id);
+    if (!meeting) {
+      document.getElementById('emptyPanel').style.display = 'block';
+      return;
+    }
+
+    if (isApprovalMeeting(meeting)) {
+      seedFormDataFromMeeting(meeting);
+      const target = buildProcessUrl(meeting);
+      if (target) {
+        location.replace(target);
+        return;
+      }
+    }
+
+    renderMeeting(meeting);
+  }
+
+  init();
+  </script>
+</body>
+</html>

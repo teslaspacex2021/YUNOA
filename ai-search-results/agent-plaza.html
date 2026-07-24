@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智能体广场 - 天翼云数字人</title>
+  <link rel="stylesheet" href="digital-human.css" />
+  <link rel="stylesheet" href="agent-plaza.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="user-avatar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+        <span class="sidebar-title">天翼云数字人</span>
+      </div>
+
+      <a href="digital-human.html" class="new-chat-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        新对话
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="digital-human.html?agent=enterprise-talent" class="nav-item">
+          <span class="nav-icon">🏢</span> 惠企优才
+        </a>
+        <a href="digital-human.html?agent=value-mgmt" class="nav-item">
+          <span class="nav-icon">📊</span> 价值经营
+        </a>
+        <a href="digital-human.html?agent=enterprise-qa" class="nav-item">
+          <span class="nav-icon">💬</span> 企业知识问答
+        </a>
+        <a href="agent-plaza.html" class="nav-item active">
+          <span class="nav-icon">🤖</span> 智能体广场
+        </a>
+        <a href="digital-human.html" class="nav-item">
+          <span class="nav-icon">📅</span> 日程
+        </a>
+      </nav>
+
+      <div class="sidebar-section">
+        <div class="section-header">收起</div>
+        <a href="#" class="nav-item sub">
+          <span class="nav-icon">🛒</span> 技能商店
+        </a>
+        <a href="#" class="nav-item sub">
+          <span class="nav-icon">🔧</span> MCP工具
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-header">知识中心</div>
+        <a href="#" class="nav-item sub">知识运营</a>
+      </div>
+
+      <div class="sidebar-section recent">
+        <div class="section-header">最近对话</div>
+        <a href="digital-human.html" class="recent-item">New Chat</a>
+        <a href="digital-human.html" class="recent-item">帮我查看我的待办</a>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="sidebar-user">段磊</span>
+        <a href="index.html" class="back-to-search">← 返回公文搜索</a>
+      </div>
+    </aside>
+
+    <main class="plaza-main">
+      <header class="plaza-header">
+        <div class="plaza-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" id="plazaSearchInput" placeholder="搜索智能体" />
+        </div>
+        <button type="button" class="plaza-create-btn">+ 创建智能体</button>
+      </header>
+
+      <div class="plaza-tabs" id="plazaTabs">
+        <button type="button" class="plaza-tab active" data-tab="official">官方推荐</button>
+        <button type="button" class="plaza-tab" data-tab="favorite">我的收藏</button>
+        <button type="button" class="plaza-tab" data-tab="created">我创建的</button>
+      </div>
+
+      <section class="plaza-section">
+        <h2 class="plaza-section-title">推荐智能体</h2>
+        <div class="plaza-recommend-grid" id="recommendGrid"></div>
+      </section>
+
+      <section class="plaza-section">
+        <div class="plaza-section-head">
+          <h2 class="plaza-section-title">全部</h2>
+          <div class="plaza-filters">
+            <select class="plaza-select" id="deptFilter">
+              <option value="">发布部门</option>
+              <option value="数字化运营部">数字化运营部</option>
+              <option value="市场部">市场部</option>
+              <option value="人力资源部">人力资源部</option>
+            </select>
+            <select class="plaza-select" id="sortFilter">
+              <option value="hot">热度优先</option>
+              <option value="new">最新发布</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="plaza-category-tabs" id="categoryTabs"></div>
+        <div class="plaza-agent-grid" id="agentGrid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="agent-plaza.js"></script>
+</body>
+</html>

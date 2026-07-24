@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会议室预定 · 会议管理</title>
+  <style>
+    :root {
+      --primary: #3b6cf5;
+      --primary-soft: #eaf0ff;
+      --primary-soft2: #f3f6ff;
+      --green: #16a34a;
+      --green-soft: #e7f7ed;
+      --red: #ef4444;
+      --red-soft: #fdeaea;
+      --ink: #1f2733;
+      --ink-2: #44505f;
+      --ink-3: #6b7785;
+      --ink-4: #9aa5b1;
+      --line: #e8ecf1;
+      --bg: #f5f7fb;
+      --sidebar-w: 248px;
+      --topbar-h: 68px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    button, input { font-family: inherit; font-size: 14px; }
+    button { cursor: pointer; border: none; background: none; color: inherit; }
+    svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .app { display: flex; min-height: 100vh; }
+
+    /* 侧边栏 */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 40;
+    }
+    .sidebar__brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 22px;
+    }
+    .brand__logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #6366f1);
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 16px rgba(59, 108, 245, .35);
+    }
+    .brand__title { font-weight: 700; font-size: 16px; display: block; }
+    .brand__sub { font-size: 11px; color: var(--ink-4); }
+    .sidebar__nav { flex: 1; padding: 8px 12px; overflow-y: auto; }
+    .nav-group__label {
+      font-size: 11px;
+      color: var(--ink-4);
+      font-weight: 600;
+      padding: 14px 12px 6px;
+      letter-spacing: .5px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      color: var(--ink-2);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      position: relative;
+    }
+    .nav-item:hover { background: var(--primary-soft2); color: var(--primary); }
+    .nav-item.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .nav-item.active::before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 0 3px 3px 0;
+    }
+    .nav-item svg { width: 19px; height: 19px; flex-shrink: 0; }
+    .nav-item__badge {
+      margin-left: auto;
+      background: var(--red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      padding: 0 5px;
+    }
+    .sidebar__user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      margin: 4px;
+    }
+    .avatar {
+      border-radius: 50%;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .avatar--md { width: 36px; height: 36px; font-size: 14px; }
+    .avatar--sm { width: 32px; height: 32px; font-size: 13px; }
+    .sidebar__user-name { font-weight: 600; font-size: 13px; display: block; }
+    .sidebar__user-role { font-size: 11px; color: var(--ink-4); }
+
+    /* 主区域 */
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .topbar {
+      height: var(--topbar-h);
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .topbar__title h1 { font-size: 18px; font-weight: 700; }
+    .topbar__title p { font-size: 12px; color: var(--ink-4); margin-top: 2px; }
+    .topbar__right { display: flex; align-items: center; gap: 8px; }
+    .iconbtn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--ink-3);
+      position: relative;
+    }
+    .iconbtn:hover { background: var(--line-2, #f0f3f7); color: var(--ink); }
+    .iconbtn svg { width: 20px; height: 20px; }
+    .badge-dot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: var(--red);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      padding: 0 4px;
+    }
+
+    .content { flex: 1; padding: 24px 28px 32px; }
+
+    /* 步骤条 */
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-4);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .step.active { color: var(--primary); font-weight: 600; }
+    .step.done { color: var(--green); }
+    .step__num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: #fff;
+    }
+    .step.active .step__num {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+    .step.done .step__num {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+    .step__line {
+      width: 100px;
+      height: 2px;
+      background: var(--line);
+      margin: 0 14px;
+    }
+    .step__line.done { background: var(--green); }
+
+    /* 筛选 */
+    .filter-bar {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 6px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 2px rgba(20, 32, 60, .06);
+    }
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f3f7;
+    }
+    .filter-row:last-child { border-bottom: none; }
+    .filter-row__icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .filter-row__icon svg { width: 17px; height: 17px; }
+    .filter-tabs { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+    .filter-tab {
+      padding: 7px 16px;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink-2);
+      background: transparent;
+      transition: .14s;
+    }
+    .filter-tab:hover { background: #f0f3f7; }
+    .filter-tab.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(59, 108, 245, .25);
+    }
+    .filter-time {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .filter-time input {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 7px 10px;
+      color: var(--ink);
+      min-width: 130px;
+    }
+
+    /* 图例 & 会议室 */
+    .legend {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 14px;
+      font-size: 12.5px;
+      color: var(--ink-3);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .legend i {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .room-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 14px;
+    }
+    .room-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: .16s;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(20, 32, 60, .06);
+    }
+    .room-card:hover { box-shadow: 0 6px 20px rgba(28, 45, 84, .07); transform: translateY(-2px); }
+    .room-card.free { background: var(--green-soft); border-color: #c7ebd4; }
+    .room-card.occupied { background: var(--red-soft); border-color: #f6cccc; cursor: not-allowed; }
+    .room-card.occupied:hover { transform: none; }
+    .room-card.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(59, 108, 245, .35);
+    }
+    .room-card__status {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      color: #fff;
+    }
+    .room-card.free .room-card__status { background: var(--green); }
+    .room-card.occupied .room-card__status { background: var(--red); }
+    .room-card.selected .room-card__status { background: rgba(255,255,255,.25); }
+    .room-card__cap {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--ink-3);
+      text-align: left;
+    }
+    .room-card.free .room-card__cap { color: var(--green); }
+    .room-card.occupied .room-card__cap { color: var(--red); }
+    .room-card.selected .room-card__cap,
+    .room-card.selected .room-card__no,
+    .room-card.selected .room-card__fig { color: #fff; }
+    .room-card__fig {
+      display: grid;
+      place-items: center;
+      height: 46px;
+      margin: 4px 0 10px;
+      color: #4cb877;
+    }
+    .room-card.occupied .room-card__fig { color: #e87878; }
+    .room-card__fig svg { width: 44px; height: 44px; stroke-width: 1.6; }
+    .room-card__no { font-weight: 800; font-size: 17px; }
+
+    /* 详情面板 */
+    .room-detail {
+      margin-top: 18px;
+      background: #fff;
+      border: 1.5px solid var(--primary);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: none;
+      box-shadow: 0 6px 20px rgba(28, 45, 84, .07);
+    }
+    .room-detail.show { display: block; }
+    .room-detail__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .room-detail__head h3 { font-size: 16px; }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .tag--green { background: var(--green-soft); color: var(--green); }
+    .tag--blue { background: var(--primary-soft); color: var(--primary); }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px 24px;
+      font-size: 13px;
+    }
+    .detail-cell__label {
+      font-size: 12px;
+      color: var(--ink-4);
+      margin-bottom: 4px;
+    }
+    .detail-cell__value { font-weight: 600; }
+
+    /* 底部按钮 */
+    .form-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .btn--ghost {
+      background: #fff;
+      color: var(--ink-2);
+      border: 1px solid var(--line);
+    }
+    .btn--ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn--primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(59, 108, 245, .3);
+    }
+    .btn--primary:hover { background: #2f5ae0; }
+    .btn--primary:disabled {
+      background: #a0b4f5;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .success-panel {
+      text-align: center;
+      padding: 60px 20px;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      display: none;
+    }
+    .success-panel.show { display: block; }
+    .success-panel h2 { font-size: 22px; color: var(--green); margin: 16px 0 8px; }
+    .success-panel p { color: var(--ink-3); margin-bottom: 24px; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .detail-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="brand__logo">A</div>
+      <div>
+        <span class="brand__title">会议管理</span>
+        <span class="brand__sub">全流程闭环管理</span>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-group__label">会议办理</div>
+      <button type="button" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z"/></svg>
+        工作台
+      </button>
+      <button type="button" class="nav-item" onclick="location.href='meeting-notice-form.html'">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"/></svg>
+        发起会议
+      </button>
+      <button type="button" class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        会议室预定
+      </button>
+      <div class="nav-group__label">协同处理</div>
+      <button type="button" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        审批中心
+        <span class="nav-item__badge">3</span>
+      </button>
+      <button type="button" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        我的会议
+      </button>
+      <button type="button" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        会议纪要
+      </button>
+    </nav>
+    <div class="sidebar__user">
+      <div class="avatar avatar--md">段</div>
+      <div>
+        <span class="sidebar__user-name">段明远</span>
+        <span class="sidebar__user-role">智能边缘事业部 · 部门负责人</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__title">
+        <h1>会议室预定</h1>
+        <p>线下场地 · 智能办公预约</p>
+      </div>
+      <div class="topbar__right">
+        <button type="button" class="btn btn--ghost" onclick="goBackToForm()">← 返回表单</button>
+        <button type="button" class="iconbtn" aria-label="搜索">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        </button>
+        <button type="button" class="iconbtn" aria-label="通知">
+          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          <span class="badge-dot">3</span>
+        </button>
+        <div class="avatar avatar--sm">段</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="steps" id="stepsBar">
+        <div class="step active" data-step="1">
+          <div class="step__num">1</div>
+          <div>选择会议室</div>
+        </div>
+        <div class="step__line" id="line1"></div>
+        <div class="step" data-step="2">
+          <div class="step__num">2</div>
+          <div>完善会议信息</div>
+        </div>
+        <div class="step__line" id="line2"></div>
+        <div class="step" data-step="3">
+          <div class="step__num">3</div>
+          <div>完成</div>
+        </div>
+      </div>
+
+      <div id="step1Panel">
+        <div class="filter-bar">
+          <div class="filter-row">
+            <div class="filter-row__icon">
+              <svg viewBox="0 0 24 24"><path d="M12 21s7-4.5 7-11a7 7 0 10-14 0c0 6.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            </div>
+            <div class="filter-tabs" id="cityTabs">
+              <button type="button" class="filter-tab" data-city="北京">北京</button>
+              <button type="button" class="filter-tab active" data-city="上海">上海</button>
+              <button type="button" class="filter-tab" data-city="广州">广州</button>
+              <button type="button" class="filter-tab" data-city="深圳">深圳</button>
+              <button type="button" class="filter-tab" data-city="杭州">杭州</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <div class="filter-row__icon">
+              <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22V12h6v10M8 6h.01M16 6h.01M12 6h.01"/></svg>
+            </div>
+            <div class="filter-tabs" id="buildingTabs">
+              <button type="button" class="filter-tab active" data-building="张江科技园">张江科技园</button>
+              <button type="button" class="filter-tab" data-building="陆家嘴金融楼">陆家嘴金融楼</button>
+              <button type="button" class="filter-tab" data-building="虹桥办公楼">虹桥办公楼</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <div class="filter-row__icon">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            </div>
+            <div class="filter-tabs" id="floorTabs">
+              <button type="button" class="filter-tab active" data-floor="全部">全部</button>
+              <button type="button" class="filter-tab" data-floor="1F">1F</button>
+              <button type="button" class="filter-tab" data-floor="2F">2F</button>
+              <button type="button" class="filter-tab" data-floor="3F">3F</button>
+              <button type="button" class="filter-tab" data-floor="4F">4F</button>
+              <button type="button" class="filter-tab" data-floor="5F">5F</button>
+              <button type="button" class="filter-tab" data-floor="15F">15F</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <div class="filter-row__icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </div>
+            <div class="filter-time">
+              <input type="date" id="bookDate" value="2026-06-20">
+              <input type="time" id="bookStart" value="14:15">
+              <span style="color:var(--ink-4)">至</span>
+              <input type="time" id="bookEnd" value="16:15">
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><i style="background:var(--green)"></i>空闲</span>
+          <span><i style="background:var(--red)"></i>已占用</span>
+          <span><i style="background:var(--primary)"></i>已选中</span>
+          <span style="color:var(--ink-4)">· 点击会议室查看详情与占用时段</span>
+        </div>
+
+        <div class="room-grid" id="roomGrid"></div>
+
+        <div class="room-detail" id="roomDetail">
+          <div class="room-detail__head">
+            <h3 id="detailTitle">会议室信息一览</h3>
+            <div>
+              <span class="tag tag--green" id="detailStatus">空闲</span>
+              <span class="tag tag--blue" id="detailLocation"></span>
+            </div>
+          </div>
+          <div class="detail-grid">
+            <div><div class="detail-cell__label">会议室名称</div><div class="detail-cell__value" id="detailNo">—</div></div>
+            <div><div class="detail-cell__label">容纳人数</div><div class="detail-cell__value" id="detailCap">—</div></div>
+            <div><div class="detail-cell__label">区域</div><div class="detail-cell__value" id="detailArea">—</div></div>
+            <div><div class="detail-cell__label">预定时段</div><div class="detail-cell__value" id="detailTime">—</div></div>
+            <div><div class="detail-cell__label">提供设备</div><div class="detail-cell__value">投影仪、视频会议、白板</div></div>
+            <div><div class="detail-cell__label">说明</div><div class="detail-cell__value" style="font-weight:400;color:var(--ink-2)">所选时段暂无预定，可放心预约</div></div>
+          </div>
+        </div>
+
+        <div class="form-foot">
+          <button type="button" class="btn btn--ghost" onclick="window.close()">取消</button>
+          <button type="button" class="btn btn--primary" id="nextBtn" disabled>下一步 →</button>
+        </div>
+      </div>
+
+      <div class="success-panel" id="successPanel">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#16a34a" stroke-width="3"/><path d="M20 32l8 8 16-16" stroke="#16a34a" stroke-width="4"/></svg>
+        <h2>会议室预定成功</h2>
+        <p id="successText"></p>
+        <button type="button" class="btn btn--primary" onclick="goBackToForm()">返回表单</button>
+        <button type="button" class="btn btn--ghost" onclick="window.close()">关闭页面</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  const ROOM_FIG = '<svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20v-1a5 5 0 015-5h2a5 5 0 015 5v1"/><path d="M15 20v-1a4 4 0 014-4"/></svg>';
+  const CHECK_FIG = '<svg viewBox="0 0 24 24" stroke="#fff"><path d="M20 6L9 17l-5-5"/></svg>';
+
+  const ROOMS = [
+    { no: '101', cap: 12, occupied: true },
+    { no: '102', cap: 100, occupied: false },
+    { no: '103', cap: 8, occupied: false },
+    { no: '104', cap: 16, occupied: true },
+    { no: '105', cap: 45, occupied: true },
+    { no: '106', cap: 20, occupied: false },
+    { no: '107', cap: 30, occupied: false },
+    { no: '108', cap: 50, occupied: true },
+    { no: '109', cap: 50, occupied: true },
+    { no: '110', cap: 30, occupied: false },
+    { no: '111', cap: 30, occupied: false },
+    { no: '112', cap: 15, occupied: true },
+    { no: '113', cap: 15, occupied: false },
+    { no: '114', cap: 10, occupied: false },
+  ];
+
+  const state = {
+    city: '上海',
+    building: '张江科技园',
+    floor: '全部',
+    selectedRoom: null,
+  };
+
+  function getTimeLabel() {
+    const d = document.getElementById('bookDate').value;
+    const s = document.getElementById('bookStart').value;
+    const e = document.getElementById('bookEnd').value;
+    return `${d} ${s}-${e}`;
+  }
+
+  function renderRooms() {
+    const grid = document.getElementById('roomGrid');
+    grid.innerHTML = ROOMS.map(r => {
+      const sel = state.selectedRoom?.no === r.no;
+      const cls = sel ? 'selected' : r.occupied ? 'occupied' : 'free';
+      const status = sel ? '已选' : r.occupied ? '占用' : '空闲';
+      return `<div class="room-card ${cls}" data-no="${r.no}" ${r.occupied ? '' : `onclick="selectRoom('${r.no}')"`}>
+        <span class="room-card__status">${status}</span>
+        <div class="room-card__cap">${r.cap}人</div>
+        <div class="room-card__fig">${sel ? CHECK_FIG : ROOM_FIG}</div>
+        <div class="room-card__no">${r.no}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function selectRoom(no) {
+    const room = ROOMS.find(r => r.no === no);
+    if (!room || room.occupied) return;
+    state.selectedRoom = room;
+    renderRooms();
+
+    const area = `${state.city}${state.building}${state.floor === '全部' ? '1F' : state.floor}`;
+    document.getElementById('detailTitle').textContent = '会议室信息一览';
+    document.getElementById('detailStatus').textContent = '空闲';
+    document.getElementById('detailLocation').textContent = area;
+    document.getElementById('detailNo').textContent = room.no;
+    document.getElementById('detailCap').textContent = `${room.cap} 人`;
+    document.getElementById('detailArea').textContent = area;
+    document.getElementById('detailTime').textContent = getTimeLabel();
+    document.getElementById('roomDetail').classList.add('show');
+    document.getElementById('nextBtn').disabled = false;
+    document.getElementById('roomDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function bindTabs(containerId, key, dataAttr) {
+    document.getElementById(containerId).addEventListener('click', e => {
+      const tab = e.target.closest('.filter-tab');
+      if (!tab) return;
+      e.currentTarget.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      state[key] = tab.dataset[dataAttr];
+      state.selectedRoom = null;
+      document.getElementById('roomDetail').classList.remove('show');
+      document.getElementById('nextBtn').disabled = true;
+      renderRooms();
+    });
+  }
+
+  bindTabs('cityTabs', 'city', 'city');
+  bindTabs('buildingTabs', 'building', 'building');
+  bindTabs('floorTabs', 'floor', 'floor');
+
+  function goBackToForm() {
+    if (window.opener && !window.opener.closed) {
+      window.opener.focus();
+      window.close();
+      return;
+    }
+    location.href = 'meeting-notice-form.html';
+  }
+
+  function applyPrefillFromQuery() {
+    const params = new URLSearchParams(location.search);
+    const date = params.get('date');
+    const start = params.get('start');
+    const end = params.get('end');
+    const dateInput = document.getElementById('bookDate');
+    const startInput = document.getElementById('bookStart');
+    const endInput = document.getElementById('bookEnd');
+    if (date && dateInput) dateInput.value = date;
+    if (start && startInput) startInput.value = start;
+    if (end && endInput) endInput.value = end;
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (!state.selectedRoom) return;
+    const booking = {
+      city: state.city,
+      building: state.building,
+      floor: state.floor,
+      roomNo: state.selectedRoom.no,
+      cap: state.selectedRoom.cap,
+      date: document.getElementById('bookDate').value,
+      start: document.getElementById('bookStart').value,
+      end: document.getElementById('bookEnd').value,
+    };
+    localStorage.setItem('meetingRoomBooking', JSON.stringify(booking));
+    localStorage.setItem('meetingRoomBookingPending', '1');
+
+    document.getElementById('step1Panel').style.display = 'none';
+    document.querySelectorAll('.step').forEach((s, i) => {
+      s.classList.toggle('active', i === 2);
+      s.classList.toggle('done', i < 2);
+    });
+    document.getElementById('line1').classList.add('done');
+    document.getElementById('line2').classList.add('done');
+    document.getElementById('successText').textContent =
+      `已预定 ${booking.city} · ${booking.building} · ${booking.roomNo}会议室（${booking.date} ${booking.start}-${booking.end}）`;
+    document.getElementById('successPanel').classList.add('show');
+  });
+
+  applyPrefillFromQuery();
+  renderRooms();
+</script>
+
+</body>
+</html>

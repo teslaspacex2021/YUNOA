@@ -1,0 +1,10 @@
+.DS_Store
+**/.DS_Store
+.workbuddy/
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store?
+Thumbs.db

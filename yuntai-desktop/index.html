@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>云台桌面端 · AI专家</title>
+  <link rel="stylesheet" href="../assets/ai-tool-modals.css" />
+  <link rel="stylesheet" href="../assets/ai-chat-panel.css" />
+  <link rel="stylesheet" href="desktop.css?v=3" />
+</head>
+<body>
+  <div class="yt-app">
+    <!-- 顶栏 -->
+    <header class="yt-topbar">
+      <div class="yt-topbar-left">
+        <button type="button" class="yt-org-btn" aria-label="切换组织">
+          测试-天翼云科技有限公司
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+      <div class="yt-topbar-search">
+        <input type="search" placeholder="搜索「AI 网关新增模型菜单」" aria-label="全局搜索" />
+        <button type="button" class="yt-smart-search">智搜</button>
+      </div>
+      <div class="yt-topbar-right" aria-hidden="true">
+        <span class="yt-top-icon"></span>
+        <span class="yt-top-icon"></span>
+        <span class="yt-top-icon"></span>
+      </div>
+    </header>
+
+    <div class="yt-body">
+      <!-- 左侧一级菜单栏（对齐云台桌面：图标+文字横排） -->
+      <nav class="yt-rail" aria-label="云台主导航">
+        <div class="yt-rail-top">
+          <div class="yt-rail-profile">
+            <span class="yt-avatar-circle" aria-hidden="true">段磊</span>
+            <span class="yt-rail-profile-name">段磊</span>
+          </div>
+
+          <!-- AI专家：置于「消息」上方 -->
+          <button
+            type="button"
+            class="yt-rail-item yt-rail-yixiaoka is-active"
+            data-module="yixiaoka"
+            aria-current="page"
+          >
+            <span class="yt-yxk-wrap">
+              <img src="assets/yixiaoka-icon.png" alt="" class="yt-yxk-icon" width="28" height="28" />
+              <span class="yt-yxk-badge">AI</span>
+            </span>
+            <span class="yt-rail-label">AI专家</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="message">
+            <span class="yt-rail-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </span>
+            <span class="yt-rail-label">消息</span>
+            <span class="yt-badge">99+</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="contacts">
+            <span class="yt-rail-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="4" y="3" width="14" height="18" rx="2"/><circle cx="11" cy="9" r="2.4"/><path d="M7.5 16.2c.7-1.4 1.9-2.1 3.5-2.1s2.8.7 3.5 2.1"/><path d="M18 8h2M18 12h2M18 16h2"/>
+              </svg>
+            </span>
+            <span class="yt-rail-label">通讯录</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="meeting">
+            <span class="yt-rail-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="2" y="6" width="13" height="12" rx="2"/><path d="m22 8-5 3.5V12.5L22 16V8z"/>
+              </svg>
+            </span>
+            <span class="yt-rail-label">会议</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="workbench">
+            <span class="yt-rail-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
+              </svg>
+            </span>
+            <span class="yt-rail-label">工作台</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="oa">
+            <span class="yt-rail-icon yt-icon-oa" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>
+              </svg>
+              <span class="yt-oa-text">OA</span>
+            </span>
+            <span class="yt-rail-label">OA门户</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="ai-todo">
+            <span class="yt-rail-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="m9 14.5 2 2 4-4"/>
+              </svg>
+            </span>
+            <span class="yt-rail-label">AI待办</span>
+          </button>
+
+          <button type="button" class="yt-rail-item" data-module="more">
+            <span class="yt-rail-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="14" y="14" width="6" height="6" rx="1.2"/>
+              </svg>
+            </span>
+            <span class="yt-rail-label">更多</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- AI专家二级面板 -->
+      <aside class="yt-yxk-panel" id="yxkPanel" aria-label="AI专家">
+        <div class="yt-yxk-header">
+          <img src="assets/yixiaoka-icon.png" alt="" class="yt-yxk-header-icon" width="40" height="40" />
+          <div class="yt-yxk-header-text">
+            <h1 class="yt-yxk-title">AI专家</h1>
+            <p class="yt-yxk-subtitle">AI 智能助手</p>
+          </div>
+        </div>
+
+        <button type="button" class="yt-yxk-new-chat" id="yxkNewChatBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          新建对话
+        </button>
+
+        <nav class="yt-yxk-nav">
+          <a href="../ai-search-results/agent-plaza.html" class="yt-yxk-nav-item">
+            <span class="yt-yxk-nav-emoji" aria-hidden="true">🤖</span>
+            智能体广场
+          </a>
+          <a href="#" class="yt-yxk-nav-item" data-action="schedule">
+            <span class="yt-yxk-nav-emoji" aria-hidden="true">📅</span>
+            日程
+          </a>
+          <a href="#" class="yt-yxk-nav-item" data-action="knowledge">
+            <span class="yt-yxk-nav-emoji" aria-hidden="true">📚</span>
+            知识中心
+          </a>
+        </nav>
+
+        <div class="yt-yxk-recent">
+          <h2 class="yt-yxk-recent-title">最近对话</h2>
+          <button type="button" class="yt-yxk-recent-item" data-chat="季度经营分析助手">季度经营分析助手</button>
+          <button type="button" class="yt-yxk-recent-item" data-chat="会议纪要整理">会议纪要整理</button>
+        </div>
+      </aside>
+
+      <!-- 其他模块占位二级面板 -->
+      <aside class="yt-side-panel hidden" id="sidePanel" aria-label="模块面板">
+        <div class="yt-side-panel-inner" id="sidePanelInner"></div>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="yt-main">
+        <div class="yt-tabs">
+          <div class="yt-tab">圆圆应用</div>
+          <div class="yt-tab is-active">
+            云台应用
+            <button type="button" class="yt-tab-close" aria-label="关闭">×</button>
+          </div>
+        </div>
+
+        <div class="yt-browser-bar">
+          <button type="button" aria-label="主页">⌂</button>
+          <button type="button" aria-label="后退">‹</button>
+          <button type="button" aria-label="前进">›</button>
+          <button type="button" aria-label="刷新">↻</button>
+        </div>
+
+        <div class="yt-main-content is-welcome" id="mainContent">
+          <div class="yt-chat-welcome" id="chatWelcome">
+            <h2 class="yt-welcome-title">
+              <span class="yt-hi">Hi</span> 我是AI专家
+            </h2>
+            <p class="yt-welcome-sub">请问有什么可以帮您的吗？</p>
+            <div class="yt-suggests">
+              <button type="button" class="yt-suggest">修改OA密码</button>
+              <button type="button" class="yt-suggest">部门业务通知单</button>
+              <button type="button" class="yt-suggest">公文格式规范有哪些？</button>
+              <button type="button" class="yt-suggest">AI 智慧办公大模型征集说明</button>
+            </div>
+          </div>
+
+          <div class="yt-chat-messages hidden" id="chatMessages"></div>
+
+          <div class="yt-composer-stack">
+            <div class="ai-chat-input-area yt-composer">
+              <div class="ai-input-box">
+                <div class="ai-input-top">
+                  <textarea id="chatInput" placeholder="请输入指令或问题和我对话吧"></textarea>
+                </div>
+                <div class="ai-input-toolbar">
+                  <div class="ai-input-tools-left" id="ytAiToolbar"></div>
+                  <div class="ai-input-tools-right">
+                    <div class="ai-mode-slot" id="ytAiModeSlot"></div>
+                    <div class="ai-model-slot" id="ytAiModelSlot"></div>
+                    <button type="button" class="ai-send-btn" id="sendBtn" aria-label="发送">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="yt-agent-chips" id="ytAgentChips">
+              <button type="button" class="yt-agent-chip">价值经营</button>
+              <button type="button" class="yt-agent-chip">翼析</button>
+              <button type="button" class="yt-agent-chip">企业知识问答</button>
+              <a href="../ai-search-results/agent-plaza.html" class="yt-agent-chip">更多</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="yt-placeholder hidden" id="modulePlaceholder">
+          <p id="modulePlaceholderText">功能开发中</p>
+          <a href="../oa-portal/index.html" class="yt-placeholder-link" id="oaPortalLink">打开 OA 门户 →</a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../assets/ai-tool-modals.js?v=4"></script>
+  <script src="../assets/ai-input-tools.js?v=13"></script>
+  <script src="desktop.js?v=4"></script>
+</body>
+</html>

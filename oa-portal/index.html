@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>天翼云 OA 门户</title>
+  <link rel="stylesheet" href="portal.css?v=34" />
+  <link rel="stylesheet" href="../assets/third-panel.css" />
+  <link rel="stylesheet" href="../assets/ai-chat-panel.css?v=7" />
+  <link rel="stylesheet" href="../assets/ai-tool-modals.css?v=2" />
+</head>
+<body>
+  <!-- 顶部工具栏 -->
+  <div class="top-toolbar">
+    <div class="toolbar-inner">
+      <a href="#" class="toolbar-link">编辑布局</a>
+      <a href="#" class="toolbar-link">还原默认布局</a>
+      <a href="#" class="toolbar-link">添加组件</a>
+    </div>
+  </div>
+
+  <!-- 页头 Banner -->
+  <header class="portal-header">
+    <div class="header-inner">
+      <div class="logo-area">
+        <img src="assets/左侧logo.png" alt="天翼云 State Cloud" class="logo-img">
+      </div>
+      <div class="header-title">
+        <img src="assets/头部文字.png" alt="天翼云 国家云 对党忠诚 | 志存高远 | 科技报国 | 勇于担当 | 安全共享" class="header-title-img">
+      </div>
+      <div class="header-ai-entry search-mode" id="headerAiEntry" data-mode="search">
+        <div class="header-ai-aside" role="group" aria-label="搜索与 AI 切换">
+          <div class="header-ai-face" aria-hidden="true">
+            <img src="../public/ailogo.gif" alt="" class="header-ai-logo">
+            <span class="header-ai-corner header-ai-corner-ai">AI</span>
+            <span class="header-ai-corner header-ai-corner-search">搜</span>
+          </div>
+          <div class="header-ai-switch">
+            <button type="button" class="header-ai-to-search" id="headerAiToSearchBtn" title="搜索模式" aria-label="搜索模式" aria-pressed="true">
+              <span class="header-ai-switch-label">搜</span>
+            </button>
+            <button type="button" class="header-ai-avatar" id="headerAiAvatarBtn" title="切换 AI专家输入" aria-label="切换 AI专家输入" aria-pressed="false">
+              <span class="header-ai-switch-label">AI</span>
+            </button>
+          </div>
+        </div>
+        <div class="header-ai-main">
+          <input type="text" class="header-ai-input" id="headerAiInput" placeholder="搜索公文、信息" autocomplete="off" />
+          <textarea class="header-ai-textarea" id="headerAiTextarea" placeholder="向 AI 专家提问，@切换专家，/添加技能" rows="2"></textarea>
+          <div class="header-ai-composer-bar" id="headerAiComposerBar">
+            <div class="header-ai-tools-left">
+              <button type="button" class="header-ai-tool-btn" id="headerAiAttachBtn" aria-label="上传附件">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <div class="header-ai-plus-wrap" data-skill-enabled="false" data-websearch-enabled="false">
+                <button type="button" class="header-ai-tool-btn" id="headerAiPlusBtn" aria-label="更多工具" aria-expanded="false" aria-haspopup="menu">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <div class="header-ai-plus-menu hidden" id="headerAiPlusMenu" role="menu">
+                  <button type="button" class="header-ai-plus-item" data-tool="websearch" role="menuitem" aria-pressed="false">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                    联网
+                  </button>
+                  <button type="button" class="header-ai-plus-item" data-tool="skill" role="menuitem">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    技能
+                  </button>
+                  <button type="button" class="header-ai-plus-item" data-tool="knowledge" role="menuitem">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+                    智库
+                  </button>
+                  <button type="button" class="header-ai-plus-item" data-tool="mcp" role="menuitem">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v6M12 16v6M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>
+                    工具
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="header-ai-chip-btn" id="headerAiExpertBtn" data-tool="expert">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                专家
+              </button>
+            </div>
+            <div class="header-ai-tools-right">
+              <div class="header-ai-modes" data-ai-mode="fast">
+                <button type="button" class="header-ai-mode-trigger" aria-label="对话模式" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="header-ai-mode-label">快速模式</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="header-ai-mode-menu hidden" role="listbox" aria-label="对话模式">
+                  <button type="button" class="header-ai-mode-option is-active" data-ai-mode="fast" role="option">快速模式</button>
+                  <button type="button" class="header-ai-mode-option" data-ai-mode="think" role="option">深度思考</button>
+                  <button type="button" class="header-ai-mode-option" data-ai-mode="office" role="option">办公任务</button>
+                </div>
+              </div>
+              <div class="header-ai-model-slot" id="headerAiModelSlot"></div>
+              <button type="button" class="header-ai-send ai-mode-send" id="headerAiSend" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="header-ai-search-btn" id="headerAiSearchBtn" aria-label="搜索">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 吸顶 AI / 搜索栏 -->
+  <div class="header-ai-entry ai-sticky search-mode" id="stickyAiEntry" data-mode="search">
+    <div class="header-ai-aside" role="group" aria-label="搜索与 AI 切换">
+      <div class="header-ai-face" aria-hidden="true">
+        <img src="../public/ailogo.gif" alt="" class="header-ai-logo">
+        <span class="header-ai-corner header-ai-corner-ai">AI</span>
+        <span class="header-ai-corner header-ai-corner-search">搜</span>
+      </div>
+      <div class="header-ai-switch">
+        <button type="button" class="header-ai-to-search" id="stickyAiToSearchBtn" title="搜索模式" aria-label="搜索模式" aria-pressed="true">
+          <span class="header-ai-switch-label">搜</span>
+        </button>
+        <button type="button" class="header-ai-avatar" id="stickyAiAvatarBtn" title="切换 AI专家输入" aria-label="切换 AI专家输入" aria-pressed="false">
+          <span class="header-ai-switch-label">AI</span>
+        </button>
+      </div>
+    </div>
+    <div class="header-ai-main">
+      <input type="text" class="header-ai-input" id="stickyAiInput" placeholder="搜索公文、信息" autocomplete="off" />
+      <textarea class="header-ai-textarea" id="stickyAiTextarea" placeholder="向 AI 专家提问，@切换专家，/添加技能" rows="2"></textarea>
+      <div class="header-ai-composer-bar" id="stickyAiComposerBar">
+        <div class="header-ai-tools-left">
+          <button type="button" class="header-ai-tool-btn" id="stickyAiAttachBtn" aria-label="上传附件">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+          <div class="header-ai-plus-wrap" data-skill-enabled="false" data-websearch-enabled="false">
+            <button type="button" class="header-ai-tool-btn" id="stickyAiPlusBtn" aria-label="更多工具" aria-expanded="false" aria-haspopup="menu">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="header-ai-plus-menu hidden" id="stickyAiPlusMenu" role="menu">
+              <button type="button" class="header-ai-plus-item" data-tool="websearch" role="menuitem" aria-pressed="false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                联网
+              </button>
+              <button type="button" class="header-ai-plus-item" data-tool="skill" role="menuitem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                技能
+              </button>
+              <button type="button" class="header-ai-plus-item" data-tool="knowledge" role="menuitem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+                智库
+              </button>
+              <button type="button" class="header-ai-plus-item" data-tool="mcp" role="menuitem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v6M12 16v6M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>
+                工具
+              </button>
+            </div>
+          </div>
+          <button type="button" class="header-ai-chip-btn" id="stickyAiExpertBtn" data-tool="expert">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            专家
+          </button>
+        </div>
+        <div class="header-ai-tools-right">
+          <div class="header-ai-modes" data-ai-mode="fast">
+            <button type="button" class="header-ai-mode-trigger" aria-label="对话模式" aria-haspopup="listbox" aria-expanded="false">
+              <span class="header-ai-mode-label">快速模式</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="header-ai-mode-menu hidden" role="listbox" aria-label="对话模式">
+              <button type="button" class="header-ai-mode-option is-active" data-ai-mode="fast" role="option">快速模式</button>
+              <button type="button" class="header-ai-mode-option" data-ai-mode="think" role="option">深度思考</button>
+              <button type="button" class="header-ai-mode-option" data-ai-mode="office" role="option">办公任务</button>
+            </div>
+          </div>
+          <div class="header-ai-model-slot" id="stickyAiModelSlot"></div>
+          <button type="button" class="header-ai-send ai-mode-send" id="stickyAiSend" aria-label="发送">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="header-ai-search-btn" id="stickyAiSearchBtn" aria-label="搜索">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- @专家 / /技能 联想面板 -->
+  <div class="ai-mention-popover hidden" id="aiMentionPopover" role="listbox" aria-label="联想选择" hidden>
+    <div class="ai-mention-head" id="aiMentionHead">切换数字员工 (@, 一次一位)</div>
+    <div class="ai-mention-list" id="aiMentionList"></div>
+  </div>
+
+  <div class="portal-body">
+    <div class="portal-sidebar-top">
+      <div class="user-card">
+        <div class="user-avatar">
+          <svg class="user-avatar-svg" viewBox="0 0 48 48" aria-hidden="true">
+            <circle cx="24" cy="24" r="24" fill="#e6f4ff"/>
+            <circle cx="24" cy="18" r="8" fill="#1677ff"/>
+            <path d="M8 40c0-7.2 7.16-13 16-13s16 5.8 16 13" fill="#1677ff" opacity="0.85"/>
+          </svg>
+        </div>
+        <p class="user-greeting">段磊，您好！</p>
+      </div>
+    </div>
+
+    <aside class="portal-sidebar-nav">
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item active">
+          <span class="nav-icon nav-icon-home"></span> 首页
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-contacts"></span> 云公司通讯录
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-group"></span> 集团通讯录
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-help"></span> 帮助手册
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-feedback"></span> 意见反馈
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-download"></span> 常用下载
+        </a>
+      </nav>
+      <div class="sidebar-qr">
+        <p class="sidebar-qr-title">OA运营群</p>
+        <div class="qr-code" aria-hidden="true">
+          <div class="qr-code-inner">
+            <img src="../public/ailogo.gif" alt="" class="qr-logo">
+          </div>
+        </div>
+        <p class="sidebar-qr-hint">用云台3.0扫一扫入群</p>
+        <p class="sidebar-qr-qq">QQ群号：</p>
+      </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="portal-main">
+      <div class="main-grid">
+        <div class="center-column">
+        <section class="app-section">
+          <div class="content-tabs">
+            <button class="tab active">菜单栏</button>
+            <button class="tab">OA待办</button>
+            <button class="tab">OA已办</button>
+            <button class="tab">MSS待办</button>
+            <button class="tab">应用系统待办<span class="tab-badge">(5)</span></button>
+            <button class="tab">我的会议</button>
+            <button class="tab">我的督办</button>
+          </div>
+
+          <div class="app-grid-card">
+            <div class="app-grid">
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#e6f4ff;color:#1677ff">🧠</div>
+              <span>翼智广场</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff7e6;color:#fa8c16">💻</div>
+              <span>个人事务</span>
+            </a>
+            <a href="../ai-search-results/digital-human.html" class="app-item">
+              <div class="app-icon" style="background:#f9f0ff;color:#722ed1">🤖</div>
+              <span>天翼云数字人</span>
+            </a>
+            <a href="../ai-search-results/index.html" class="app-item">
+              <div class="app-icon" style="background:#e6f4ff;color:#1677ff">📄</div>
+              <span>公文管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#f6ffed;color:#52c41a">🛡️</div>
+              <span>督办管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff1f0;color:#ff4d4f">📁</div>
+              <span>资源管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#e6fffb;color:#13c2c2">☁️</div>
+              <span>天翼云行政</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff7e6;color:#fa8c16">👥</div>
+              <span>人力资源</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#f6ffed;color:#52c41a">💰</div>
+              <span>财务管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#f9f0ff;color:#722ed1">📊</div>
+              <span>项目管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff0f6;color:#eb2f96">📅</div>
+              <span>会议管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#e6f4ff;color:#1677ff">📧</div>
+              <span>邮件系统</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fcffe6;color:#a0d911">📚</div>
+              <span>知识库</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff1f0;color:#ff4d4f">📈</div>
+              <span>报表中心</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#e6fffb;color:#13c2c2">📝</div>
+              <span>工单系统</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff7e6;color:#fa8c16">🛒</div>
+              <span>采购管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#f6ffed;color:#52c41a">💼</div>
+              <span>资产管理</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#f9f0ff;color:#722ed1">🎓</div>
+              <span>培训学习</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#e6f4ff;color:#1677ff">📱</div>
+              <span>移动办公</span>
+            </a>
+            <a href="#" class="app-item">
+              <div class="app-icon" style="background:#fff0f6;color:#eb2f96">🔧</div>
+              <span>系统管理</span>
+            </a>
+            <a href="#" class="app-item app-item-more">
+              <div class="app-icon app-icon-more">+</div>
+              <span>更多</span>
+            </a>
+          </div>
+        </div>
+        </section>
+
+        <div class="widget-card email-card">
+          <div class="widget-header-row">
+            <h3 class="widget-title-inline">邮件</h3>
+            <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+          </div>
+          <ul class="email-list">
+            <li class="email-item email-item-unread">
+              <a href="#" class="email-link">
+                <span class="email-subject">【待阅】关于2026年信息化项目申报工作的通知</span>
+                <span class="email-meta">
+                  <span class="email-from">办公室</span>
+                  <span class="email-date">2026-06-04 09:32</span>
+                </span>
+              </a>
+            </li>
+            <li class="email-item email-item-unread">
+              <a href="#" class="email-link">
+                <span class="email-subject">Re: 天翼云OA系统升级维护时间安排</span>
+                <span class="email-meta">
+                  <span class="email-from">信息技术部</span>
+                  <span class="email-date">2026-06-03 16:18</span>
+                </span>
+              </a>
+            </li>
+            <li class="email-item">
+              <a href="#" class="email-link">
+                <span class="email-subject">2026年6月部门周报提交提醒</span>
+                <span class="email-meta">
+                  <span class="email-from">人力资源部</span>
+                  <span class="email-date">2026-06-03 10:05</span>
+                </span>
+              </a>
+            </li>
+            <li class="email-item">
+              <a href="#" class="email-link">
+                <span class="email-subject">【会议通知】数字化转型专项推进会</span>
+                <span class="email-meta">
+                  <span class="email-from">综合管理部</span>
+                  <span class="email-date">2026-06-02 14:40</span>
+                </span>
+              </a>
+            </li>
+            <li class="email-item">
+              <a href="#" class="email-link">
+                <span class="email-subject">关于规范公文格式排版的工作提示</span>
+                <span class="email-meta">
+                  <span class="email-from">公文管理岗</span>
+                  <span class="email-date">2026-06-01 08:56</span>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        </div>
+
+        <!-- 右侧栏 -->
+        <aside class="right-widgets">
+          <div class="widget-card notice-card">
+            <div class="widget-tabs">
+              <button class="widget-tab active">公告</button>
+              <button class="widget-tab">感谢信</button>
+              <button class="widget-tab">通知</button>
+              <button class="widget-tab">规章制度</button>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="notice-list">
+              <li>
+                <span class="notice-title">关于2026年端午节放假安排的通知</span>
+                <span class="notice-date">2026-06-04</span>
+              </li>
+              <li>
+                <span class="notice-title">天翼云OA系统升级维护公告</span>
+                <span class="notice-date">2026-06-03</span>
+              </li>
+              <li>
+                <span class="notice-title">关于加强公文格式规范管理的通知</span>
+                <span class="notice-date">2026-06-02</span>
+              </li>
+              <li>
+                <span class="notice-title">2026年度信息化项目申报工作启动</span>
+                <span class="notice-date">2026-06-01</span>
+              </li>
+              <li>
+                <span class="notice-title">关于开展安全生产月活动的通知</span>
+                <span class="notice-date">2026-05-30</span>
+              </li>
+            </ul>
+          </div>
+          <div class="widget-card quick-nav-card">
+            <div class="widget-header-row">
+              <h3 class="widget-title-inline">快捷导航</h3>
+              <button type="button" class="widget-scroll-btn" aria-label="查看更多">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+            <div class="quick-nav-grid">
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#e6f4ff;color:#1677ff">M</span>
+                <span>MSS门户</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#fff7e6;color:#fa8c16">综</span>
+                <span>综调系统</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#f6ffed;color:#52c41a">采</span>
+                <span>采购辅助</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#f9f0ff;color:#722ed1">财</span>
+                <span>财务辅助</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#fff1f0;color:#ff4d4f">公</span>
+                <span>总部公文</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#e6fffb;color:#13c2c2">人</span>
+                <span>人力系统</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#fff0f6;color:#eb2f96">项</span>
+                <span>项目管理</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#fcffe6;color:#a0d911">知</span>
+                <span>知识管理</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#e6f4ff;color:#1677ff">资</span>
+                <span>资产系统</span>
+              </a>
+              <a href="#" class="quick-nav-item">
+                <span class="qn-icon" style="background:#fff7e6;color:#fa8c16">报</span>
+                <span>报表查询</span>
+              </a>
+            </div>
+          </div>
+          <div class="widget-card efficiency-card">
+            <div class="efficiency-head">
+              <span class="efficiency-head-item active">效能提升专区</span>
+              <span class="efficiency-head-item">Token看板</span>
+            </div>
+            <div class="efficiency-links">
+              <a href="#" class="efficiency-link active">部门AI+通报</a>
+              <a href="#" class="efficiency-link">公文处理</a>
+              <a href="#" class="efficiency-link">会议纪律</a>
+              <a href="#" class="efficiency-link">文明办公</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="bottom-grid">
+        <div class="bottom-stack">
+          <div class="widget-card news-card">
+            <div class="widget-tabs">
+              <button class="widget-tab active">公司新闻</button>
+              <button class="widget-tab">红云党建</button>
+              <button class="widget-tab">行业动态</button>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="info-list">
+              <li>
+                <a href="#" class="info-link">天翼云发布「AI+办公」专项行动方案，助力数字化转型</a>
+                <span class="info-date">2026-06-26</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">云公司召开2026年中期经营分析会</a>
+                <span class="info-date">2026-06-25</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">AI专家全面上线 OA 门户首页</a>
+                <span class="info-date">2026-06-24</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于推进公文格式标准化工作的进展通报</a>
+                <span class="info-date">2026-06-23</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">天翼云与国家云战略协同创新实验室正式揭牌</a>
+                <span class="info-date">2026-06-22</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">2026年度信息化项目申报工作有序推进</a>
+                <span class="info-date">2026-06-21</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="widget-card schedule-card">
+            <div class="schedule-header">
+              <h3 class="widget-title-inline">日程安排</h3>
+              <div class="schedule-nav">
+                <button type="button" class="schedule-nav-btn" aria-label="上一周">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <span class="schedule-date-label">2026-06-26（第26周）</span>
+                <button type="button" class="schedule-nav-btn" aria-label="下一周">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+              <a href="#" class="widget-more-link schedule-more">更多&gt;&gt;</a>
+            </div>
+            <div class="schedule-week">
+              <div class="schedule-day"><span class="day-label">二</span><span class="day-num">23</span></div>
+              <div class="schedule-day"><span class="day-label">三</span><span class="day-num">24</span></div>
+              <div class="schedule-day"><span class="day-label">四</span><span class="day-num">25</span></div>
+              <div class="schedule-day today"><span class="day-label">五</span><span class="day-num">26</span></div>
+              <div class="schedule-day"><span class="day-label">六</span><span class="day-num">27</span></div>
+              <div class="schedule-day"><span class="day-label">日</span><span class="day-num">28</span></div>
+              <div class="schedule-day"><span class="day-label">一</span><span class="day-num">29</span></div>
+            </div>
+            <ul class="schedule-events">
+              <li class="schedule-event">
+                <span class="event-time">09:00</span>
+                <span class="event-title">部门周例会</span>
+                <span class="event-place">3楼会议室A</span>
+              </li>
+              <li class="schedule-event">
+                <span class="event-time">14:00</span>
+                <span class="event-title">数字化转型专项推进会</span>
+                <span class="event-place">线上会议</span>
+              </li>
+              <li class="schedule-event">
+                <span class="event-time">16:30</span>
+                <span class="event-title">公文格式规范培训</span>
+                <span class="event-place">培训室201</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bottom-stack">
+          <div class="widget-card read-card">
+            <div class="widget-tabs">
+              <button class="widget-tab active">待阅</button>
+              <button class="widget-tab">已阅</button>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="info-list info-list-compact">
+              <li>
+                <a href="#" class="info-link info-link-unread">关于2026年信息化项目申报工作的通知</a>
+                <span class="info-date">06-26</span>
+              </li>
+              <li>
+                <a href="#" class="info-link info-link-unread">天翼云OA系统升级维护公告</a>
+                <span class="info-date">06-25</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于加强公文格式规范管理的通知</a>
+                <span class="info-date">06-24</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">2026年度安全生产月活动方案</a>
+                <span class="info-date">06-23</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于规范请示报告工作事项的通知</a>
+                <span class="info-date">06-22</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="widget-card telecom-card">
+            <div class="widget-tabs">
+              <button class="widget-tab active">电信信息</button>
+              <button class="widget-tab">安全生产</button>
+              <button class="widget-tab">基层动态</button>
+              <button class="widget-tab">热点问题</button>
+              <a href="#" class="widget-more-link">更多</a>
+            </div>
+            <ul class="info-list info-list-compact">
+              <li>
+                <a href="#" class="info-link">云网融合助力「东数西算」工程再提速</a>
+                <span class="info-date">06-26</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">5G+工业互联网应用案例入选集团优秀实践</a>
+                <span class="info-date">06-25</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">天翼云算力网络节点扩容项目顺利验收</a>
+                <span class="info-date">06-24</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于办公终端安全加固的温馨提示</a>
+                <span class="info-date">06-23</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">2026年第二季度网络运行质量报告发布</a>
+                <span class="info-date">06-22</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- AI 对话面板（左侧第三屏 + 右侧对话区） -->
+  <div class="ai-chat-panel hidden" id="aiChatPanel">
+    <!-- 左侧第三屏：历史记录 / 检索结果 / 工作台 -->
+    <aside class="ai-side-panel third-panel hidden" id="aiSidePanel" aria-hidden="true"></aside>
+
+    <!-- 右侧主对话区 -->
+    <div class="ai-chat-main">
+      <header class="ai-chat-header">
+        <div class="ai-chat-header-left">
+          <button type="button" class="ai-header-btn" id="aiHistoryToggleBtn" title="历史对话" aria-label="历史对话">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2"/>
+              <path d="M9 4v16"/>
+            </svg>
+          </button>
+        </div>
+        <div class="ai-chat-header-center">
+          <button type="button" class="ai-chat-title-row" id="aiTitleSwitchBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="切换智能体">
+            <h3 class="ai-chat-title">天翼云数字人</h3>
+            <svg class="ai-chat-title-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <p class="ai-chat-subtitle">内容和引用来源由AI生成仅供参考</p>
+        </div>
+        <div class="ai-chat-header-actions">
+          <button type="button" class="ai-header-btn" id="aiNewChatBtn" title="新建对话" aria-label="新建对话">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <path d="M12 8v6M9 11h6"/>
+            </svg>
+          </button>
+          <button type="button" class="ai-header-btn" id="aiFullscreenBtn" title="全屏" aria-label="全屏">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
+            </svg>
+          </button>
+          <button type="button" class="ai-header-btn" id="aiClearChatBtn" title="清空对话" aria-label="清空对话">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+          </button>
+          <button type="button" class="ai-header-btn ai-header-close" id="chatCloseBtn" title="关闭" aria-label="关闭">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="ai-agent-switcher hidden" id="aiAgentSwitcher" role="listbox" aria-label="切换智能体"></div>
+      <div class="ai-chat-messages" id="chatMessages"></div>
+
+      <div class="ai-chat-input-area">
+        <div class="ai-attachment-bar hidden" id="attachmentBar">
+          <span class="ai-attachment-icon">📎</span>
+          <span class="ai-attachment-text" id="attachmentText">附件名称按上传顺序显示，删除后按顺序删除</span>
+          <button type="button" class="ai-attachment-close" id="attachmentClose" aria-label="移除附件">×</button>
+        </div>
+        <div class="ai-input-box">
+          <div class="ai-input-top">
+            <textarea id="chatPanelInput" placeholder="请直接提出您的问题~"></textarea>
+          </div>
+          <div class="ai-input-toolbar">
+            <div class="ai-input-tools-left" id="chatAiToolbar"></div>
+            <div class="ai-input-tools-right">
+              <div class="ai-mode-slot" id="chatAiModeSlot"></div>
+              <div class="ai-model-slot" id="chatAiModelSlot"></div>
+              <button type="button" class="ai-send-btn" id="chatPanelSend" aria-label="发送">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/public-files.js"></script>
+  <script src="../assets/third-panel.js"></script>
+  <script src="../assets/ai-tool-modals.js?v=6"></script>
+  <script src="../assets/ai-input-tools.js?v=13"></script>
+  <script src="../assets/ai-chat-panel.js?v=6"></script>
+  <script>
+    // 头像点击兜底：portal.js 未加载时仍可切换搜索/AI 输入
+    (function () {
+      function setMode(toAi) {
+        var entries = [document.getElementById("headerAiEntry"), document.getElementById("stickyAiEntry")];
+        var buttons = [document.getElementById("headerAiAvatarBtn"), document.getElementById("stickyAiAvatarBtn")];
+        entries.forEach(function (entry) {
+          if (!entry) return;
+          entry.classList.toggle("ai-mode", toAi);
+          entry.classList.toggle("search-mode", !toAi);
+          entry.dataset.mode = toAi ? "ai" : "search";
+        });
+        buttons.forEach(function (btn) {
+          if (!btn) return;
+          btn.setAttribute("aria-pressed", String(toAi));
+          btn.title = toAi ? "当前为 AI专家" : "切换到 AI专家";
+          btn.setAttribute("aria-label", btn.title);
+        });
+        ["headerAiToSearchBtn", "stickyAiToSearchBtn"].forEach(function (id) {
+          var btn = document.getElementById(id);
+          if (!btn) return;
+          btn.setAttribute("aria-pressed", String(!toAi));
+          btn.title = toAi ? "切换到搜索" : "当前为搜索";
+          btn.setAttribute("aria-label", btn.title);
+        });
+        if (toAi) {
+          var sticky = document.getElementById("stickyAiEntry");
+          var target = sticky && sticky.classList.contains("visible")
+            ? document.getElementById("stickyAiTextarea")
+            : document.getElementById("headerAiTextarea");
+          if (target) setTimeout(function () { target.focus(); }, 0);
+        }
+      }
+      function fallbackToggle() {
+        setMode(true);
+      }
+      window.toggleHeaderAiMode = window.toggleHeaderAiMode || fallbackToggle;
+      window.setHeaderAiMode = window.setHeaderAiMode || function (mode) {
+        setMode(mode === "ai");
+      };
+      document.addEventListener("click", function (e) {
+        var aside = e.target && e.target.closest && e.target.closest(".header-ai-aside");
+        if (!aside) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var entry = aside.closest(".header-ai-entry");
+        var toAi = !(entry && entry.classList.contains("ai-mode"));
+        if (typeof window.setHeaderMode === "function") window.setHeaderMode(toAi ? "ai" : "search");
+        else setMode(toAi);
+      }, true);
+    })();
+  </script>
+  <script src="portal.js?v=18"></script>
+</body>
+</html>

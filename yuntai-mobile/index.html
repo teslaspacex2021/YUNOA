@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>云台手机端</title>
+  <link rel="stylesheet" href="mobile.css?v=27" />
+</head>
+<body>
+  <div class="phone-shell">
+    <div class="phone-frame">
+      <!-- 状态栏 -->
+      <div class="status-bar" aria-hidden="true">
+        <span class="status-time">17:13</span>
+        <div class="status-right">
+          <span class="status-signal"></span>
+          <span class="status-wifi"></span>
+          <span class="status-battery">97</span>
+        </div>
+      </div>
+
+      <!-- ===== 消息页 ===== -->
+      <section class="page page-messages is-active" id="page-messages" data-page="messages">
+        <header class="msg-header">
+          <button type="button" class="org-switch">
+            测试-天翼云科技有限公司
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="msg-header-actions">
+            <button type="button" class="icon-btn" aria-label="话题">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>
+              </svg>
+            </button>
+            <button type="button" class="icon-btn" aria-label="新建">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="msg-search-row">
+          <div class="msg-search">
+            <input type="search" placeholder="搜索" readonly />
+            <svg class="search-glass" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="msg-filters">
+          <button type="button" class="filter-chip has-dot">所有未读(67)</button>
+          <button type="button" class="filter-chip is-active">所有消息</button>
+          <button type="button" class="filter-chip has-dot">所有@我(2)</button>
+          <button type="button" class="filter-trash" aria-label="清理">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="msg-list" id="msgList">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- ===== AI专家页 ===== -->
+      <section class="page page-yxk" id="page-yxk" data-page="yxk">
+        <header class="yxk-nav">
+          <div class="yxk-nav-left">
+            <button type="button" class="icon-btn" id="yxkBackBtn" aria-label="返回">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="icon-btn" aria-label="主页">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="yxk-nav-center">
+            <button type="button" class="yxk-title-switch" id="yxkTitleSwitchBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="切换智能体">
+              <h1 class="yxk-nav-title" id="yxkNavTitle">AI专家</h1>
+              <svg class="yxk-nav-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="yxk-nav-right">
+            <button type="button" class="icon-btn" aria-label="更多">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="yxkCloseBtn" aria-label="关闭">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="yxk-agent-switcher hidden" id="yxkAgentSwitcher" role="listbox" aria-label="切换智能体"></div>
+
+        <div class="yxk-toolbar">
+          <button type="button" class="icon-btn" id="yxkHistoryBtn" aria-label="侧栏" aria-expanded="false" aria-controls="yxkHistoryDrawer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" id="yxkNewChatBtn" aria-label="新建对话">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v6M9 11h6"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="yxk-body" id="yxkBody">
+          <div class="yxk-welcome" id="yxkWelcome">
+            <h2 class="yxk-hi">
+              <span class="yxk-hi-word">Hi</span>
+              <span class="yxk-hi-spark" aria-hidden="true">✦</span>
+              我是AI专家
+            </h2>
+            <p class="yxk-ask">请问有什么我能帮的吗？</p>
+
+            <div class="yxk-try">
+              <span class="yxk-try-label">您可以试着问：</span>
+              <button type="button" class="yxk-refresh" id="yxkRefresh">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+                换一换
+              </button>
+            </div>
+
+            <div class="yxk-suggests" id="yxkSuggests"></div>
+          </div>
+
+          <div class="yxk-messages hidden" id="yxkMessages"></div>
+        </div>
+
+        <div class="yxk-composer" id="yxkComposer" data-ai-mode="fast">
+          <div class="yxk-expert-bar" id="yxkExpertBar">
+            <button type="button" class="yxk-expert-more" id="yxkExpertMore" aria-label="更多专家">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </button>
+            <div class="yxk-expert-scroller" id="yxkExpertScroller" role="listbox" aria-label="推荐专家"></div>
+          </div>
+          <div class="yxk-active-expert hidden" id="yxkActiveExpert"></div>
+          <div class="yxk-composer-card">
+            <div class="yxk-composer-extras hidden" id="yxkComposerExtras">
+              <div class="yxk-attach-row hidden" id="yxkAttachRow" aria-label="已选附件"></div>
+              <div class="yxk-skill-row hidden" id="yxkSkillRow" aria-label="已选技能"></div>
+            </div>
+            <button type="button" class="yxk-composer-icon yxk-voice-btn" id="yxkVoiceBtn" aria-label="语音" aria-pressed="false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M3.5 12a2.5 2.5 0 0 1 0 0M7 9.5a5 5 0 0 1 0 5M10.5 7a8 8 0 0 1 0 10"/>
+              </svg>
+            </button>
+            <button type="button" class="yxk-composer-icon yxk-keyboard-btn" id="yxkKeyboardBtn" aria-label="键盘输入" hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="2" y="6" width="20" height="13" rx="2"/>
+                <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h4M18 14h.01"/>
+              </svg>
+            </button>
+            <textarea id="yxkInput" class="yxk-composer-input" rows="1" placeholder="发消息或按住说话" autocomplete="off"></textarea>
+            <button type="button" class="yxk-hold-speak" id="yxkHoldSpeak" hidden aria-label="按住说话">按住 说话</button>
+            <div class="yxk-composer-toolbar">
+              <div class="yxk-plus-wrap" data-skill-enabled="false">
+                <button type="button" class="yxk-composer-icon" id="yxkPlusBtn" aria-label="更多工具" aria-expanded="false" aria-haspopup="dialog" aria-controls="yxkPlusSheet">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+              </div>
+              <button type="button" class="yxk-send-btn" id="yxkSendBtn" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 19V5M5 12l7-7 7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="yxk-keyboard" id="yxkKeyboard" hidden aria-hidden="true">
+          <div class="yxk-keyboard-candidates" aria-hidden="true">
+            <span>我</span><span>你</span><span>的</span><span>是</span><span>在</span><span>有</span><span>不</span><span>了</span>
+          </div>
+          <div class="yxk-keyboard-rows">
+            <div class="yxk-keyboard-row">
+              <button type="button" class="yxk-key">Q</button><button type="button" class="yxk-key">W</button><button type="button" class="yxk-key">E</button><button type="button" class="yxk-key">R</button><button type="button" class="yxk-key">T</button><button type="button" class="yxk-key">Y</button><button type="button" class="yxk-key">U</button><button type="button" class="yxk-key">I</button><button type="button" class="yxk-key">O</button><button type="button" class="yxk-key">P</button>
+            </div>
+            <div class="yxk-keyboard-row">
+              <button type="button" class="yxk-key">A</button><button type="button" class="yxk-key">S</button><button type="button" class="yxk-key">D</button><button type="button" class="yxk-key">F</button><button type="button" class="yxk-key">G</button><button type="button" class="yxk-key">H</button><button type="button" class="yxk-key">J</button><button type="button" class="yxk-key">K</button><button type="button" class="yxk-key">L</button>
+            </div>
+            <div class="yxk-keyboard-row">
+              <button type="button" class="yxk-key yxk-key-wide">⇧</button><button type="button" class="yxk-key">Z</button><button type="button" class="yxk-key">X</button><button type="button" class="yxk-key">C</button><button type="button" class="yxk-key">V</button><button type="button" class="yxk-key">B</button><button type="button" class="yxk-key">N</button><button type="button" class="yxk-key">M</button><button type="button" class="yxk-key yxk-key-wide" data-key="backspace">⌫</button>
+            </div>
+            <div class="yxk-keyboard-row">
+              <button type="button" class="yxk-key yxk-key-fn">123</button><button type="button" class="yxk-key yxk-key-space" data-key="space">空格</button><button type="button" class="yxk-key yxk-key-fn" data-key="enter">换行</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 语音录音遮罩 -->
+        <div class="yxk-voice-overlay" id="yxkVoiceOverlay" hidden aria-hidden="true">
+          <div class="yxk-voice-glow" aria-hidden="true"></div>
+          <div class="yxk-voice-panel">
+            <p class="yxk-voice-tip" id="yxkVoiceTip">松手发送，上移取消</p>
+            <div class="yxk-voice-wave" id="yxkVoiceWave" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 专家列表页 ===== -->
+      <section class="page page-experts" id="page-experts" data-page="experts">
+        <header class="experts-nav">
+          <button type="button" class="icon-btn" id="expertsBackBtn" aria-label="返回">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <h1 class="experts-nav-title">专家列表</h1>
+          <span class="experts-nav-spacer" aria-hidden="true"></span>
+        </header>
+
+        <div class="experts-search-wrap">
+          <label class="experts-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="expertsSearchInput" placeholder="搜索专家" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="experts-cats" id="expertsCats" role="tablist" aria-label="专家分类">
+          <button type="button" class="experts-cat is-active" data-cat="all" role="tab" aria-selected="true">全部</button>
+          <button type="button" class="experts-cat" data-cat="tencent" role="tab" aria-selected="false">腾讯专家 (35)</button>
+          <button type="button" class="experts-cat" data-cat="tech" role="tab" aria-selected="false">技术工程 (32)</button>
+          <button type="button" class="experts-cat" data-cat="ops" role="tab" aria-selected="false">运营</button>
+        </div>
+
+        <div class="experts-grid" id="expertsGrid"></div>
+      </section>
+
+      <!-- 技能 / 智库 / 工具 选择页 -->
+      <section class="page page-tool-picker" id="page-tool-picker" data-page="tool-picker">
+        <header class="tp-nav">
+          <button type="button" class="icon-btn" id="tpBackBtn" aria-label="返回">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <h1 class="tp-nav-title" id="tpNavTitle">智库</h1>
+          <button type="button" class="tp-done-btn" id="tpDoneBtn">完成</button>
+        </header>
+
+        <div class="tp-search-wrap">
+          <label class="tp-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="tpSearchInput" placeholder="搜索" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="tp-cats" id="tpCats" role="tablist" aria-label="分类"></div>
+        <div class="tp-meta">
+          <span class="tp-count" id="tpCount">已选 0</span>
+          <button type="button" class="tp-create-btn hidden" id="tpCreateBtn">+ 创建技能</button>
+        </div>
+        <div class="tp-tags" id="tpTags" hidden></div>
+        <div class="tp-list" id="tpList"></div>
+      </section>
+
+      <!-- 占位页：通讯录 / 工作台 / 更多 -->
+      <section class="page page-placeholder" id="page-placeholder" data-page="placeholder">
+        <div class="placeholder-inner">
+          <p class="placeholder-title" id="placeholderTitle">功能预览</p>
+          <p class="placeholder-desc">本原型仅绘制「消息」与「AI专家」页面</p>
+        </div>
+      </section>
+
+      <!-- 底部 Tab：AI专家独立入口 + 其余成组 -->
+      <nav class="tab-bar" aria-label="主导航">
+        <button type="button" class="tab-item tab-item-ai" data-tab="yxk" aria-label="AI专家">
+          <span class="tab-icon tab-icon-yxk">
+            <img src="assets/ailogo.gif" alt="" />
+          </span>
+          <span class="tab-label">AI专家</span>
+        </button>
+        <div class="tab-bar-group" role="group" aria-label="主导航菜单">
+          <button type="button" class="tab-item is-active" data-tab="messages">
+            <span class="tab-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/>
+              </svg>
+              <span class="tab-badge">67</span>
+            </span>
+            <span class="tab-label">消息</span>
+          </button>
+          <button type="button" class="tab-item" data-tab="workbench">
+            <span class="tab-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M4 8h16v3H4zM6 11h12v3H6zM8 14h8v3H8z"/>
+              </svg>
+            </span>
+            <span class="tab-label">工作台</span>
+          </button>
+          <button type="button" class="tab-item" data-tab="contacts">
+            <span class="tab-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8.5 16.5c.8-1.5 2-2.2 3.5-2.2s2.7.7 3.5 2.2"/>
+              </svg>
+            </span>
+            <span class="tab-label">通讯录</span>
+          </button>
+          <button type="button" class="tab-item" data-tab="more">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+            </span>
+            <span class="tab-label">更多</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- 加号：底部拉起面板 -->
+      <div class="yxk-sheet" id="yxkPlusSheet" hidden aria-hidden="true">
+        <button type="button" class="yxk-sheet-mask" id="yxkPlusSheetMask" aria-label="关闭"></button>
+        <div class="yxk-sheet-panel" role="dialog" aria-modal="true" aria-label="更多工具" data-skill-enabled="false" data-sheet-view="main">
+          <div class="yxk-sheet-handle" aria-hidden="true"></div>
+          <div class="yxk-sheet-view" data-view="main">
+            <div class="yxk-sheet-grid">
+              <button type="button" class="yxk-sheet-grid-item" data-tool="camera">
+                <span class="yxk-sheet-grid-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </span>
+                <span>拍照</span>
+              </button>
+              <button type="button" class="yxk-sheet-grid-item" data-tool="album">
+                <span class="yxk-sheet-grid-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                </span>
+                <span>照片 / 视频</span>
+              </button>
+              <button type="button" class="yxk-sheet-grid-item" data-tool="file">
+                <span class="yxk-sheet-grid-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                </span>
+                <span>手机文件</span>
+              </button>
+            </div>
+            <div class="yxk-sheet-list">
+              <button type="button" class="yxk-sheet-list-item" data-tool="skill">
+                <span class="yxk-sheet-list-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </span>
+                <span class="yxk-sheet-list-label">技能</span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-tool="knowledge">
+                <span class="yxk-sheet-list-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+                </span>
+                <span class="yxk-sheet-list-label">智库</span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-tool="mcp">
+                <span class="yxk-sheet-list-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v6M12 16v6M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>
+                </span>
+                <span class="yxk-sheet-list-label">工具</span>
+                <span class="yxk-sheet-tool-icons" id="yxkSheetMcpIcons" aria-label="已连接工具"></span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-tool="mode" id="yxkSheetModeEntry">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge" id="yxkSheetModeBadge">A</span></span>
+                <span class="yxk-sheet-list-label">模式</span>
+                <span class="yxk-sheet-meta" id="yxkSheetModeMeta">快速模式</span>
+                <span class="yxk-sheet-chevron" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+                </span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-tool="model" id="yxkSheetModelEntry">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge" id="yxkSheetModelBadge">A</span></span>
+                <span class="yxk-sheet-list-label">模型</span>
+                <span class="yxk-sheet-meta" id="yxkSheetModelMeta">Auto</span>
+                <span class="yxk-sheet-chevron" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+                </span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-tool="expert">
+                <span class="yxk-sheet-list-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4-5 8-5s6.5 1.5 8 5"/></svg>
+                </span>
+                <span class="yxk-sheet-list-label">专家</span>
+              </button>
+            </div>
+          </div>
+          <div class="yxk-sheet-view" data-view="mode" hidden>
+            <button type="button" class="yxk-sheet-back" id="yxkSheetModeBack">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+              <span>模式</span>
+            </button>
+            <div class="yxk-sheet-list yxk-sheet-mode-list">
+              <button type="button" class="yxk-sheet-list-item" data-ai-mode="fast">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge">A</span></span>
+                <span class="yxk-sheet-list-label">快速模式</span>
+                <span class="yxk-sheet-check" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-ai-mode="think">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge">深</span></span>
+                <span class="yxk-sheet-list-label">深度思考</span>
+                <span class="yxk-sheet-check" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-ai-mode="office">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge">办</span></span>
+                <span class="yxk-sheet-list-label">办公任务</span>
+                <span class="yxk-sheet-check" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="yxk-sheet-view" data-view="model" hidden>
+            <button type="button" class="yxk-sheet-back" id="yxkSheetModelBack">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+              <span>模型</span>
+            </button>
+            <div class="yxk-sheet-list yxk-sheet-model-list">
+              <button type="button" class="yxk-sheet-list-item is-active" data-model="auto">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge">A</span></span>
+                <span class="yxk-sheet-list-label">Auto</span>
+                <span class="yxk-sheet-check" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-model="deepseek">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge">D</span></span>
+                <span class="yxk-sheet-list-label">DeepSeek</span>
+                <span class="yxk-sheet-check" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+              <button type="button" class="yxk-sheet-list-item" data-model="qwen">
+                <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge">通</span></span>
+                <span class="yxk-sheet-list-label">通义千问</span>
+                <span class="yxk-sheet-check" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 历史对话：左侧拉起 -->
+      <div class="yxk-history-drawer" id="yxkHistoryDrawer" hidden aria-hidden="true">
+        <button type="button" class="yxk-history-mask" id="yxkHistoryMask" aria-label="关闭历史"></button>
+        <aside class="yxk-history-panel" role="dialog" aria-modal="true" aria-label="历史对话">
+          <header class="yxk-history-head">
+            <h2 class="yxk-history-title">历史对话</h2>
+            <div class="yxk-history-head-actions">
+              <button type="button" class="icon-btn" id="yxkHistoryNewBtn" aria-label="新建对话">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v6M9 11h6"/></svg>
+              </button>
+              <button type="button" class="icon-btn" id="yxkHistoryCloseBtn" aria-label="收起">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="m14 9 3 3-3 3"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="yxk-history-search-wrap">
+            <label class="yxk-history-search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="search" id="yxkHistorySearch" placeholder="搜索历史对话" autocomplete="off" />
+            </label>
+          </div>
+          <div class="yxk-history-list" id="yxkHistoryList"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script src="mobile.js?v=23"></script>
+</body>
+</html>

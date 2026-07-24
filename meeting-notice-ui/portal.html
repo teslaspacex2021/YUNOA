@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天翼云 · 国家云门户</title>
+  <link rel="stylesheet" href="portal.css">
+</head>
+<body>
+
+  <div class="top-toolbar">
+    <div class="toolbar-inner">
+      <a href="#" class="toolbar-link">选择风格</a>
+      <a href="#" class="toolbar-link">编辑布局</a>
+      <a href="#" class="toolbar-link">添加组件</a>
+    </div>
+  </div>
+
+  <header class="portal-header">
+    <div class="header-inner">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <img src="ogo.png" alt="天翼云" width="40" height="40" style="border-radius:50%">
+        </div>
+        <div class="logo-text">
+          <span class="logo-cn">天翼云</span>
+          <span class="logo-en">State Cloud</span>
+        </div>
+      </div>
+      <div class="header-title">
+        <h1>天翼云 国家云</h1>
+        <p>对党忠诚 | 志存高远 | 科技报国 | 勇于担当 | 安全共享</p>
+      </div>
+      <div class="header-search">
+        <input type="text" placeholder="搜索公文、信息">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M7 12A5 5 0 117 2a5 5 0 000 10zm3.5-1.5l2.5 2.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="portal-body">
+    <div class="portal-sidebar-top">
+      <div class="user-card">
+        <div class="user-avatar">
+          <svg class="user-avatar-svg" viewBox="0 0 48 48" aria-hidden="true">
+            <circle cx="24" cy="24" r="24" fill="#e6f4ff"/>
+            <circle cx="24" cy="18" r="8" fill="#1677ff"/>
+            <path d="M8 40c0-7.2 7.16-13 16-13s16 5.8 16 13" fill="#1677ff" opacity="0.85"/>
+          </svg>
+        </div>
+        <p class="user-greeting">超级管理员，您好！</p>
+      </div>
+    </div>
+
+    <aside class="portal-sidebar-nav">
+      <nav class="sidebar-nav">
+        <a href="portal.html" class="nav-item active">
+          <span class="nav-icon nav-icon-home"></span> 首页
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-contacts"></span> 云公司通讯录
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-group"></span> 集团通讯录
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-help"></span> 帮助手册
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-feedback"></span> 意见反馈
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon nav-icon-download"></span> 常用下载
+        </a>
+      </nav>
+      <div class="sidebar-qr">
+        <p class="sidebar-qr-title">OA运营群</p>
+        <div class="qr-code" aria-hidden="true">
+          <div class="qr-code-inner">
+            <svg width="22" height="22" viewBox="0 0 64 64"><rect width="64" height="64" fill="#fff"/><rect x="4" y="4" width="20" height="20" fill="#333"/><rect x="40" y="4" width="20" height="20" fill="#333"/><rect x="4" y="40" width="20" height="20" fill="#333"/></svg>
+          </div>
+        </div>
+        <p class="sidebar-qr-hint">用云台3.0扫一扫入群</p>
+        <p class="sidebar-qr-qq">QQ群号：168642464</p>
+      </div>
+    </aside>
+
+    <main class="portal-main">
+      <div class="main-grid">
+        <div class="center-column">
+          <section class="app-section">
+            <div class="content-tabs" id="mainTabs">
+              <button type="button" class="tab" data-tab="menu">菜单栏</button>
+              <button type="button" class="tab" data-tab="oa-todo">OA待办</button>
+              <button type="button" class="tab" data-tab="oa-done">OA已办</button>
+              <button type="button" class="tab" data-tab="mss">MSS待办</button>
+              <button type="button" class="tab" data-tab="app-todo">应用系统待办</button>
+              <button type="button" class="tab active" data-tab="meetings">我的会议</button>
+              <button type="button" class="tab" data-tab="supervise">我的督办</button>
+              <a class="content-tabs__more" href="index.html" id="meetingsMoreLink">更多&gt;&gt;</a>
+            </div>
+
+            <div class="tab-panel-body" id="tabPanelMenu" hidden>
+              <div class="app-grid-card">
+                <div class="app-grid">
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#e6f4ff;color:#1677ff">🧠</div>
+                    <span>翼智广场</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fff7e6;color:#fa8c16">💻</div>
+                    <span>个人事务</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#f9f0ff;color:#722ed1">🤖</div>
+                    <span>天翼云数字人</span>
+                  </a>
+                  <a href="meeting-notice-form.html" class="app-item">
+                    <div class="app-icon" style="background:#e6f4ff;color:#1677ff">📄</div>
+                    <span>公文管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#f6ffed;color:#52c41a">🛡️</div>
+                    <span>督办管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fff1f0;color:#ff4d4f">📁</div>
+                    <span>资源管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#e6fffb;color:#13c2c2">☁️</div>
+                    <span>天翼云行政</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fff7e6;color:#fa8c16">👥</div>
+                    <span>人力资源</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#f6ffed;color:#52c41a">💰</div>
+                    <span>财务管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#f9f0ff;color:#722ed1">📊</div>
+                    <span>项目管理</span>
+                  </a>
+                  <a href="index.html" class="app-item">
+                    <div class="app-icon" style="background:#fff0f6;color:#eb2f96">📅</div>
+                    <span>会议管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#e6f4ff;color:#1677ff">📧</div>
+                    <span>邮件系统</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fcffe6;color:#a0d911">📚</div>
+                    <span>知识库</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fff1f0;color:#ff4d4f">📈</div>
+                    <span>报表中心</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#e6fffb;color:#13c2c2">📝</div>
+                    <span>工单系统</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fff7e6;color:#fa8c16">🛒</div>
+                    <span>采购管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#f6ffed;color:#52c41a">💼</div>
+                    <span>资产管理</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#f9f0ff;color:#722ed1">🎓</div>
+                    <span>培训学习</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#e6f4ff;color:#1677ff">📱</div>
+                    <span>移动办公</span>
+                  </a>
+                  <a href="#" class="app-item">
+                    <div class="app-icon" style="background:#fff0f6;color:#eb2f96">🔧</div>
+                    <span>系统管理</span>
+                  </a>
+                  <a href="#" class="app-item app-item-more">
+                    <div class="app-icon app-icon-more">+</div>
+                    <span>更多</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-panel-body" id="tabPanelMeetings">
+              <ul class="todo-list" id="meetingTodoList"></ul>
+              <div class="empty-hint" id="meetingEmpty" style="display:none">暂无数据</div>
+            </div>
+
+            <div class="tab-panel-body" id="tabPanelEmpty" hidden>
+              <div class="empty-hint">暂无数据</div>
+            </div>
+          </section>
+
+          <div class="widget-card email-card">
+            <div class="widget-header-row">
+              <h3 class="widget-title-inline">邮件</h3>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="email-list">
+              <li class="email-item email-item-unread">
+                <a href="#" class="email-link">
+                  <span class="email-subject">【待阅】关于2026年信息化项目申报工作的通知</span>
+                  <span class="email-meta">
+                    <span class="email-from">办公室</span>
+                    <span class="email-date">2026-07-08 09:32</span>
+                  </span>
+                </a>
+              </li>
+              <li class="email-item email-item-unread">
+                <a href="#" class="email-link">
+                  <span class="email-subject">Re: 天翼云OA系统升级维护时间安排</span>
+                  <span class="email-meta">
+                    <span class="email-from">信息技术部</span>
+                    <span class="email-date">2026-07-07 16:18</span>
+                  </span>
+                </a>
+              </li>
+              <li class="email-item">
+                <a href="#" class="email-link">
+                  <span class="email-subject">2026年7月部门周报提交提醒</span>
+                  <span class="email-meta">
+                    <span class="email-from">人力资源部</span>
+                    <span class="email-date">2026-07-07 10:05</span>
+                  </span>
+                </a>
+              </li>
+              <li class="email-item">
+                <a href="meeting-detail.html?id=m002" class="email-link">
+                  <span class="email-subject">【会议通知】天翼云核心能力升级推进会</span>
+                  <span class="email-meta">
+                    <span class="email-from">数字化运营部</span>
+                    <span class="email-date">2026-07-06 14:40</span>
+                  </span>
+                </a>
+              </li>
+              <li class="email-item">
+                <a href="#" class="email-link">
+                  <span class="email-subject">关于规范公文格式排版的工作提示</span>
+                  <span class="email-meta">
+                    <span class="email-from">公文管理岗</span>
+                    <span class="email-date">2026-07-05 08:56</span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="right-widgets">
+          <div class="widget-card notice-card">
+            <div class="widget-tabs">
+              <button type="button" class="widget-tab active">公告</button>
+              <button type="button" class="widget-tab">感谢信</button>
+              <button type="button" class="widget-tab">通知</button>
+              <button type="button" class="widget-tab">规章制度</button>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="notice-list">
+              <li>
+                <span class="notice-title">关于2026年端午节放假安排的通知</span>
+                <span class="notice-date">2026-06-04</span>
+              </li>
+              <li>
+                <span class="notice-title">天翼云OA系统升级维护公告</span>
+                <span class="notice-date">2026-07-03</span>
+              </li>
+              <li>
+                <span class="notice-title">关于加强公文格式规范管理的通知</span>
+                <span class="notice-date">2026-07-02</span>
+              </li>
+              <li>
+                <span class="notice-title">2026年度信息化项目申报工作启动</span>
+                <span class="notice-date">2026-07-01</span>
+              </li>
+              <li>
+                <span class="notice-title">关于开展安全生产月活动的通知</span>
+                <span class="notice-date">2026-06-30</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="widget-card quick-nav-card">
+            <div class="widget-header-row">
+              <h3 class="widget-title-inline">快捷导航</h3>
+              <button type="button" class="widget-scroll-btn" aria-label="查看更多">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+            <div class="quick-nav-grid">
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#e6f4ff;color:#1677ff">M</span><span>MSS门户</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#fff7e6;color:#fa8c16">综</span><span>综调系统</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#f6ffed;color:#52c41a">采</span><span>采购辅助</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#f9f0ff;color:#722ed1">财</span><span>财务辅助</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#fff1f0;color:#ff4d4f">公</span><span>总部公文</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#e6fffb;color:#13c2c2">人</span><span>人力系统</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#fff0f6;color:#eb2f96">项</span><span>项目管理</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#fcffe6;color:#a0d911">知</span><span>知识管理</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#e6f4ff;color:#1677ff">资</span><span>资产系统</span></a>
+              <a href="#" class="quick-nav-item"><span class="qn-icon" style="background:#fff7e6;color:#fa8c16">报</span><span>报表查询</span></a>
+              <a href="index.html" class="quick-nav-item"><span class="qn-icon" style="background:#7f8c8d;color:#fff">会</span><span>会议通知</span></a>
+            </div>
+          </div>
+
+          <div class="widget-card efficiency-card">
+            <div class="efficiency-head">
+              <span class="efficiency-head-item active">效能提升专区</span>
+              <span class="efficiency-head-item">Token看板</span>
+            </div>
+            <div class="efficiency-links">
+              <a href="#" class="efficiency-link active">部门AI+通报</a>
+              <a href="#" class="efficiency-link">公文处理</a>
+              <a href="#" class="efficiency-link">会议纪律</a>
+              <a href="#" class="efficiency-link">文明办公</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="bottom-grid">
+        <div class="bottom-stack">
+          <div class="widget-card news-card">
+            <div class="widget-tabs">
+              <button type="button" class="widget-tab active">公司新闻</button>
+              <button type="button" class="widget-tab">红云党建</button>
+              <button type="button" class="widget-tab">行业动态</button>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="info-list">
+              <li>
+                <a href="#" class="info-link">天翼云发布「AI+办公」专项行动方案，助力数字化转型</a>
+                <span class="info-date">2026-07-08</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">云公司召开2026年中期经营分析会</a>
+                <span class="info-date">2026-07-07</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">部门会议通知系统上线试运行</a>
+                <span class="info-date">2026-07-06</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于推进公文格式标准化工作的进展通报</a>
+                <span class="info-date">2026-07-05</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">天翼云与国家云战略协同创新实验室正式揭牌</a>
+                <span class="info-date">2026-07-04</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">2026年度信息化项目申报工作有序推进</a>
+                <span class="info-date">2026-07-03</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="widget-card schedule-card">
+            <div class="schedule-header">
+              <h3 class="widget-title-inline">日程安排</h3>
+              <div class="schedule-nav">
+                <button type="button" class="schedule-nav-btn" aria-label="上一周">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <span class="schedule-date-label">2026-07-09（第28周）</span>
+                <button type="button" class="schedule-nav-btn" aria-label="下一周">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+              <a href="index.html" class="widget-more-link schedule-more">更多&gt;&gt;</a>
+            </div>
+            <div class="schedule-week">
+              <div class="schedule-day"><span class="day-label">二</span><span class="day-num">07</span></div>
+              <div class="schedule-day"><span class="day-label">三</span><span class="day-num">08</span></div>
+              <div class="schedule-day today"><span class="day-label">四</span><span class="day-num">09</span></div>
+              <div class="schedule-day"><span class="day-label">五</span><span class="day-num">10</span></div>
+              <div class="schedule-day"><span class="day-label">六</span><span class="day-num">11</span></div>
+              <div class="schedule-day"><span class="day-label">日</span><span class="day-num">12</span></div>
+              <div class="schedule-day"><span class="day-label">一</span><span class="day-num">13</span></div>
+            </div>
+            <ul class="schedule-events">
+              <li class="schedule-event">
+                <span class="event-time">09:00</span>
+                <span class="event-title">部门周例会</span>
+                <span class="event-place">3楼会议室A</span>
+              </li>
+              <li class="schedule-event">
+                <span class="event-time">14:00</span>
+                <a href="meeting-detail.html?id=m001" class="event-title event-title-link">二季度产品规划研讨会</a>
+                <span class="event-place">张江科技园</span>
+              </li>
+              <li class="schedule-event">
+                <span class="event-time">16:30</span>
+                <span class="event-title">公文格式规范培训</span>
+                <span class="event-place">培训室201</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bottom-stack">
+          <div class="widget-card read-card">
+            <div class="widget-tabs">
+              <button type="button" class="widget-tab active">待阅</button>
+              <button type="button" class="widget-tab">已阅</button>
+              <a href="#" class="widget-more-link">更多&gt;&gt;</a>
+            </div>
+            <ul class="info-list info-list-compact">
+              <li>
+                <a href="#" class="info-link info-link-unread">关于2026年信息化项目申报工作的通知</a>
+                <span class="info-date">07-08</span>
+              </li>
+              <li>
+                <a href="#" class="info-link info-link-unread">天翼云OA系统升级维护公告</a>
+                <span class="info-date">07-07</span>
+              </li>
+              <li>
+                <a href="meeting-detail.html?id=m001" class="info-link info-link-unread">2026年二季度产品规划研讨会会议通知</a>
+                <span class="info-date">07-06</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于加强公文格式规范管理的通知</a>
+                <span class="info-date">07-05</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">2026年度安全生产月活动方案</a>
+                <span class="info-date">07-04</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="widget-card telecom-card">
+            <div class="widget-tabs">
+              <button type="button" class="widget-tab active">电信信息</button>
+              <button type="button" class="widget-tab">安全生产</button>
+              <button type="button" class="widget-tab">基层动态</button>
+              <button type="button" class="widget-tab">热点问题</button>
+              <a href="#" class="widget-more-link">更多</a>
+            </div>
+            <ul class="info-list info-list-compact">
+              <li>
+                <a href="#" class="info-link">云网融合助力「东数西算」工程再提速</a>
+                <span class="info-date">07-08</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">5G+工业互联网应用案例入选集团优秀实践</a>
+                <span class="info-date">07-07</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">天翼云算力网络节点扩容项目顺利验收</a>
+                <span class="info-date">07-06</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">关于办公终端安全加固的温馨提示</a>
+                <span class="info-date">07-05</span>
+              </li>
+              <li>
+                <a href="#" class="info-link">2026年第二季度网络运行质量报告发布</a>
+                <span class="info-date">07-04</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  const CURRENT_USER = { id: 'u01', name: '超级管理员', dept: '数字化运营部' };
+  const ATTENDANCE_KEY = 'meetingListAttendance';
+  const MEETING_LIST_KEY = 'meetingListData';
+
+  const DEFAULT_MEETINGS = [
+    {
+      id: 'm001',
+      title: '2026年二季度产品规划研讨会',
+      urgency: '加急',
+      draftDate: '2026-07-01',
+      docNo: '天翼云会议〔2026〕1号',
+      dept: '产品中心',
+      drafter: '王立军',
+      meetingStart: '2026-07-15T14:00',
+      meetingEnd: '2026-07-15T16:00',
+      step: '部门成员办理',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-form.html?mode=approve&step=assign&dept=市场营销部',
+      meetingFormat: 'offline',
+      meetingCategory: '部门级会议',
+      mainDept: '市场营销部、产品中心',
+      locations: ['上海 · 张江科技园 · 103号会议室'],
+      agenda: '<p>一、传达公司二季度产品规划总体要求</p><p>二、各部门汇报重点产品路线图</p><p>三、讨论资源协同与里程碑安排</p>',
+      aoneMeetingId: 'AONE-202607091601-9084',
+      aoneMeetingNo: '908400000',
+      onlineAttendees: '刘洋、王立军',
+      onsiteAttendees: '赵敏、陈文强',
+    },
+    {
+      id: 'm002',
+      title: '天翼云核心能力升级推进会',
+      urgency: '普通',
+      draftDate: '2026-07-03',
+      docNo: '天翼云会议〔2026〕2号',
+      dept: '数字化运营部',
+      drafter: '超级管理员',
+      meetingStart: '2026-07-20T09:30',
+      meetingEnd: '2026-07-20T11:30',
+      step: '汇总闭环',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-approval.html?step=summary',
+      meetingFormat: 'online',
+      meetingCategory: '正式会议',
+      mainDept: '数字化运营部、研发中心',
+      locations: [],
+      agenda: '<p>一、核心能力升级进展通报</p><p>二、重点专项推进情况</p><p>三、下阶段工作计划</p>',
+      aoneMeetingId: 'AONE-202607091602-1122',
+      aoneMeetingNo: '112200000',
+      onlineAttendees: '超级管理员、袁野、许婷',
+      onsiteAttendees: '',
+    },
+    {
+      id: 'm003',
+      title: '市场营销策略专项沟通会',
+      urgency: '特急',
+      draftDate: '2026-06-28',
+      docNo: '天翼云会议〔2026〕3号',
+      dept: '市场营销部',
+      drafter: '赵敏',
+      meetingStart: '2026-07-25T15:00',
+      meetingEnd: '2026-07-25T17:00',
+      step: '办结',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-form.html',
+      meetingFormat: 'offline',
+      meetingCategory: '客户交流',
+      mainDept: '市场营销部',
+      locations: ['北京 · 总部大楼 · 201号会议室'],
+      agenda: '<p>一、市场策略复盘</p><p>二、客户反馈问题研讨</p>',
+      aoneMeetingId: 'AONE-202606281430-3344',
+      aoneMeetingNo: '334400000',
+      onlineAttendees: '赵敏',
+      onsiteAttendees: '张磊、陈静',
+    },
+    {
+      id: 'm004',
+      title: '客户服务流程优化讨论会',
+      urgency: '普通',
+      draftDate: '2026-06-20',
+      docNo: '天翼云会议〔2026〕4号',
+      dept: '客户运营部',
+      drafter: '孙倩',
+      meetingStart: '2026-07-09T08:00',
+      meetingEnd: '2026-07-09T18:00',
+      step: '办结',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-form.html',
+      meetingFormat: 'offline',
+      meetingCategory: '日常沟通',
+      mainDept: '客户运营部',
+      locations: ['广州 · 客服中心 · 5号会议室'],
+      agenda: '<p>客户服务流程优化方案讨论</p>',
+      aoneMeetingId: 'AONE-202606181000-5566',
+      aoneMeetingNo: '556600000',
+      onlineAttendees: '孙倩',
+      onsiteAttendees: '范明、汪敏',
+    },
+    {
+      id: 'm005',
+      title: '研发中心技术方案评审会',
+      urgency: '加急',
+      draftDate: '2026-07-05',
+      docNo: '天翼云会议〔2026〕5号',
+      dept: '研发中心',
+      drafter: '陈文强',
+      meetingStart: '2026-07-12T14:00',
+      meetingEnd: '2026-07-12T17:00',
+      step: '指派参会人员',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-approval.html?step=assign&dept=研发中心',
+      meetingFormat: 'offline',
+      meetingCategory: '正式会议',
+      mainDept: '研发中心',
+      locations: ['北京 · 科技园 · 301号会议室', '上海 · 张江 · 102号会议室'],
+      agenda: '<p>一、技术方案总体介绍</p><p>二、评审意见交流</p><p>三、形成评审结论</p>',
+      aoneMeetingId: 'AONE-202607051400-7788',
+      aoneMeetingNo: '778800000',
+      onlineAttendees: '陈文强、冯宇',
+      onsiteAttendees: '韩雪、曹磊',
+    },
+    {
+      id: 'm006',
+      title: '上半年工作总结汇报会',
+      urgency: '普通',
+      draftDate: '2026-06-15',
+      docNo: '天翼云会议〔2026〕6号',
+      dept: '数字化运营部',
+      drafter: '超级管理员',
+      meetingStart: '2026-07-01T09:00',
+      meetingEnd: '2026-07-01T11:30',
+      step: '办结',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-detail.html?id=m006',
+      meetingFormat: 'online',
+      meetingCategory: '正式会议',
+      mainDept: '数字化运营部',
+      locations: [],
+      agenda: '<p>一、上半年工作完成情况汇报</p>',
+      aoneMeetingId: 'AONE-202607011000-6621',
+      aoneMeetingNo: '662100000',
+      onlineAttendees: '超级管理员、袁野',
+      onsiteAttendees: '',
+    },
+    {
+      id: 'm007',
+      title: '数字化运营周例会',
+      urgency: '普通',
+      draftDate: '2026-07-10',
+      docNo: '天翼云会议〔2026〕7号',
+      dept: '数字化运营部',
+      drafter: '袁野',
+      meetingStart: '2026-07-13T09:30',
+      meetingEnd: '2026-07-13T11:30',
+      step: '部门成员办理',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-detail.html?id=m007',
+      meetingFormat: 'online',
+      meetingCategory: '部门级会议',
+      mainDept: '数字化运营部',
+      locations: [],
+      agenda: '<p>一、上周工作回顾</p><p>二、本周重点任务</p>',
+      aoneMeetingId: 'AONE-202607130930-7701',
+      aoneMeetingNo: '770100000',
+      onlineAttendees: '袁野、许婷、沈浩',
+      onsiteAttendees: '',
+    },
+    {
+      id: 'm008',
+      title: '产品需求评审会',
+      urgency: '加急',
+      draftDate: '2026-07-11',
+      docNo: '天翼云会议〔2026〕8号',
+      dept: '产品中心',
+      drafter: '王立军',
+      meetingStart: '2026-07-13T14:00',
+      meetingEnd: '2026-07-13T17:00',
+      step: '部门成员办理',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-detail.html?id=m008',
+      meetingFormat: 'offline',
+      meetingCategory: '正式会议',
+      mainDept: '产品中心、研发中心',
+      locations: ['北京 · 总部大楼 · 305号会议室'],
+      agenda: '<p>一、需求背景说明</p><p>二、方案评审与讨论</p>',
+      aoneMeetingId: 'AONE-202607131400-8802',
+      aoneMeetingNo: '880200000',
+      onlineAttendees: '王立军',
+      onsiteAttendees: '刘洋、陈文强',
+    },
+    {
+      id: 'm009',
+      title: '安全合规专题培训',
+      urgency: '普通',
+      draftDate: '2026-07-08',
+      docNo: '天翼云会议〔2026〕9号',
+      dept: '数字化运营部',
+      drafter: '沈浩',
+      meetingStart: '2026-07-18T15:00',
+      meetingEnd: '2026-07-18T17:00',
+      step: '发起人部门领导',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-form.html?mode=approve&step=deptLeader',
+      meetingFormat: 'online',
+      meetingCategory: '学习培训',
+      mainDept: '数字化运营部、客户运营部',
+      locations: [],
+      agenda: '<p>一、信息安全制度宣贯</p><p>二、合规案例分享</p>',
+      aoneMeetingId: 'AONE-202607181500-9903',
+      aoneMeetingNo: '990300000',
+      onlineAttendees: '',
+      onsiteAttendees: '',
+    },
+    {
+      id: 'm010',
+      title: '跨部门协同推进会',
+      urgency: '加急',
+      draftDate: '2026-07-12',
+      docNo: '天翼云会议〔2026〕10号',
+      dept: '市场营销部',
+      drafter: '赵敏',
+      meetingStart: '2026-07-22T10:00',
+      meetingEnd: '2026-07-22T12:00',
+      step: '指派参会人员',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-approval.html?step=assign&dept=市场营销部',
+      meetingFormat: 'offline',
+      meetingCategory: '工作调研',
+      mainDept: '市场营销部、产品中心、研发中心',
+      locations: ['上海 · 张江科技园 · 201号会议室'],
+      agenda: '<p>一、协同事项通报</p><p>二、堵点问题研讨</p>',
+      aoneMeetingId: 'AONE-202607221000-1004',
+      aoneMeetingNo: '100400000',
+      onlineAttendees: '赵敏',
+      onsiteAttendees: '张磊',
+    },
+    {
+      id: 'm011',
+      title: '季度经营分析会',
+      urgency: '特急',
+      draftDate: '2026-07-06',
+      docNo: '天翼云会议〔2026〕11号',
+      dept: '市场营销部',
+      drafter: '张磊',
+      meetingStart: '2026-07-28T09:00',
+      meetingEnd: '2026-07-28T12:00',
+      step: '汇总闭环',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-approval.html?step=summary',
+      meetingFormat: 'offline',
+      meetingCategory: '公司级会议',
+      mainDept: '市场营销部、客户运营部、产品中心',
+      locations: ['北京 · 总部大楼 · 多功能厅'],
+      agenda: '<p>一、季度经营数据通报</p><p>二、下季度目标部署</p>',
+      aoneMeetingId: 'AONE-202607280900-1105',
+      aoneMeetingNo: '110500000',
+      onlineAttendees: '张磊、赵敏',
+      onsiteAttendees: '陈静、范明',
+    },
+    {
+      id: 'm015',
+      title: '智慧办公平台验收会',
+      urgency: '特急',
+      draftDate: '2026-07-12',
+      docNo: '天翼云会议〔2026〕12号',
+      dept: '数字化运营部',
+      drafter: '许婷',
+      meetingStart: '2026-07-17T14:00',
+      meetingEnd: '2026-07-17T16:00',
+      step: '部门成员办理',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-form.html?mode=approve&step=assign&dept=数字化运营部',
+      meetingFormat: 'offline',
+      meetingCategory: '正式会议',
+      mainDept: '数字化运营部、研发中心',
+      locations: ['北京 · 总部大楼 · 208号会议室'],
+      agenda: '<p>智慧办公平台验收方案评审</p>',
+      aoneMeetingId: 'AONE-202607171400-1506',
+      aoneMeetingNo: '150600000',
+      onlineAttendees: '许婷',
+      onsiteAttendees: '袁野、沈浩',
+    },
+    {
+      id: 'm016',
+      title: '客户满意度提升专题会',
+      urgency: '普通',
+      draftDate: '2026-07-11',
+      docNo: '天翼云会议〔2026〕13号',
+      dept: '客户运营部',
+      drafter: '范明',
+      meetingStart: '2026-07-19T10:00',
+      meetingEnd: '2026-07-19T11:30',
+      step: '发起人部门领导',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-form.html?mode=approve&step=deptLeader',
+      meetingFormat: 'online',
+      meetingCategory: '客户交流',
+      mainDept: '客户运营部、市场营销部',
+      locations: [],
+      agenda: '<p>客户满意度调研结果通报与改进措施研讨</p>',
+      aoneMeetingId: 'AONE-202607191000-1607',
+      aoneMeetingNo: '160700000',
+      onlineAttendees: '范明、汪敏',
+      onsiteAttendees: '',
+    },
+    {
+      id: 'm017',
+      title: '研发效能提升工作坊',
+      urgency: '加急',
+      draftDate: '2026-07-13',
+      docNo: '天翼云会议〔2026〕14号',
+      dept: '研发中心',
+      drafter: '韩雪',
+      meetingStart: '2026-07-24T15:00',
+      meetingEnd: '2026-07-24T17:30',
+      step: '指派参会人员',
+      attendeeUserId: 'u01',
+      processHref: 'meeting-notice-approval.html?step=assign&dept=研发中心',
+      meetingFormat: 'offline',
+      meetingCategory: '学习培训',
+      mainDept: '研发中心',
+      locations: ['北京 · 科技园 · 402号会议室'],
+      agenda: '<p>研发效能度量与改进实践分享</p>',
+      aoneMeetingId: 'AONE-202607241500-1708',
+      aoneMeetingNo: '170800000',
+      onlineAttendees: '韩雪',
+      onsiteAttendees: '冯宇、曹磊',
+    },
+  ];
+
+  const tabPanelMenu = document.getElementById('tabPanelMenu');
+  const tabPanelMeetings = document.getElementById('tabPanelMeetings');
+  const tabPanelEmpty = document.getElementById('tabPanelEmpty');
+
+  function migrateHtmlPath(href) {
+    if (!href || typeof href !== 'string') return href;
+    return href
+      .replace(/部门会议通知审批\.html/g, 'meeting-notice-approval.html')
+      .replace(/部门会议通知表单\.html/g, 'meeting-notice-form.html')
+      .replace(/会议室预定\.html/g, 'room-booking.html')
+      .replace(/流转记录\.html/g, 'flow-record.html')
+      .replace(/会议详情\.html/g, 'meeting-detail.html')
+      .replace(/门户\.html/g, 'portal.html');
+  }
+
+  function migrateMeetingRecord(meeting) {
+    if (meeting?.processHref) meeting.processHref = migrateHtmlPath(meeting.processHref);
+    return meeting;
+  }
+
+  function seedMeetingListIfNeeded() {
+    try {
+      const raw = localStorage.getItem(MEETING_LIST_KEY);
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (Array.isArray(list) && list.length) {
+          const merged = list.map(migrateMeetingRecord);
+          const ids = new Set(merged.map(m => m.id));
+          DEFAULT_MEETINGS.forEach(mock => {
+            if (!ids.has(mock.id)) merged.push(migrateMeetingRecord({ ...mock }));
+          });
+          localStorage.setItem(MEETING_LIST_KEY, JSON.stringify(merged));
+          return;
+        }
+      }
+      localStorage.setItem(MEETING_LIST_KEY, JSON.stringify(DEFAULT_MEETINGS));
+    } catch (_) {
+      localStorage.setItem(MEETING_LIST_KEY, JSON.stringify(DEFAULT_MEETINGS));
+    }
+  }
+
+  function getAttendanceRecord(meetingId) {
+    const all = loadAttendance();
+    const key = `${meetingId}_${CURRENT_USER.id}`;
+    return all[key] || { status: 'pending' };
+  }
+
+  function isMeetingStarted(iso) {
+    if (!iso) return false;
+    return new Date(iso).getTime() <= Date.now();
+  }
+
+  function isMeetingEnded(iso) {
+    if (!iso) return false;
+    return new Date(iso).getTime() <= Date.now();
+  }
+
+  function toLocalDateTimeIso(d) {
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  function applyDemoMeetingState(meetings) {
+    const now = new Date();
+    const inProgressStart1 = new Date(now);
+    inProgressStart1.setHours(now.getHours() - 1, 0, 0, 0);
+    const inProgressEnd1 = new Date(now);
+    inProgressEnd1.setHours(now.getHours() + 2, 0, 0, 0);
+    const inProgressStart2 = new Date(now);
+    inProgressStart2.setHours(now.getHours() - 2, 30, 0, 0);
+    const inProgressEnd2 = new Date(now);
+    inProgressEnd2.setHours(now.getHours() + 1, 30, 0, 0);
+
+    meetings.forEach(m => {
+      if (m.id === 'm007') {
+        m.meetingStart = toLocalDateTimeIso(inProgressStart1);
+        m.meetingEnd = toLocalDateTimeIso(inProgressEnd1);
+      } else if (m.id === 'm008') {
+        m.meetingStart = toLocalDateTimeIso(inProgressStart2);
+        m.meetingEnd = toLocalDateTimeIso(inProgressEnd2);
+      } else if (m.id === 'm005') {
+        m.meetingStart = '2026-07-16T14:00';
+        m.meetingEnd = '2026-07-16T17:00';
+      }
+    });
+    return meetings;
+  }
+
+  function loadAttendance() {
+    try { return JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '{}'); }
+    catch (_) { return {}; }
+  }
+
+  function urgencyClass(u) {
+    if (u === '特急') return 'extra';
+    if (u === '加急') return 'urgent';
+    return 'normal';
+  }
+
+  function getMeetings() {
+    try {
+      const raw = localStorage.getItem(MEETING_LIST_KEY);
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (Array.isArray(list) && list.length) {
+          return applyDemoMeetingState(list.map(migrateMeetingRecord));
+        }
+      }
+    } catch (_) {}
+    return applyDemoMeetingState([...DEFAULT_MEETINGS]);
+  }
+
+  function getTodoMeetings(meetings) {
+    return meetings.filter(m => {
+      if (m.step === '办结') return false;
+      if (m.attendeeUserId !== CURRENT_USER.id) return false;
+      if (isMeetingEnded(m.meetingEnd)) return false;
+      const inProgress = isMeetingStarted(m.meetingStart) && !isMeetingEnded(m.meetingEnd);
+      if (m.step === '部门成员办理' && !inProgress) {
+        const rec = getAttendanceRecord(m.id);
+        if (rec.status === 'confirmed' || rec.status === 'delegated') return false;
+      }
+      return true;
+    });
+  }
+
+  function todoLabel(m) {
+    if (isMeetingStarted(m.meetingStart) && !isMeetingEnded(m.meetingEnd)) {
+      return '会议进行中';
+    }
+    const rec = getAttendanceRecord(m.id);
+    if (rec.status === 'delegated') return '已转派';
+    if (m.step === '部门成员办理') return '待确认参会';
+    if (m.step === '汇总闭环') return '待汇总办理';
+    if (m.step === '指派参会人员') return '待指派参会';
+    if (m.step === '发起人部门领导') return '待部门领导审批';
+    return m.step || '待办理';
+  }
+
+  function fmtArriveTime(value) {
+    if (!value) return '—';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return `${value} 09:00`;
+      return String(value);
+    }
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  function getArriveTime(meeting) {
+    const rec = getAttendanceRecord(meeting.id);
+    if (rec.updatedAt) return fmtArriveTime(rec.updatedAt);
+    if (meeting.arrivedAt) return fmtArriveTime(meeting.arrivedAt);
+    if (meeting.noticeSentAt) return fmtArriveTime(meeting.noticeSentAt);
+    if (meeting.draftDate) return `${meeting.draftDate} 09:00`;
+    return '—';
+  }
+
+  function switchTabPanel(tabKey) {
+    tabPanelMenu.hidden = tabKey !== 'menu';
+    tabPanelMeetings.hidden = tabKey !== 'meetings';
+    tabPanelEmpty.hidden = tabKey === 'menu' || tabKey === 'meetings';
+  }
+
+  function renderMeetingTodos() {
+    const meetings = getMeetings();
+    const todos = getTodoMeetings(meetings);
+    const listEl = document.getElementById('meetingTodoList');
+    const emptyEl = document.getElementById('meetingEmpty');
+
+    if (!todos.length) {
+      listEl.innerHTML = '';
+      listEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+    } else {
+      listEl.style.display = 'block';
+      emptyEl.style.display = 'none';
+      listEl.innerHTML = todos.map(m => {
+        const tagClass = urgencyClass(m.urgency || '普通');
+        const tagText = m.urgency || '普通';
+        const href = `meeting-detail.html?id=${encodeURIComponent(m.id)}`;
+        return `<li class="todo-item">
+          <a href="${href}" class="todo-item__main">
+            <span class="todo-item__tag ${tagClass}">${tagText}</span>
+            <span class="todo-item__title">${m.title}</span>
+            <span class="todo-item__status">${todoLabel(m)}</span>
+          </a>
+          <span class="todo-item__arrive">${getArriveTime(m)}</span>
+        </li>`;
+      }).join('');
+    }
+
+    const countEl = document.querySelector('[data-tab="meetings"]');
+    if (countEl) {
+      const base = '我的会议';
+      countEl.innerHTML = todos.length ? `${base}<span class="tab-badge">(${todos.length})</span>` : base;
+    }
+  }
+
+  document.querySelectorAll('.content-tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.content-tabs .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      switchTabPanel(tab.dataset.tab);
+    });
+  });
+
+  document.querySelectorAll('.widget-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.widget-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.efficiency-head-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.efficiency-head-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.efficiency-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.efficiency-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  seedMeetingListIfNeeded();
+  switchTabPanel('meetings');
+  renderMeetingTodos();
+</script>
+</body>
+</html>

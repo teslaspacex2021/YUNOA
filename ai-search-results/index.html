@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>公文信息搜索 - 天翼云科技有限公司</title>
+  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="../assets/third-panel.css" />
+  <link rel="stylesheet" href="../assets/ai-chat-panel.css" />
+  <link rel="stylesheet" href="../assets/ai-tool-modals.css" />
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" width="36" height="36">
+            <circle cx="20" cy="20" r="18" fill="#fff" opacity="0.9"/>
+            <text x="20" y="26" text-anchor="middle" fill="#1677ff" font-size="14" font-weight="bold">CT</text>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-cn">中国电信</span>
+          <span class="logo-en">CHINA TELECOM</span>
+        </div>
+        <span class="company-name">天翼云科技有限公司</span>
+      </div>
+      <nav class="header-nav">
+        <a href="digital-human.html" class="nav-link digital-human-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+          AI 数字人
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- 搜索筛选区（可收起） -->
+    <section class="search-panel collapsed" id="searchPanel">
+      <!-- 紧凑搜索条（始终显示） -->
+      <div class="search-compact">
+        <div class="search-compact-field">
+          <input type="text" class="search-compact-input" id="keywordInput" value="公文" placeholder="输入最近一个月事项或关键词进行搜索" />
+          <div class="smart-search-control" id="smartSearchControl">
+            <span class="smart-search-divider" aria-hidden="true"></span>
+            <label class="smart-search-toggle" title="智搜：开启后展示 AI 助手建议">
+              <span class="smart-search-meta">
+                <svg class="smart-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M16.2 6.2 17 8l1.8.8L17 9.6l-.8 1.8-.8-1.8L13.6 8l1.8-.8.8-1.8z" fill="currentColor"/>
+                </svg>
+                <span class="smart-search-label">智搜</span>
+              </span>
+              <input type="checkbox" id="smartSearchToggle" class="smart-search-checkbox" aria-label="开启智搜" />
+              <span class="smart-search-switch" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="searchBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          搜索
+        </button>
+        <button class="filter-toggle" id="filterToggle" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+          </svg>
+          <span class="toggle-label">高级筛选</span>
+          <svg class="toggle-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 高级筛选（默认折叠） -->
+      <div class="filter-advanced" id="filterAdvanced">
+        <div class="filter-row">
+          <label class="filter-label">所属栏目</label>
+          <div class="filter-tags" data-filter="category">
+            <button class="tag active" data-value="all">不限</button>
+            <button class="tag" data-value="receive">收文</button>
+            <button class="tag" data-value="send">发文</button>
+            <button class="tag" data-value="workorder">工单</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <label class="filter-label">检索位置</label>
+          <div class="filter-tags" data-filter="location">
+            <button class="tag active" data-value="all">不限</button>
+            <button class="tag" data-value="title">标题</button>
+            <button class="tag" data-value="body">正文</button>
+            <button class="tag" data-value="attachment">附件名</button>
+            <button class="tag" data-value="number">文号</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <label class="filter-label">时间选择</label>
+          <div class="date-range">
+            <input type="date" class="date-input" placeholder="开始日期" />
+            <span class="date-sep">—</span>
+            <input type="date" class="date-input" placeholder="结束日期" />
+          </div>
+        </div>
+        <div class="filter-row">
+          <label class="filter-label">起草人</label>
+          <input type="text" class="text-input" placeholder="请输入起草人" />
+        </div>
+        <div class="filter-row">
+          <label class="filter-label">起草部门</label>
+          <input type="text" class="text-input" placeholder="请输入起草部门" />
+        </div>
+        <div class="filter-row filter-row-actions">
+          <button class="btn btn-default" id="resetBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            重置筛选
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 搜索结果主体 -->
+    <section class="results-section">
+      <div class="results-header">
+        <span class="results-divider">搜索结果</span>
+      </div>
+
+      <!-- AI 优先展示区：仅在开启「智搜」时显示 -->
+      <div class="ai-priority-zone hidden" id="aiPriorityZone" hidden>
+        <div class="ai-priority-card" id="aiSummary">
+          <div class="ai-priority-header">
+            <h3 class="ai-priority-title">
+              <svg class="ai-sparkle" width="20" height="20" viewBox="0 0 24 24" fill="#1677ff">
+                <path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5L12 2z"/>
+                <path d="M19 15l.75 2.75L22.5 18.5l-2.75.75L19 22l-.75-2.75L15.5 18.5l2.75-.75L19 15z" opacity="0.7"/>
+              </svg>
+              小翼 AI 助手建议
+            </h3>
+            <p class="ai-priority-subtitle">基于您的搜索「<strong id="queryDisplay">公文</strong>」，为您智能分析并优先推荐</p>
+          </div>
+
+          <!-- AI 优先推荐卡片 -->
+          <div class="ai-recommend-cards hidden" id="aiRecommendCards"></div>
+
+          <!-- AI 思考中 -->
+          <div class="ai-thinking" id="aiLoading">
+            <span>AI正在思考中</span>
+            <span class="thinking-dots"><span></span><span></span><span></span></span>
+          </div>
+
+          <!-- 折叠摘要预览 -->
+          <p class="ai-brief hidden" id="aiBrief"></p>
+
+          <!-- 展开详情 -->
+          <div class="ai-detail hidden" id="aiContent">
+            <div class="ai-greeting" id="aiGreeting"></div>
+
+            <div class="ai-section">
+              <h4 class="section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#1677ff">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                核心结论
+              </h4>
+              <p class="section-text" id="coreConclusion"></p>
+            </div>
+
+            <div class="ai-section">
+              <h4 class="section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#1677ff">
+                  <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                关键信息分点
+              </h4>
+              <ol class="key-points" id="keyPoints"></ol>
+            </div>
+
+            <div class="ai-actions">
+              <button class="ai-action-btn" id="copySummaryBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                复制摘要
+              </button>
+              <button class="ai-action-btn" id="askAiBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                向 AI 数字人追问
+              </button>
+            </div>
+          </div>
+
+          <button class="ai-expand-btn hidden" id="aiExpandBtn" type="button">
+            <span class="expand-label">展开</span>
+            <svg class="expand-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <p class="results-stats">为您找到相关结果共 <strong id="resultCount">0</strong> 条</p>
+
+      <div class="results-layout">
+        <!-- 左侧：传统搜索结果 -->
+        <div class="results-main">
+          <div class="traditional-results">
+            <ul class="result-list" id="resultList"></ul>
+
+            <div class="pagination">
+              <span class="page-info">共 <strong id="totalCount">1</strong> 条</span>
+              <select class="page-size">
+                <option value="10">10条/页</option>
+                <option value="20">20条/页</option>
+                <option value="50">50条/页</option>
+              </select>
+              <div class="page-controls">
+                <button class="page-btn" disabled>&lt;</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn" disabled>&gt;</button>
+              </div>
+              <span class="page-goto">前往 <input type="number" value="1" min="1" class="page-input" /> 页</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：智能体推荐 -->
+        <aside class="results-sidebar">
+          <div class="sidebar-card agents-card">
+            <h3 class="sidebar-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#1677ff">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              推荐智能体
+            </h3>
+            <p class="sidebar-desc">根据搜索内容，为您推荐以下 AI 智能体</p>
+            <div class="agent-list" id="agentList"></div>
+            <button type="button" class="view-all-agents" id="viewAllAgents">查看全部智能体 →</button>
+          </div>
+
+          <div class="sidebar-card feedback-card">
+            <h3 class="sidebar-title">搜索反馈</h3>
+            <p class="feedback-question">本次 AI 搜索结果对您有帮助吗？</p>
+            <div class="feedback-btns">
+              <button class="feedback-btn" data-helpful="yes">👍 有帮助</button>
+              <button class="feedback-btn" data-helpful="no">👎 无帮助</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- AI 对话面板（与门户首页一致） -->
+  <div class="ai-chat-panel hidden" id="aiChatPanel">
+    <aside class="ai-side-panel third-panel hidden" id="aiSidePanel" aria-hidden="true"></aside>
+    <div class="ai-chat-main">
+      <header class="ai-chat-header">
+        <div class="ai-chat-header-left">
+          <button type="button" class="ai-header-btn" id="aiHistoryToggleBtn" title="历史对话" aria-label="历史对话">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2"/>
+              <path d="M9 4v16"/>
+            </svg>
+          </button>
+        </div>
+        <div class="ai-chat-header-center">
+          <button type="button" class="ai-chat-title-row" id="aiTitleSwitchBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="切换智能体">
+            <h3 class="ai-chat-title">天翼云数字人</h3>
+            <svg class="ai-chat-title-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <p class="ai-chat-subtitle">内容和引用来源由AI生成仅供参考</p>
+        </div>
+        <div class="ai-chat-header-actions">
+          <button type="button" class="ai-header-btn" id="aiNewChatBtn" title="新建对话" aria-label="新建对话">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <path d="M12 8v6M9 11h6"/>
+            </svg>
+          </button>
+          <button type="button" class="ai-header-btn" id="aiFullscreenBtn" title="全屏" aria-label="全屏">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
+            </svg>
+          </button>
+          <button type="button" class="ai-header-btn" id="aiClearChatBtn" title="清空对话" aria-label="清空对话">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+          </button>
+          <button type="button" class="ai-header-btn ai-header-close" id="chatCloseBtn" title="关闭" aria-label="关闭">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+      <div class="ai-agent-switcher hidden" id="aiAgentSwitcher" role="listbox" aria-label="切换智能体"></div>
+      <div class="ai-chat-messages" id="chatMessages"></div>
+      <div class="ai-chat-input-area">
+        <div class="ai-attachment-bar hidden" id="attachmentBar">
+          <span class="ai-attachment-icon">📎</span>
+          <span class="ai-attachment-text" id="attachmentText">附件名称按上传顺序显示，删除后按顺序删除</span>
+          <button type="button" class="ai-attachment-close" id="attachmentClose" aria-label="移除附件">×</button>
+        </div>
+        <div class="ai-input-box">
+          <div class="ai-input-top">
+            <textarea id="chatPanelInput" placeholder="请直接提出您的问题~"></textarea>
+          </div>
+          <div class="ai-input-toolbar">
+            <div class="ai-input-tools-left" id="chatAiToolbar"></div>
+            <div class="ai-input-tools-right">
+              <div class="ai-model-slot" id="chatAiModelSlot"></div>
+              <button type="button" class="ai-send-btn" id="chatPanelSend" aria-label="发送">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/public-files.js"></script>
+  <script src="../assets/third-panel.js"></script>
+  <script src="../assets/ai-tool-modals.js"></script>
+  <script src="../assets/ai-input-tools.js"></script>
+  <script src="../assets/ai-chat-panel.js"></script>
+  <script src="app.js?v=2"></script>
+</body>
+</html>

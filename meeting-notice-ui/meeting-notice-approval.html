@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发起人部门领导 · 部门会议通知</title>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var step = params.get('step') || 'deptLeader';
+      location.replace('meeting-notice-form.html?mode=approve&step=' + encodeURIComponent(step));
+    })();
+  </script>
+</head>
+<body>
+  <p style="font-family:sans-serif;padding:24px;color:#666;">正在进入审批页面…</p>
+</body>
+</html>

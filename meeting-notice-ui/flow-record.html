@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>流转记录 · 部门会议通知</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+      font-size: 13px;
+      color: #333;
+      background: #eef1f6;
+      line-height: 1.5;
+    }
+
+    .page-header {
+      position: relative;
+      height: 72px;
+      background: url('header-banner-bg.png') center / cover no-repeat;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    }
+    .page-header .logo { height: 40px; }
+
+    .page-wrap {
+      max-width: 1200px;
+      margin: 20px auto 40px;
+      padding: 0 16px;
+    }
+
+    .record-panel {
+      background: #fff;
+      border: 1px solid #b8d4f0;
+      box-shadow: 0 1px 6px rgba(0,80,160,.08);
+    }
+
+    .section-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(90deg, #d6e8f8 0%, #e8f2fb 100%);
+      border-bottom: 1px solid #b8d4f0;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a5a9e;
+    }
+
+    .record-meta {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #666;
+      border-bottom: 1px solid #e8e8e8;
+      background: #fafafa;
+    }
+    .record-meta strong { color: #333; }
+
+    .record-table-wrap {
+      overflow-x: auto;
+      padding: 0;
+    }
+
+    .record-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1080px;
+    }
+    .record-table th,
+    .record-table td {
+      border: 1px solid #e0e0e0;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    .record-table th {
+      background: #f5f5f5;
+      color: #333;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .record-table td { color: #333; }
+    .record-table tbody tr:hover { background: #fafcff; }
+    .record-table .col-index { width: 50px; text-align: center; vertical-align: middle; }
+    .record-table .col-time { white-space: nowrap; color: #555; vertical-align: middle; }
+    .record-table .col-opinion { max-width: 280px; word-break: break-word; }
+    .record-table .pending { color: #1677c7; }
+    .record-table .done { color: #52a832; }
+    .record-table .returned { color: #d46b08; }
+    .record-table .empty { color: #ccc; }
+    .record-action {
+      display: inline-block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 10px 4px 12px;
+    }
+    .toolbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: #1677c7;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 4px 2px;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    .toolbar-btn:hover { opacity: .75; }
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <img class="logo" src="ogo.png" alt="中国电信 · 天翼云">
+</header>
+
+<div class="page-wrap">
+  <div class="toolbar">
+    <button type="button" class="toolbar-btn" onclick="window.close()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3L3 8l5 5V10h5V6H8V3z"/></svg>
+      关闭
+    </button>
+  </div>
+
+  <div class="record-panel">
+    <div class="section-bar">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="#1a5a9e"><path d="M2 2h8v2H4v8H2V2zm4 4h8v8H6V6zm2 2v4h4V8H8z"/></svg>
+      流转记录
+    </div>
+    <div class="record-meta" id="recordMeta">
+      会议名称：<strong id="metaMeetingName">—</strong>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      文号：<strong>天翼云会议〔2026〕号</strong>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      当前状态：<strong class="pending" id="metaStatus">—</strong>
+    </div>
+    <div class="record-table-wrap">
+      <table class="record-table">
+        <thead>
+          <tr>
+            <th class="col-index">序号</th>
+            <th>活动</th>
+            <th>待处理人</th>
+            <th>处理人</th>
+            <th>到达时间</th>
+            <th>提交时间</th>
+            <th>意见</th>
+            <th>附件</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="recordBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'meetingNoticeFormData';
+
+  const DEPT_LEADERS = {
+    '市场部': '赵敏',
+    '产品中心': '王立军',
+    '研发中心': '陈文强',
+    '智能边缘事业部': '段明远',
+    '数字化运营部': '刘洋',
+    '客户服务部': '孙倩',
+    '人力资源部': '郑华',
+    '财务部': '蒋涛',
+    '综合管理部': '周鹏',
+    '战略规划部': '李娜',
+    '安全运营中心': '徐超',
+    '政企事业部': '钱进',
+  };
+
+  function fmtTime(iso) {
+    if (!iso || iso === '—') return '—';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  }
+
+  function parseDepts(text) {
+    return (text || '').split(/[、,，;；\s]+/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function loadData() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  }
+
+  function formatAssignOpinion(assign) {
+    if (!assign) return '—';
+    const parts = [];
+    if (assign.opinion) parts.push(assign.opinion);
+    if (assign.online) parts.push(`线上：${assign.online}`);
+    if (assign.onsite) parts.push(`现场：${assign.onsite}`);
+    if (assign.note) parts.push(`说明：${assign.note}`);
+    return parts.join('；') || '—';
+  }
+
+  function leaderLabel(dept) {
+    const name = DEPT_LEADERS[dept];
+    return name ? `${name}（${dept}）` : `${dept}负责人`;
+  }
+
+  function rowsFromFlowRecords(data) {
+    return (data.flowRecords || []).map((r, i) => ({
+      seq: i + 1,
+      activity: r.activity,
+      action: r.action || '',
+      pending: r.pending || '—',
+      handler: r.handler || '—',
+      arrive: r.arriveAt,
+      submit: r.submitAt,
+      opinion: r.opinion || '—',
+      status: r.status || 'done',
+    }));
+  }
+
+  function buildRowsFromState(data) {
+    const rows = [];
+    const t = data.submittedAt || data.draftClosedAt || new Date().toISOString();
+
+    if (data.draftClosedAt && data.flowStep === 'closeDraft') {
+      rows.push({
+        activity: '起草通知',
+        action: '办结',
+        pending: '—',
+        handler: '超级管理员（数字化运营部）',
+        arrive: t,
+        submit: data.draftClosedAt,
+        opinion: '—',
+        status: 'done',
+      });
+      return rows;
+    }
+
+    rows.push({
+      activity: '起草通知',
+      action: '送部门领导审核',
+      pending: '刘洋（数字化运营部）',
+      handler: '超级管理员（数字化运营部）',
+      arrive: t,
+      submit: data.submittedAt || t,
+      opinion: '—',
+      status: data.submittedAt ? 'done' : 'pending',
+    });
+
+    if (!data.submittedAt && !data.approvedAt) return rows;
+
+    rows.push({
+      activity: '发起人部门领导',
+      action: data.approvedAt ? '同意并分发至主送部门领导' : '待审批',
+      pending: '刘洋（数字化运营部）',
+      handler: data.approvedAt ? '刘洋（数字化运营部）' : '—',
+      arrive: data.submittedAt || t,
+      submit: data.approvedAt || '—',
+      opinion: data.deptLeaderOpinion || '—',
+      status: data.approvedAt ? 'done' : 'pending',
+    });
+
+    if (!data.approvedAt) return rows;
+
+    if (data.noticeSentAt || data.aoneMeetingId) {
+      rows.push({
+        activity: '会议通知与待办',
+        action: data.aoneMeetingId
+          ? `已发送至参会人员/主送部门 · A One 会议号 ${data.aoneMeetingId}`
+          : '已发送至参会人员/主送部门',
+        pending: '—',
+        handler: '系统',
+        arrive: data.approvedAt,
+        submit: data.noticeSentAt || data.approvedAt,
+        opinion: (data.meetingFormat === 'online' || data.meetingType === 'online')
+          ? '线上会议 A One 会议号已生成'
+          : '线下会议亦可预约 A One，会议号已生成',
+        status: 'done',
+      });
+    }
+
+    const depts = parseDepts(data.mainDept);
+    const assignments = data.deptAssignments || {};
+
+    depts.forEach(dept => {
+      const assign = assignments[dept];
+      rows.push({
+        activity: `指派参会人员 · ${dept}`,
+        action: assign ? '提交参会名单' : '待指派',
+        pending: leaderLabel(dept),
+        handler: assign ? leaderLabel(dept) : '—',
+        arrive: data.approvedAt,
+        submit: assign?.submittedAt || '—',
+        opinion: formatAssignOpinion(assign),
+        status: assign ? 'done' : 'pending',
+      });
+    });
+
+    const allAssigned = depts.length > 0 && depts.every(d => assignments[d]);
+    if (data.cancelledAt) {
+      rows.push({
+        activity: '汇总闭环',
+        action: '取消会议',
+        pending: '超级管理员（数字化运营部）',
+        handler: '超级管理员（数字化运营部）',
+        arrive: allAssigned ? (assignments[depts[depts.length - 1]]?.submittedAt || data.approvedAt) : data.approvedAt,
+        submit: data.cancelledAt,
+        opinion: data.summaryOpinion || '完成',
+        status: 'done',
+      });
+    } else if (data.closedAt) {
+      rows.push({
+        activity: '汇总闭环',
+        action: '确认闭环并上传会议纪要',
+        pending: '超级管理员（数字化运营部）',
+        handler: '超级管理员（数字化运营部）',
+        arrive: allAssigned ? (assignments[depts[depts.length - 1]]?.submittedAt || data.approvedAt) : data.approvedAt,
+        submit: data.closedAt,
+        opinion: data.summaryOpinion || '完成',
+        status: 'done',
+      });
+
+      if (data.minutesSubmittedAt) {
+        rows.push({
+          activity: '上传会议纪要',
+          action: data.meetingMinutes?.aoneFetchedAt ? '提交（含 A One 同步）' : '提交',
+          pending: '超级管理员（数字化运营部）',
+          handler: '超级管理员（数字化运营部）',
+          arrive: data.closedAt,
+          submit: data.minutesSubmittedAt,
+          opinion: data.minutesOpinion || '完成',
+          status: 'done',
+        });
+      } else {
+        rows.push({
+          activity: '上传会议纪要',
+          action: '待上传',
+          pending: '超级管理员（数字化运营部）',
+          handler: '—',
+          arrive: data.closedAt,
+          submit: '—',
+          opinion: '—',
+          status: 'pending',
+        });
+      }
+    } else if (allAssigned) {
+      rows.push({
+        activity: '汇总闭环',
+        action: '待确认闭环',
+        pending: '超级管理员（数字化运营部）',
+        handler: '—',
+        arrive: assignments[depts[depts.length - 1]]?.submittedAt || '—',
+        submit: '—',
+        opinion: '—',
+        status: 'pending',
+      });
+    }
+
+    return rows;
+  }
+
+  function buildRows(data) {
+    if (data.flowRecords?.length) {
+      return rowsFromFlowRecords(data);
+    }
+    return buildRowsFromState(data);
+  }
+
+  function resolveStatus(data) {
+    if (data?.cancelledAt) return { text: '会议已取消', cls: 'done' };
+    if (data?.minutesSubmittedAt) return { text: '纪要已提交', cls: 'done' };
+    if (data?.closedAt) return { text: '待上传纪要', cls: 'pending' };
+    if (data?.draftClosedAt && data.flowStep === 'closeDraft') {
+      return { text: '拟稿已办结', cls: 'done' };
+    }
+    if (!data?.submittedAt) return { text: '起草中', cls: 'pending' };
+
+    const depts = parseDepts(data.mainDept);
+    const assignments = data.deptAssignments || {};
+
+    if (data.approvedAt && depts.length) {
+      const allDone = depts.every(d => assignments[d]);
+      if (allDone) return { text: '汇总闭环', cls: 'pending' };
+      return { text: '指派参会人员', cls: 'pending' };
+    }
+    if (data.approvedAt) return { text: '分发主送部门', cls: 'pending' };
+    return { text: '发起人部门领导', cls: 'pending' };
+  }
+
+  function render() {
+    const data = loadData();
+    document.getElementById('metaMeetingName').textContent = data?.meetingName || '（尚未拟稿）';
+
+    const status = resolveStatus(data);
+    const statusEl = document.getElementById('metaStatus');
+    statusEl.textContent = status.text;
+    statusEl.className = status.cls;
+
+    const rows = data ? buildRows(data) : [];
+    const tbody = document.getElementById('recordBody');
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#999;padding:24px">暂无流转记录，请先完成拟稿提交</td></tr>';
+      return;
+    }
+
+    const displayRows = rows.map((r, i) => ({ ...r, seq: rows.length - i }));
+
+    tbody.innerHTML = displayRows.map(r => {
+      const statusCls = r.status === 'done' ? 'done' : r.status === 'returned' ? 'returned' : 'pending';
+      const activityHtml = r.action
+        ? `${r.activity}<div class="record-action">${r.action}</div>`
+        : r.activity;
+      return `
+      <tr>
+        <td class="col-index">${r.seq}</td>
+        <td>${activityHtml}</td>
+        <td class="${r.pending === '—' ? 'empty' : ''}">${r.pending}</td>
+        <td class="${r.handler === '—' ? 'empty' : ''}">${r.handler}</td>
+        <td class="col-time">${fmtTime(r.arrive)}</td>
+        <td class="col-time ${r.submit === '—' ? 'empty' : ''}">${fmtTime(r.submit)}</td>
+        <td class="col-opinion ${r.opinion === '—' ? 'empty' : ''}">${r.opinion}</td>
+        <td class="empty">—</td>
+        <td class="${statusCls}">${r.status === 'done' ? '已办' : r.status === 'returned' ? '退回' : '待办'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  render();
+</script>
+
+</body>
+</html>
