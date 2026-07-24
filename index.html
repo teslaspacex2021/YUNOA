@@ -18,6 +18,7 @@
       --accent-app: #2ec4b6;
       --accent-ops: #f5a623;
       --accent-meeting: #a78bfa;
+      --accent-aone: #38bdf8;
       --accent-de: #ff6b9d;
     }
 
@@ -154,6 +155,7 @@
     .entry-app::before { background: var(--accent-app); }
     .entry-ops::before { background: var(--accent-ops); }
     .entry-meeting::before { background: var(--accent-meeting); }
+    .entry-aone::before { background: var(--accent-aone); }
     .entry-de::before { background: var(--accent-de); }
 
     .entry:hover {
@@ -186,6 +188,7 @@
     .entry-app .entry-icon { background: rgba(46, 196, 182, 0.18); }
     .entry-ops .entry-icon { background: rgba(245, 166, 35, 0.18); }
     .entry-meeting .entry-icon { background: rgba(167, 139, 250, 0.18); }
+    .entry-aone .entry-icon { background: rgba(56, 189, 248, 0.18); }
     .entry-de .entry-icon { background: rgba(255, 107, 157, 0.18); }
 
     .entry h2 {
@@ -230,6 +233,7 @@
     .entry-app .entry-action { color: #7ee0d6; }
     .entry-ops .entry-action { color: #ffc857; }
     .entry-meeting .entry-action { color: #c4b5fd; }
+    .entry-aone .entry-action { color: #7dd3fc; }
     .entry-de .entry-action { color: #ff9ec0; }
 
     .foot {
@@ -361,14 +365,27 @@
 
       <a
         class="entry entry-meeting"
-        href="https://meetin-notice.pages.dev/"
+        href="meeting-notice-ui/index.html"
         target="_blank"
         rel="noopener noreferrer"
       >
         <div class="entry-icon" aria-hidden="true">✉</div>
         <h2>会议通知</h2>
-        <span class="entry-tag">Meeting · Online</span>
-        <p>会议通知发起、审批流转、会议室预定与流程记录；打开线上演示环境查看完整业务链路。</p>
+        <span class="entry-tag">Meeting Notice · Demo</span>
+        <p>会议通知发起、审批流转、会议室预定与流程记录；本地路由打开完整业务链路。</p>
+        <span class="entry-action">打开演示 →</span>
+      </a>
+
+      <a
+        class="entry entry-aone"
+        href="https://aonemeeting.pages.dev/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div class="entry-icon" aria-hidden="true">📅</div>
+        <h2>会议管理</h2>
+        <span class="entry-tag">A One Meeting · Online</span>
+        <p>会前、会中、会后全流程管理，覆盖线上与线下会议；打开 A One 会议管理线上环境。</p>
         <span class="entry-action">打开演示 →</span>
       </a>
 
