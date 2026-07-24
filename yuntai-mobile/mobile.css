@@ -720,64 +720,6 @@ button {
   background: #f0f7ff;
 }
 
-.yxk-active-expert {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 8px;
-  padding: 6px 8px 6px 6px;
-  background: #f0f7ff;
-  border: 1px solid #bedaff;
-  border-radius: 12px;
-  min-width: 0;
-}
-
-.yxk-active-expert.hidden {
-  display: none;
-}
-
-.yxk-active-expert-avatar {
-  flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.yxk-active-expert-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: #1677ff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.yxk-active-expert-remove {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: #4a86d6;
-}
-
-.yxk-active-expert-remove:active {
-  background: rgba(22, 119, 255, 0.12);
-}
-
 .yxk-composer-extras {
   display: flex;
   flex-direction: column;

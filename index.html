@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>天翼云 · 入口导航</title>
+  <title>天翼云 · Demo 演示导航</title>
   <style>
     :root {
       --bg-0: #0f1419;
@@ -29,100 +29,123 @@
 
     html,
     body {
-      min-height: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
       font-family: "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(1200px 600px at 12% -10%, rgba(230, 0, 18, 0.28), transparent 55%),
-        radial-gradient(900px 500px at 90% 10%, rgba(61, 139, 253, 0.22), transparent 50%),
-        radial-gradient(700px 400px at 70% 100%, rgba(46, 196, 182, 0.16), transparent 45%),
+        radial-gradient(1000px 520px at 10% -8%, rgba(230, 0, 18, 0.26), transparent 55%),
+        radial-gradient(800px 440px at 92% 8%, rgba(61, 139, 253, 0.2), transparent 50%),
+        radial-gradient(640px 360px at 72% 100%, rgba(46, 196, 182, 0.14), transparent 45%),
         linear-gradient(160deg, var(--bg-0), var(--bg-1) 55%, #121820);
       -webkit-font-smoothing: antialiased;
     }
 
     .page {
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 48px 24px 56px;
+      padding: clamp(16px, 2.5vh, 28px) clamp(16px, 3vw, 32px);
+      gap: clamp(14px, 2.2vh, 22px);
     }
 
     .brand {
       text-align: center;
-      margin-bottom: 40px;
-      animation: rise 0.55s ease both;
+      flex-shrink: 0;
+    }
+
+    .brand-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .brand-mark {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 56px;
-      height: 56px;
-      margin-bottom: 16px;
-      border-radius: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       background: linear-gradient(145deg, #ff3b3b, #b8000e);
-      box-shadow: 0 10px 28px rgba(230, 0, 18, 0.35);
-      font-size: 22px;
+      box-shadow: 0 8px 20px rgba(230, 0, 18, 0.32);
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: 0.5px;
+      flex-shrink: 0;
     }
 
     .brand h1 {
-      font-size: clamp(28px, 4vw, 40px);
+      font-size: clamp(22px, 2.8vw, 30px);
       font-weight: 700;
-      letter-spacing: 1px;
-      line-height: 1.2;
+      letter-spacing: 0.5px;
+      line-height: 1.15;
+    }
+
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 6px;
+      background: rgba(230, 0, 18, 0.18);
+      border: 1px solid rgba(230, 0, 18, 0.45);
+      color: #ff8a8a;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      vertical-align: middle;
+      margin-left: 8px;
+      transform: translateY(-2px);
     }
 
     .brand p {
-      margin-top: 10px;
-      font-size: 15px;
+      margin-top: 8px;
+      font-size: 13px;
       color: var(--text-muted);
+      line-height: 1.45;
+      max-width: 52ch;
     }
 
     .entries {
-      width: min(960px, 100%);
+      width: min(1080px, 100%);
+      flex: 0 1 auto;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 1.4vh, 14px) clamp(12px, 1.4vw, 16px);
     }
 
     .entry {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      min-height: 220px;
-      padding: 28px 24px 22px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto auto 1fr auto;
+      column-gap: 12px;
+      row-gap: 4px;
+      min-height: 0;
+      padding: 14px 14px 12px;
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 14px;
       background: var(--card);
       backdrop-filter: blur(10px);
       text-decoration: none;
       color: inherit;
       overflow: hidden;
-      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      animation: rise 0.6s ease both;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
-
-    .entry:nth-child(1) { animation-delay: 0.05s; }
-    .entry:nth-child(2) { animation-delay: 0.1s; }
-    .entry:nth-child(3) { animation-delay: 0.15s; }
-    .entry:nth-child(4) { animation-delay: 0.2s; }
-    .entry:nth-child(5) { animation-delay: 0.25s; }
-    .entry:nth-child(6) { animation-delay: 0.3s; }
 
     .entry::before {
       content: "";
       position: absolute;
       inset: 0 auto auto 0;
       width: 100%;
-      height: 3px;
+      height: 2px;
       opacity: 0.9;
     }
 
@@ -134,25 +157,28 @@
     .entry-de::before { background: var(--accent-de); }
 
     .entry:hover {
-      transform: translateY(-4px);
+      transform: translateY(-2px);
       background: var(--card-hover);
       border-color: rgba(255, 255, 255, 0.22);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
     }
 
     .entry:focus-visible {
       outline: 2px solid #fff;
-      outline-offset: 3px;
+      outline-offset: 2px;
     }
 
     .entry-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
-      margin-bottom: 18px;
-      font-size: 22px;
+      font-size: 16px;
+      align-self: start;
+      margin-top: 2px;
     }
 
     .entry-oa .entry-icon { background: rgba(230, 0, 18, 0.18); }
@@ -163,24 +189,39 @@
     .entry-de .entry-icon { background: rgba(255, 107, 157, 0.18); }
 
     .entry h2 {
-      font-size: 20px;
+      grid-column: 2;
+      grid-row: 1;
+      font-size: 15px;
       font-weight: 650;
-      margin-bottom: 8px;
+      line-height: 1.25;
+      align-self: end;
+    }
+
+    .entry-tag {
+      grid-column: 2;
+      grid-row: 2;
+      font-size: 11px;
+      color: rgba(154, 167, 181, 0.85);
+      line-height: 1.2;
     }
 
     .entry p {
-      font-size: 13px;
+      grid-column: 1 / -1;
+      grid-row: 3;
+      margin-top: 8px;
+      font-size: 12px;
       line-height: 1.55;
       color: var(--text-muted);
-      flex: 1;
     }
 
     .entry-action {
-      margin-top: 18px;
+      grid-column: 1 / -1;
+      grid-row: 4;
+      margin-top: 10px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 13px;
+      gap: 4px;
+      font-size: 12px;
       font-weight: 600;
     }
 
@@ -192,32 +233,65 @@
     .entry-de .entry-action { color: #ff9ec0; }
 
     .foot {
-      margin-top: 36px;
-      font-size: 12px;
-      color: rgba(154, 167, 181, 0.8);
-      animation: rise 0.7s ease both;
-      animation-delay: 0.25s;
+      flex-shrink: 0;
+      font-size: 11px;
+      color: rgba(154, 167, 181, 0.75);
+      text-align: center;
     }
 
-    @keyframes rise {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
+    @media (max-width: 900px) {
+      html,
+      body {
+        overflow: auto;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+
+      .page {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        justify-content: flex-start;
+        padding-top: 28px;
+        padding-bottom: 28px;
+      }
+
+      .entries {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 820px) {
+    @media (max-width: 560px) {
       .entries {
         grid-template-columns: 1fr;
-        max-width: 420px;
       }
 
+      .brand-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .demo-badge {
+        margin-left: 0;
+        transform: none;
+      }
+    }
+
+    @media (max-height: 700px) and (min-width: 901px) {
       .entry {
-        min-height: 0;
+        padding: 12px 12px 10px;
+      }
+
+      .entry p {
+        margin-top: 6px;
+        font-size: 11.5px;
+        line-height: 1.45;
+      }
+
+      .entry-action {
+        margin-top: 8px;
+      }
+
+      .brand p {
+        margin-top: 6px;
       }
     }
   </style>
@@ -225,12 +299,14 @@
 <body>
   <main class="page">
     <header class="brand">
-      <div class="brand-mark" aria-hidden="true">云</div>
-      <h1>天翼云</h1>
-      <p>选择入口，在新标签页中打开对应应用</p>
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">云</div>
+        <h1>天翼云 Demo<span class="demo-badge">演示</span></h1>
+      </div>
+      <p>原型演示导航 · 以下入口均为 Demo 预览，点击后在新标签页打开对应应用</p>
     </header>
 
-    <nav class="entries" aria-label="应用入口">
+    <nav class="entries" aria-label="演示入口">
       <a
         class="entry entry-oa"
         href="oa-portal/index.html"
@@ -239,8 +315,9 @@
       >
         <div class="entry-icon" aria-hidden="true">⌂</div>
         <h2>OA 门户</h2>
-        <p>公文检索、待办处理与 AI专家助手入口。</p>
-        <span class="entry-action">打开新标签 →</span>
+        <span class="entry-tag">Portal · Demo</span>
+        <p>公文检索与待办处理；页头支持搜索 / AI 专家切换，可 @切换专家、/添加技能，并联动专家与技能面板。</p>
+        <span class="entry-action">打开演示 →</span>
       </a>
 
       <a
@@ -251,8 +328,9 @@
       >
         <div class="entry-icon" aria-hidden="true">▣</div>
         <h2>云台 PC 端</h2>
-        <p>桌面端工作台导航，含AI专家、消息、会议等模块。</p>
-        <span class="entry-action">打开新标签 →</span>
+        <span class="entry-tag">Desktop · Demo</span>
+        <p>桌面端工作台导航，含 AI 专家对话、消息、会议等模块，可体验完整侧栏与主内容区布局。</p>
+        <span class="entry-action">打开演示 →</span>
       </a>
 
       <a
@@ -263,8 +341,9 @@
       >
         <div class="entry-icon" aria-hidden="true">◉</div>
         <h2>云台 APP 端</h2>
-        <p>手机端消息首页与AI专家对话体验预览。</p>
-        <span class="entry-action">打开新标签 →</span>
+        <span class="entry-tag">Mobile · Demo</span>
+        <p>手机端消息首页与 AI 专家对话预览；支持加号面板、模式 / 模型切换、专家与技能选择。</p>
+        <span class="entry-action">打开演示 →</span>
       </a>
 
       <a
@@ -275,8 +354,9 @@
       >
         <div class="entry-icon" aria-hidden="true">◈</div>
         <h2>云公司运营管理平台</h2>
-        <p>云公司运营管理能力与诊断智能体相关原型入口。</p>
-        <span class="entry-action">打开新标签 →</span>
+        <span class="entry-tag">Ops · Demo</span>
+        <p>云公司运营管理能力与诊断智能体相关原型，可浏览运营看板与智能体辅助诊断入口。</p>
+        <span class="entry-action">打开演示 →</span>
       </a>
 
       <a
@@ -287,8 +367,9 @@
       >
         <div class="entry-icon" aria-hidden="true">✉</div>
         <h2>会议通知</h2>
-        <p>会议通知发起、审批、会议室预定与流程记录。</p>
-        <span class="entry-action">打开新标签 →</span>
+        <span class="entry-tag">Meeting · Online</span>
+        <p>会议通知发起、审批流转、会议室预定与流程记录；打开线上演示环境查看完整业务链路。</p>
+        <span class="entry-action">打开演示 →</span>
       </a>
 
       <a
@@ -299,12 +380,13 @@
       >
         <div class="entry-icon" aria-hidden="true">◎</div>
         <h2>云公司数字员工</h2>
-        <p>数字员工对话、排班与运营管理线上环境。</p>
-        <span class="entry-action">打开新标签 →</span>
+        <span class="entry-tag">Digital Employee · Online</span>
+        <p>数字员工对话、排班与运营管理线上环境，可体验多智能体协作与数字员工工作台。</p>
+        <span class="entry-action">打开演示 →</span>
       </a>
     </nav>
 
-    <p class="foot">默认导航页 · 点击卡片将在新标签页打开</p>
+    <p class="foot">天翼云 Demo 演示页 · 仅供原型预览，非生产环境</p>
   </main>
 </body>
 </html>

@@ -98,8 +98,6 @@
   const yxkVoiceOverlay = document.getElementById("yxkVoiceOverlay");
   const yxkVoiceTip = document.getElementById("yxkVoiceTip");
   const yxkExpertScroller = document.getElementById("yxkExpertScroller");
-  const yxkExpertBar = document.getElementById("yxkExpertBar");
-  const yxkActiveExpert = document.getElementById("yxkActiveExpert");
   const yxkComposerExtras = document.getElementById("yxkComposerExtras");
   const yxkAttachRow = document.getElementById("yxkAttachRow");
   const yxkSkillRow = document.getElementById("yxkSkillRow");
@@ -572,32 +570,6 @@
     });
   }
 
-  function renderActiveExpert() {
-    if (!yxkActiveExpert) return;
-    const expert = getActiveExpert();
-    const isActive = Boolean(activeExpertId) && expert.id;
-    if (!isActive) {
-      yxkActiveExpert.classList.add("hidden");
-      yxkActiveExpert.innerHTML = "";
-      if (yxkExpertBar) yxkExpertBar.classList.remove("hidden");
-      return;
-    }
-    if (yxkExpertBar) yxkExpertBar.classList.add("hidden");
-    yxkActiveExpert.classList.remove("hidden");
-    yxkActiveExpert.innerHTML = `
-      <span class="yxk-active-expert-avatar" style="background:${expert.color}">${expert.avatar}</span>
-      <span class="yxk-active-expert-name">${expert.name}</span>
-      <button type="button" class="yxk-active-expert-remove" aria-label="取消选择专家">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>`;
-    const removeBtn = yxkActiveExpert.querySelector(".yxk-active-expert-remove");
-    if (removeBtn) {
-      removeBtn.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        clearExpertSelection();
-      });
-    }
-  }
 
   function getSelectedSkills() {
     if (aiMode !== "office") return [];
@@ -1017,7 +989,6 @@
     activeExpertId = expert.id;
     currentSessionId = null;
     renderExpertChips();
-    renderActiveExpert();
     syncExpertHeader();
     setVoiceMode(false);
     closeComposerMenus();
@@ -1038,7 +1009,6 @@
   function clearExpertSelection() {
     activeExpertId = null;
     renderExpertChips();
-    renderActiveExpert();
     syncExpertHeader();
     toggleTitleSwitcher(false);
   }
@@ -1783,7 +1753,6 @@
   renderMessages();
   renderSuggests();
   renderExpertChips();
-  renderActiveExpert();
   renderComposerExtras();
   syncExpertHeader();
   syncSheetMcpIcons();
