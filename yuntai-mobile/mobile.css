@@ -1749,6 +1749,47 @@ button {
   min-width: 0;
 }
 
+.yxk-sheet-list-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.yxk-sheet-list-text .yxk-sheet-list-label {
+  flex: none;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.yxk-sheet-list-desc {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #8c8c8c;
+}
+
+.yxk-sheet-mode-list .yxk-sheet-list-item {
+  align-items: flex-start;
+  min-height: 60px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.yxk-sheet-mode-list .yxk-sheet-list-icon {
+  margin-top: 2px;
+}
+
+.yxk-sheet-mode-list .yxk-sheet-check {
+  margin-top: 4px;
+}
+
+.yxk-sheet-mode-list .yxk-sheet-list-item.is-active .yxk-sheet-list-desc {
+  color: #8c8c8c;
+}
+
 .yxk-sheet-tag {
   flex-shrink: 0;
   height: 22px;

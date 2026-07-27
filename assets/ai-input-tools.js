@@ -65,6 +65,12 @@ const MODE_LABELS = {
   office: "办公任务"
 };
 
+const MODE_DESCS = {
+  fast: "适用于大部分情况",
+  think: "擅长解决更难的问题",
+  office: "支持技能与办公流程"
+};
+
 function isSkillModeEnabled(mode = selectedComposerMode) {
   return mode === "office";
 }
@@ -119,6 +125,18 @@ function getModelSelectHtml(options = {}) {
   </div>`;
 }
 
+function getModeOptionHtml(modeId, currentMode) {
+  const label = MODE_LABELS[modeId] || modeId;
+  const desc = MODE_DESCS[modeId] || "";
+  return `
+    <button type="button" class="ai-composer-mode-option${modeId === currentMode ? " is-active" : ""}" data-ai-mode="${modeId}" role="option">
+      <span class="ai-composer-mode-option-text">
+        <span class="ai-composer-mode-option-label">${label}</span>
+        <span class="ai-composer-mode-option-desc">${desc}</span>
+      </span>
+    </button>`;
+}
+
 /** 对话模式下拉（放在 Auto 左侧） */
 function getAiModeSelectHtml(options = {}) {
   const mode = options.mode || selectedComposerMode;
@@ -130,9 +148,9 @@ function getAiModeSelectHtml(options = {}) {
       ${CHEVRON_SVG}
     </button>
     <div class="ai-composer-mode-menu hidden" role="listbox" aria-label="对话模式">
-      <button type="button" class="ai-composer-mode-option${mode === "fast" ? " is-active" : ""}" data-ai-mode="fast" role="option">快速模式</button>
-      <button type="button" class="ai-composer-mode-option${mode === "think" ? " is-active" : ""}" data-ai-mode="think" role="option">深度思考</button>
-      <button type="button" class="ai-composer-mode-option${mode === "office" ? " is-active" : ""}" data-ai-mode="office" role="option">办公任务</button>
+      ${getModeOptionHtml("fast", mode)}
+      ${getModeOptionHtml("think", mode)}
+      ${getModeOptionHtml("office", mode)}
     </div>
   </div>`;
 }

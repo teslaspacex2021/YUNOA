@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>天翼云 OA 门户</title>
-  <link rel="stylesheet" href="portal.css?v=34" />
+  <link rel="stylesheet" href="portal.css?v=35" />
   <link rel="stylesheet" href="../assets/third-panel.css" />
-  <link rel="stylesheet" href="../assets/ai-chat-panel.css?v=7" />
-  <link rel="stylesheet" href="../assets/ai-tool-modals.css?v=2" />
+  <link rel="stylesheet" href="../assets/ai-chat-panel.css?v=10" />
+  <link rel="stylesheet" href="../assets/ai-tool-modals.css?v=4" />
 </head>
 <body>
   <!-- 顶部工具栏 -->
@@ -87,9 +87,24 @@
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
                 <div class="header-ai-mode-menu hidden" role="listbox" aria-label="对话模式">
-                  <button type="button" class="header-ai-mode-option is-active" data-ai-mode="fast" role="option">快速模式</button>
-                  <button type="button" class="header-ai-mode-option" data-ai-mode="think" role="option">深度思考</button>
-                  <button type="button" class="header-ai-mode-option" data-ai-mode="office" role="option">办公任务</button>
+                  <button type="button" class="header-ai-mode-option is-active" data-ai-mode="fast" role="option">
+                    <span class="header-ai-mode-option-text">
+                      <span class="header-ai-mode-option-label">快速模式</span>
+                      <span class="header-ai-mode-option-desc">适用于大部分情况</span>
+                    </span>
+                  </button>
+                  <button type="button" class="header-ai-mode-option" data-ai-mode="think" role="option">
+                    <span class="header-ai-mode-option-text">
+                      <span class="header-ai-mode-option-label">深度思考</span>
+                      <span class="header-ai-mode-option-desc">擅长解决更难的问题</span>
+                    </span>
+                  </button>
+                  <button type="button" class="header-ai-mode-option" data-ai-mode="office" role="option">
+                    <span class="header-ai-mode-option-text">
+                      <span class="header-ai-mode-option-label">办公任务</span>
+                      <span class="header-ai-mode-option-desc">支持技能与办公流程</span>
+                    </span>
+                  </button>
                 </div>
               </div>
               <div class="header-ai-model-slot" id="headerAiModelSlot"></div>
@@ -170,9 +185,24 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="header-ai-mode-menu hidden" role="listbox" aria-label="对话模式">
-              <button type="button" class="header-ai-mode-option is-active" data-ai-mode="fast" role="option">快速模式</button>
-              <button type="button" class="header-ai-mode-option" data-ai-mode="think" role="option">深度思考</button>
-              <button type="button" class="header-ai-mode-option" data-ai-mode="office" role="option">办公任务</button>
+              <button type="button" class="header-ai-mode-option is-active" data-ai-mode="fast" role="option">
+                <span class="header-ai-mode-option-text">
+                  <span class="header-ai-mode-option-label">快速模式</span>
+                  <span class="header-ai-mode-option-desc">适用于大部分情况</span>
+                </span>
+              </button>
+              <button type="button" class="header-ai-mode-option" data-ai-mode="think" role="option">
+                <span class="header-ai-mode-option-text">
+                  <span class="header-ai-mode-option-label">深度思考</span>
+                  <span class="header-ai-mode-option-desc">擅长解决更难的问题</span>
+                </span>
+              </button>
+              <button type="button" class="header-ai-mode-option" data-ai-mode="office" role="option">
+                <span class="header-ai-mode-option-text">
+                  <span class="header-ai-mode-option-label">办公任务</span>
+                  <span class="header-ai-mode-option-desc">支持技能与办公流程</span>
+                </span>
+              </button>
             </div>
           </div>
           <div class="header-ai-model-slot" id="stickyAiModelSlot"></div>
@@ -712,7 +742,7 @@
         </div>
         <div class="ai-input-box">
           <div class="ai-input-top">
-            <textarea id="chatPanelInput" placeholder="请直接提出您的问题~"></textarea>
+            <textarea id="chatPanelInput" placeholder="请直接提出您的问题，@召唤专家，/添加技能"></textarea>
           </div>
           <div class="ai-input-toolbar">
             <div class="ai-input-tools-left" id="chatAiToolbar"></div>
@@ -733,9 +763,9 @@
 
   <script src="../assets/public-files.js"></script>
   <script src="../assets/third-panel.js"></script>
-  <script src="../assets/ai-tool-modals.js?v=6"></script>
-  <script src="../assets/ai-input-tools.js?v=13"></script>
-  <script src="../assets/ai-chat-panel.js?v=6"></script>
+  <script src="../assets/ai-tool-modals.js?v=8"></script>
+  <script src="../assets/ai-input-tools.js?v=14"></script>
+  <script src="../assets/ai-chat-panel.js?v=9"></script>
   <script>
     // 头像点击兜底：portal.js 未加载时仍可切换搜索/AI 输入
     (function () {

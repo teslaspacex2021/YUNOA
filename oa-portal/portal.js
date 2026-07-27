@@ -26,12 +26,18 @@ const AI_COMPACT_PLACEHOLDER = "向 AI 专家提问...";
 const SEARCH_PAGE = "../ai-search-results/index.html";
 
 const MENTION_EXPERTS_FALLBACK = [
-  { id: "e1", name: "小翼·智能助手", dept: "综合服务部·智能综合助理", avatar: "👩‍💼" },
-  { id: "e2", name: "小翼·客服", dept: "客户服务部·智能客服专员", avatar: "👨‍💼" },
-  { id: "e3", name: "小翼·财务", dept: "财务部·智能财务助理", avatar: "👩‍💻" },
-  { id: "e4", name: "小翼·人力", dept: "人力资源部·智能人力助理", avatar: "👨‍💻" },
-  { id: "e5", name: "小翼·法务", dept: "法务部·智能法务顾问", avatar: "👩‍⚖️" },
-  { id: "e6", name: "小翼·公文", dept: "办公室·智能公文助理", avatar: "👨‍🏫" }
+  { id: "e1", name: "小翼·智能助手", dept: "综合服务部 · 综合支撑 - 办公室 - 智能综合", avatar: "👩‍💼" },
+  { id: "e2", name: "小翼·定时任务助手", dept: "综合服务部 · 定时调度与任务提醒", avatar: "⏱️" },
+  { id: "e3", name: "小翼·客服", dept: "客户服务部 · 智能客服专员", avatar: "👨‍💼" },
+  { id: "e4", name: "小翼·数据", dept: "数据运营部 · 数据分析与指标解读", avatar: "📊" },
+  { id: "e5", name: "小翼·营销", dept: "市场营销部 · 营销策划与客户洞察", avatar: "📣" },
+  { id: "e6", name: "小翼·审计", dept: "审计部 · 合规审计与风险核查", avatar: "🔍" },
+  { id: "e7", name: "小翼·HR", dept: "人力资源部 · 智能人力助理", avatar: "👨‍💻" },
+  { id: "e8", name: "小翼·财务", dept: "财务部 · 智能财务助理", avatar: "👩‍💻" },
+  { id: "e9", name: "小翼·运维", dept: "信息技术部 · 系统运维与故障排查", avatar: "🛠️" },
+  { id: "e10", name: "小翼·商机", dept: "销售支撑部 · 商机挖掘与拓客", avatar: "💡" },
+  { id: "e11", name: "小翼·文档", dept: "办公室 · 智能公文助理", avatar: "📄" },
+  { id: "e12", name: "小翼·经分", dept: "经营分析部 · 经营分析与报表", avatar: "📈" }
 ];
 
 const MENTION_SKILLS_FALLBACK = [

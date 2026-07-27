@@ -12,6 +12,42 @@
   let attachmentBar, attachmentText, attachmentClose, aiUploadBtn;
   let chatAiToolbar;
   let aiTitleSwitchBtn, aiAgentSwitcher;
+  let chatMentionPopover, chatMentionHead, chatMentionList;
+  let chatSkillChips;
+  let composerSkills = [];
+
+  const MENTION_EXPERTS_FALLBACK = [
+    { id: "e1", name: "小翼·智能助手", dept: "综合服务部 · 综合支撑 - 办公室 - 智能综合", avatar: "👩‍💼" },
+    { id: "e2", name: "小翼·定时任务助手", dept: "综合服务部 · 定时调度与任务提醒", avatar: "⏱️" },
+    { id: "e3", name: "小翼·客服", dept: "客户服务部 · 智能客服专员", avatar: "👨‍💼" },
+    { id: "e4", name: "小翼·数据", dept: "数据运营部 · 数据分析与指标解读", avatar: "📊" },
+    { id: "e5", name: "小翼·营销", dept: "市场营销部 · 营销策划与客户洞察", avatar: "📣" },
+    { id: "e6", name: "小翼·审计", dept: "审计部 · 合规审计与风险核查", avatar: "🔍" },
+    { id: "e7", name: "小翼·HR", dept: "人力资源部 · 智能人力助理", avatar: "👨‍💻" },
+    { id: "e8", name: "小翼·财务", dept: "财务部 · 智能财务助理", avatar: "👩‍💻" },
+    { id: "e9", name: "小翼·运维", dept: "信息技术部 · 系统运维与故障排查", avatar: "🛠️" },
+    { id: "e10", name: "小翼·商机", dept: "销售支撑部 · 商机挖掘与拓客", avatar: "💡" },
+    { id: "e11", name: "小翼·文档", dept: "办公室 · 智能公文助理", avatar: "📄" },
+    { id: "e12", name: "小翼·经分", dept: "经营分析部 · 经营分析与报表", avatar: "📈" }
+  ];
+
+  const MENTION_SKILLS_FALLBACK = [
+    { id: "s1", name: "期刊数据多维分析", desc: "多维度拆解期刊数据", icon: "⚡" },
+    { id: "s2", name: "大白话版数据分析", desc: "复杂结论转易懂表达", icon: "📊" },
+    { id: "s3", name: "数据可视化", desc: "一键生成图表与汇报素材", icon: "📈" },
+    { id: "s4", name: "数据分析技能", desc: "通用数据分析与指标解读", icon: "🔍" },
+    { id: "s5", name: "运营数据分析技能", desc: "面向运营场景的指标拆解", icon: "📋" }
+  ];
+
+  let mentionState = {
+    open: false,
+    type: null,
+    query: "",
+    start: -1,
+    end: -1,
+    activeIndex: 0,
+    items: []
+  };
 
   const TOTAL_REFS = 19;
 
@@ -577,19 +613,352 @@ function resetChatInputHeight() {
   resizeChatInput();
 }
 
+function ensureMentionPopover() {
+  if (chatMentionPopover) return;
+  const el = document.createElement("div");
+  el.className = "ai-mention-popover hidden";
+  el.id = "chatMentionPopover";
+  el.setAttribute("role", "listbox");
+  el.setAttribute("aria-label", "联想选择");
+  el.hidden = true;
+  el.innerHTML = `
+    <div class="ai-mention-head" id="chatMentionHead">切换数字员工 (@, 一次一位)</div>
+    <div class="ai-mention-list" id="chatMentionList"></div>
+  `;
+  document.body.appendChild(el);
+  chatMentionPopover = el;
+  chatMentionHead = el.querySelector("#chatMentionHead");
+  chatMentionList = el.querySelector("#chatMentionList");
+}
+
+function detectMentionTrigger(textarea) {
+  if (!textarea) return null;
+  const value = textarea.value;
+  const caret = textarea.selectionStart ?? value.length;
+  const before = value.slice(0, caret);
+  const match = before.match(/(^|[\s\n])([@／/])([^\s@／/]*)$/);
+  if (!match) return null;
+  const trigger = match[2] === "／" ? "/" : match[2];
+  const query = match[3] || "";
+  const start = before.length - match[0].length + match[1].length;
+  return { trigger, query, start, end: caret };
+}
+
+function getMentionSource(type) {
+  if (type === "expert") {
+    return global.AiToolModals?.getExperts?.() || MENTION_EXPERTS_FALLBACK;
+  }
+  return global.AiToolModals?.getSkills?.() || MENTION_SKILLS_FALLBACK;
+}
+
+function getMentionItems(type, query) {
+  const q = (query || "").trim().toLowerCase();
+  const source = getMentionSource(type);
+  if (!q) return source.slice();
+  return source.filter(item => {
+    const hay = type === "expert"
+      ? `${item.name} ${item.dept || ""}`
+      : `${item.name} ${item.desc || ""}`;
+    return hay.toLowerCase().includes(q);
+  });
+}
+
+function closeMentionPopover() {
+  mentionState.open = false;
+  mentionState.type = null;
+  mentionState.items = [];
+  mentionState.activeIndex = 0;
+  if (!chatMentionPopover) return;
+  chatMentionPopover.classList.add("hidden");
+  chatMentionPopover.hidden = true;
+}
+
+function renderMentionList() {
+  if (!chatMentionList) return;
+  const { items, type, activeIndex } = mentionState;
+  if (!items.length) {
+    chatMentionList.innerHTML = `<div class="ai-mention-empty">暂无匹配${type === "expert" ? "专家" : "技能"}</div>`;
+    return;
+  }
+  chatMentionList.innerHTML = items
+    .map((item, index) => {
+      if (type === "expert") {
+        return `
+        <button type="button" class="ai-mention-item${index === activeIndex ? " is-active" : ""}" data-index="${index}" role="option" aria-selected="${index === activeIndex}">
+          <span class="ai-mention-avatar">${item.avatar || "👤"}</span>
+          <span class="ai-mention-meta">
+            <span class="ai-mention-name">${escapeHtml(item.name)}</span>
+            <span class="ai-mention-sub">${escapeHtml(item.dept || "")}</span>
+          </span>
+        </button>`;
+      }
+      return `
+      <button type="button" class="ai-mention-item${index === activeIndex ? " is-active" : ""}" data-index="${index}" role="option" aria-selected="${index === activeIndex}">
+        <span class="ai-mention-avatar is-skill">${item.icon || "⚡"}</span>
+        <span class="ai-mention-meta">
+          <span class="ai-mention-name">${escapeHtml(item.name)}</span>
+          <span class="ai-mention-sub">${escapeHtml(item.desc || "")}</span>
+        </span>
+      </button>`;
+    })
+    .join("");
+
+  chatMentionList.querySelectorAll(".ai-mention-item").forEach(btn => {
+    btn.addEventListener("mouseenter", () => {
+      mentionState.activeIndex = Number(btn.dataset.index) || 0;
+      chatMentionList.querySelectorAll(".ai-mention-item").forEach((el, i) => {
+        el.classList.toggle("is-active", i === mentionState.activeIndex);
+      });
+    });
+    btn.addEventListener("mousedown", e => {
+      e.preventDefault();
+      selectMentionItem(Number(btn.dataset.index) || 0);
+    });
+  });
+}
+
+function positionMentionPopover(textarea) {
+  ensureMentionPopover();
+  if (!chatMentionPopover || !textarea) return;
+  const rect = textarea.getBoundingClientRect();
+  const popW = Math.min(360, window.innerWidth - 32);
+  const left = Math.min(
+    Math.max(16, rect.left),
+    window.innerWidth - popW - 16
+  );
+  chatMentionPopover.style.width = `${popW}px`;
+  chatMentionPopover.style.left = `${left}px`;
+  chatMentionPopover.hidden = false;
+  chatMentionPopover.classList.remove("hidden");
+  const popH = chatMentionPopover.offsetHeight || 220;
+  let top = rect.top - popH - 8;
+  if (top < 8) top = Math.min(rect.bottom + 8, window.innerHeight - popH - 8);
+  chatMentionPopover.style.top = `${Math.max(8, top)}px`;
+}
+
+function openMentionPopover(triggerInfo) {
+  ensureMentionPopover();
+  const type = triggerInfo.trigger === "@" ? "expert" : "skill";
+  mentionState.open = true;
+  mentionState.type = type;
+  mentionState.query = triggerInfo.query;
+  mentionState.start = triggerInfo.start;
+  mentionState.end = triggerInfo.end;
+  mentionState.items = getMentionItems(type, triggerInfo.query);
+  mentionState.activeIndex = 0;
+
+  if (chatMentionHead) {
+    chatMentionHead.textContent = type === "expert"
+      ? "召唤专家 (@, 一次一位)"
+      : "添加技能 (/, 可多选)";
+  }
+  renderMentionList();
+  positionMentionPopover(chatPanelInput);
+}
+
+function updateMentionFromTextarea() {
+  if (!chatPanelInput) return;
+  const info = detectMentionTrigger(chatPanelInput);
+  if (!info) {
+    closeMentionPopover();
+    return;
+  }
+  openMentionPopover(info);
+}
+
+function ensureSkillChips() {
+  if (chatSkillChips) return chatSkillChips;
+  const top = chatPanelInput?.closest(".ai-input-top");
+  if (!top) return null;
+  const el = document.createElement("div");
+  el.className = "ai-skill-chips hidden";
+  el.id = "chatSkillChips";
+  el.setAttribute("aria-label", "已选技能");
+  top.insertBefore(el, chatPanelInput);
+  chatSkillChips = el;
+  return chatSkillChips;
+}
+
+function renderComposerSkills() {
+  const row = ensureSkillChips();
+  if (!row) return;
+  if (!composerSkills.length) {
+    row.innerHTML = "";
+    row.classList.add("hidden");
+    return;
+  }
+  row.classList.remove("hidden");
+  row.innerHTML = composerSkills
+    .map(s => `
+      <span class="ai-skill-chip" data-skill-id="${escapeHtml(s.id)}">
+        <span class="ai-skill-chip-icon" aria-hidden="true">${s.icon || "🔧"}</span>
+        <span class="ai-skill-chip-name">${escapeHtml(s.name)}</span>
+        <button type="button" class="ai-skill-chip-remove" data-remove-skill="${escapeHtml(s.id)}" aria-label="移除技能 ${escapeHtml(s.name)}">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </span>`)
+    .join("");
+  row.querySelectorAll("[data-remove-skill]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      removeComposerSkill(btn.dataset.removeSkill);
+    });
+  });
+}
+
+function addComposerSkill(item) {
+  if (!item?.id) return;
+  if (composerSkills.some(s => s.id === item.id)) return;
+  composerSkills.push({
+    id: item.id,
+    name: item.name,
+    icon: item.icon || "🔧"
+  });
+  const skills = global.AiToolModals?.getSkills?.() || [];
+  const found = skills.find(s => s.id === item.id);
+  if (found) found.selected = true;
+  renderComposerSkills();
+}
+
+function removeComposerSkill(id) {
+  composerSkills = composerSkills.filter(s => s.id !== id);
+  const skills = global.AiToolModals?.getSkills?.() || [];
+  const found = skills.find(s => s.id === id);
+  if (found) found.selected = false;
+  renderComposerSkills();
+}
+
+function clearComposerSkills() {
+  composerSkills.forEach(s => {
+    const skills = global.AiToolModals?.getSkills?.() || [];
+    const found = skills.find(x => x.id === s.id);
+    if (found) found.selected = false;
+  });
+  composerSkills = [];
+  renderComposerSkills();
+}
+
+function applyExpertToChatHeader(expert) {
+  if (!expert?.name) return;
+  currentAgentName = expert.name;
+  const titleEl = document.querySelector(".ai-chat-title");
+  if (titleEl) titleEl.textContent = expert.name;
+}
+
+function replaceMentionTrigger(before, after) {
+  const next = `${before}${after}`.replace(/[ \t]{2,}/g, " ");
+  chatPanelInput.value = next;
+  const caret = Math.min(before.length, next.length);
+  chatPanelInput.setSelectionRange(caret, caret);
+}
+
+function selectMentionItem(index) {
+  const item = mentionState.items[index];
+  if (!chatPanelInput || !item) return;
+
+  const value = chatPanelInput.value;
+  const start = mentionState.start;
+  const end = mentionState.end;
+  const before = value.slice(0, start);
+  const after = value.slice(end);
+
+  if (mentionState.type === "expert") {
+    replaceMentionTrigger(before, after);
+    global.AiToolModals?.setActiveExpert?.(item.id);
+    applyExpertToChatHeader(item);
+  } else {
+    replaceMentionTrigger(before, after);
+    addComposerSkill(item);
+  }
+
+  closeMentionPopover();
+  resizeChatInput();
+  chatPanelInput.focus();
+}
+
+function handleMentionKeydown(e) {
+  if (!mentionState.open) return false;
+  const max = mentionState.items.length;
+  if (e.key === "Escape") {
+    e.preventDefault();
+    closeMentionPopover();
+    return true;
+  }
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (!max) return true;
+    mentionState.activeIndex = (mentionState.activeIndex + 1) % max;
+    renderMentionList();
+    return true;
+  }
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (!max) return true;
+    mentionState.activeIndex = (mentionState.activeIndex - 1 + max) % max;
+    renderMentionList();
+    return true;
+  }
+  if (e.key === "Enter" || e.key === "Tab") {
+    if (!max) {
+      closeMentionPopover();
+      return e.key === "Tab";
+    }
+    e.preventDefault();
+    selectMentionItem(mentionState.activeIndex);
+    return true;
+  }
+  return false;
+}
+
 function bindChatEvents() {
+  ensureMentionPopover();
+  ensureSkillChips();
+
   chatPanelSend?.addEventListener("click", () => {
+    closeMentionPopover();
     const text = chatPanelInput.value.trim();
-    if (text) sendChatMessage(text);
+    const payload = buildSendPayload(text);
+    if (payload) sendChatMessage(payload);
   });
 
-  chatPanelInput?.addEventListener("input", resizeChatInput);
+  chatPanelInput?.addEventListener("input", () => {
+    resizeChatInput();
+    updateMentionFromTextarea();
+  });
+  chatPanelInput?.addEventListener("click", updateMentionFromTextarea);
+  chatPanelInput?.addEventListener("keyup", e => {
+    if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
+      updateMentionFromTextarea();
+    }
+  });
   chatPanelInput?.addEventListener("keydown", e => {
+    if (handleMentionKeydown(e)) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       const text = chatPanelInput.value.trim();
-      if (text) sendChatMessage(text);
+      const payload = buildSendPayload(text);
+      if (payload) sendChatMessage(payload);
     }
+  });
+
+  window.addEventListener("ai-expert-change", e => {
+    const expert = e.detail?.expert;
+    if (!expert || expert.id === "default") return;
+    if (aiChatPanel?.classList.contains("hidden")) return;
+    applyExpertToChatHeader(expert);
+  });
+
+  document.addEventListener("pointerdown", e => {
+    if (!mentionState.open) return;
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (t.closest("#chatMentionPopover") || t.closest("#chatPanelInput")) return;
+    closeMentionPopover();
+  }, true);
+
+  window.addEventListener("resize", () => {
+    if (mentionState.open) positionMentionPopover(chatPanelInput);
   });
 
   chatCloseBtn?.addEventListener("click", closeChatPanel);
@@ -674,6 +1043,7 @@ function unlockPageScroll() {
 }
 
 function closeChatPanel() {
+  closeMentionPopover();
   aiChatPanel.classList.add("hidden");
   aiChatPanel.style.top = "";
   unlockPageScroll();
@@ -710,6 +1080,8 @@ function clearCurrentChat() {
   if (!confirm("确定清空当前对话吗？")) return;
   chatMessages.innerHTML = "";
   welcomeSuggestionIndex = 0;
+  clearComposerSkills();
+  if (chatPanelInput) chatPanelInput.value = "";
   showWelcome();
   closeSidePanel();
   hideSuggestions();
@@ -888,6 +1260,8 @@ function startNewConversation() {
   aiHistoryToggleBtn.classList.remove("active");
   chatMessages.innerHTML = "";
   welcomeSuggestionIndex = 0;
+  clearComposerSkills();
+  if (chatPanelInput) chatPanelInput.value = "";
   selectAgent(DEFAULT_AGENT_ID, DEFAULT_AGENT_NAME);
   hideSuggestions();
   resetChatInputHeight();
@@ -1000,9 +1374,18 @@ function hideSuggestions() {
   removeAllSuggestions();
 }
 
+function buildSendPayload(text) {
+  const skillNames = composerSkills.map(s => s.name).filter(Boolean);
+  if (!text && !skillNames.length) return "";
+  if (!skillNames.length) return text;
+  const skillLine = `[技能] ${skillNames.join("、")}`;
+  return text ? `${text}\n${skillLine}` : skillLine;
+}
+
 function sendChatMessage(text) {
   removeWelcomeScreen();
   isFirstMessage = false;
+  closeMentionPopover();
 
   ensureCurrentSession(text);
   removeAllSuggestions();

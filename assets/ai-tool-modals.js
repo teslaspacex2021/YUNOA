@@ -12,13 +12,39 @@
   ];
 
   const MOCK_EXPERTS = [
-    { id: "e1", name: "小翼·智能助手", dept: "综合服务部·智能综合助理", avatar: "👩‍💼", selected: true },
-    { id: "e2", name: "小翼·客服", dept: "客户服务部·智能客服专员", avatar: "👨‍💼", selected: true },
-    { id: "e3", name: "小翼·财务", dept: "财务部·智能财务助理", avatar: "👩‍💻", selected: true },
-    { id: "e4", name: "小翼·人力", dept: "人力资源部·智能人力助理", avatar: "👨‍💻", selected: false },
-    { id: "e5", name: "小翼·法务", dept: "法务部·智能法务顾问", avatar: "👩‍⚖️", selected: false },
-    { id: "e6", name: "小翼·公文", dept: "办公室·智能公文助理", avatar: "👨‍🏫", selected: false }
+    { id: "e1", name: "小翼·智能助手", dept: "综合服务部 · 综合支撑 - 办公室 - 智能综合", avatar: "👩‍💼", status: "online", color: "#1677ff", selected: true },
+    { id: "e2", name: "小翼·定时任务助手", dept: "综合服务部 · 定时调度与任务提醒", avatar: "⏱️", status: "online", color: "#13c2c2", selected: false },
+    { id: "e3", name: "小翼·客服", dept: "客户服务部 · 智能客服专员", avatar: "👨‍💼", status: "online", color: "#52c41a", selected: false },
+    { id: "e4", name: "小翼·数据", dept: "数据运营部 · 数据分析与指标解读", avatar: "📊", status: "training", color: "#722ed1", selected: false },
+    { id: "e5", name: "小翼·营销", dept: "市场营销部 · 营销策划与客户洞察", avatar: "📣", status: "online", color: "#eb2f96", selected: false },
+    { id: "e6", name: "小翼·审计", dept: "审计部 · 合规审计与风险核查", avatar: "🔍", status: "online", color: "#2f54eb", selected: false },
+    { id: "e7", name: "小翼·HR", dept: "人力资源部 · 智能人力助理", avatar: "👨‍💻", status: "online", color: "#fa8c16", selected: false },
+    { id: "e8", name: "小翼·财务", dept: "财务部 · 智能财务助理", avatar: "👩‍💻", status: "online", color: "#fa541c", selected: false },
+    { id: "e9", name: "小翼·运维", dept: "信息技术部 · 系统运维与故障排查", avatar: "🛠️", status: "paused", color: "#8c8c8c", selected: false },
+    { id: "e10", name: "小翼·商机", dept: "销售支撑部 · 商机挖掘与拓客", avatar: "💡", status: "online", color: "#a0d911", selected: false },
+    { id: "e11", name: "小翼·文档", dept: "办公室 · 智能公文助理", avatar: "📄", status: "online", color: "#36cfc9", selected: false },
+    { id: "e12", name: "小翼·经分", dept: "经营分析部 · 经营分析与报表", avatar: "📈", status: "training", color: "#597ef7", selected: false },
+    { id: "e13", name: "小翼·法务", dept: "法务部 · 智能法务顾问", avatar: "👩‍⚖️", status: "online", color: "#9254de", selected: false },
+    { id: "e14", name: "小翼·采购", dept: "采购管理部 · 采购询比与供应商协同", avatar: "🛒", status: "online", color: "#13c2c2", selected: false },
+    { id: "e15", name: "小翼·合同", dept: "法务部 · 合同审查与条款比对", avatar: "📝", status: "online", color: "#1890ff", selected: false },
+    { id: "e16", name: "小翼·会议", dept: "综合服务部 · 会议安排与纪要生成", avatar: "🗓️", status: "online", color: "#52c41a", selected: false },
+    { id: "e17", name: "小翼·访客", dept: "行政管理部 · 访客预约与通行指引", avatar: "🪪", status: "paused", color: "#8c8c8c", selected: false },
+    { id: "e18", name: "小翼·督办", dept: "办公室 · 督办跟踪与进度提醒", avatar: "🎯", status: "online", color: "#fa541c", selected: false },
+    { id: "e19", name: "小翼·安全", dept: "安全部 · 安全合规与风险提示", avatar: "🛡️", status: "online", color: "#f5222d", selected: false },
+    { id: "e20", name: "小翼·知识", dept: "知识管理部 · 知识检索与问答", avatar: "📚", status: "training", color: "#2f54eb", selected: false },
+    { id: "e21", name: "小翼·报表", dept: "数据运营部 · 报表生成与可视化", avatar: "📉", status: "online", color: "#722ed1", selected: false },
+    { id: "e22", name: "小翼·培训", dept: "人力资源部 · 培训课程与学习助手", avatar: "🎓", status: "online", color: "#eb2f96", selected: false },
+    { id: "e23", name: "小翼·资产", dept: "资产管理部 · 资产盘点与调拨", avatar: "📦", status: "paused", color: "#8c8c8c", selected: false },
+    { id: "e24", name: "小翼·项目", dept: "项目管理部 · 项目进度与风险跟踪", avatar: "🚀", status: "online", color: "#fa8c16", selected: false }
   ];
+
+  const EXPERT_PAGE_SIZE = 12;
+
+  const EXPERT_STATUS_LABELS = {
+    online: "在线",
+    training: "训练中",
+    paused: "已暂停"
+  };
 
   const MOCK_MCP = [
     { id: "m1", name: "期刊数据多维分析", desc: "描述描述描述描述描述描述描述描述描述描述描述描述", selected: true },
@@ -57,12 +83,13 @@
       sidebarTitle: "专家市场",
       showCreate: false,
       showSidebar: false,
+      layout: "expert-grid",
       nav: [
         { id: "digital", label: "数字员工", icon: "👤" },
         { id: "agent", label: "智能体市场", icon: "🤖" }
       ],
-      listTitle: "数字人列表",
-      searchPlaceholder: "搜索数字人",
+      listTitle: "选择数字员工",
+      searchPlaceholder: "搜索数字员工名称、岗位、部门...",
       items: () => MOCK_EXPERTS,
       type: "expert"
     },
@@ -97,7 +124,8 @@
   let currentType = null;
   let currentNav = null;
   let searchQuery = "";
-  let activeExpertId = "default";
+  let expertPage = 1;
+  let activeExpertId = "e1";
 
   const DEFAULT_EXPERT = { id: "default", name: "AI专家", dept: "默认数字人助手" };
 
@@ -117,21 +145,22 @@
 
   function getActiveExpert() {
     if (activeExpertId === "default") return DEFAULT_EXPERT;
-    const selected = getSelectedExperts();
-    if (!selected.length) return DEFAULT_EXPERT;
-    if (activeExpertId) {
-      const found = selected.find(item => item.id === activeExpertId);
-      if (found) return found;
-    }
-    return selected[0];
+    const found = MOCK_EXPERTS.find(item => item.id === activeExpertId);
+    return found || DEFAULT_EXPERT;
   }
 
-  function setActiveExpert(id) {
+  function setActiveExpert(id, options = {}) {
     const item = MOCK_EXPERTS.find(e => e.id === id);
-    if (item) item.selected = true;
-    activeExpertId = id || "default";
+    if (item) {
+      MOCK_EXPERTS.forEach(e => {
+        e.selected = e.id === id;
+      });
+      activeExpertId = id;
+    } else {
+      activeExpertId = id || "default";
+    }
     notifyExpertChange();
-    if (currentType === "expert" && overlay && !overlay.classList.contains("hidden")) {
+    if (!options.skipRender && currentType === "expert" && overlay && !overlay.classList.contains("hidden")) {
       render();
     }
   }
@@ -241,17 +270,59 @@
 
   function renderExpertItem(item) {
     const isActive = getActiveExpert().id === item.id;
-    return `<div class="ai-picker-item${item.selected ? " ai-picker-item-selectable" : ""}${isActive ? " ai-picker-item-active" : ""}" data-id="${item.id}">
-      <div class="ai-picker-item-avatar" style="display:flex;align-items:center;justify-content:center;font-size:22px">${item.avatar}</div>
-      <div class="ai-picker-item-body">
-        <div class="ai-picker-item-title">${escapeHtml(item.name)}</div>
-        <div class="ai-picker-item-desc">${escapeHtml(item.dept)}</div>
-      </div>
-      <div class="ai-picker-item-action">
-        ${item.selected
-          ? `<span class="ai-picker-check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>`
-          : `<button type="button" class="ai-picker-add-btn" data-add="${item.id}">添加</button>`}
-      </div>
+    const status = item.status || "online";
+    const statusLabel = EXPERT_STATUS_LABELS[status] || EXPERT_STATUS_LABELS.online;
+    return `
+    <button type="button" class="ai-expert-card${isActive ? " is-active" : ""}" data-expert-id="${item.id}" role="option" aria-selected="${isActive}">
+      <span class="ai-expert-card-avatar" style="background:${(item.color || "#1677ff")}18">${item.avatar || "👤"}</span>
+      <span class="ai-expert-card-body">
+        <span class="ai-expert-card-name-row">
+          <span class="ai-expert-card-name">${escapeHtml(item.name)}</span>
+          <span class="ai-expert-status is-${status}">${statusLabel}</span>
+        </span>
+        <span class="ai-expert-card-desc">${escapeHtml(item.dept || "")}</span>
+      </span>
+    </button>`;
+  }
+
+  function renderExpertGrid(items) {
+    if (!items.length) return `<div class="ai-picker-empty">暂无匹配的数字员工</div>`;
+    return `<div class="ai-expert-grid" role="listbox" aria-label="数字员工列表">${items.map(renderExpertItem).join("")}</div>`;
+  }
+
+  function getExpertPageCount(total) {
+    return Math.max(1, Math.ceil(total / EXPERT_PAGE_SIZE));
+  }
+
+  function paginateExperts(items) {
+    const totalPages = getExpertPageCount(items.length);
+    if (expertPage > totalPages) expertPage = totalPages;
+    if (expertPage < 1) expertPage = 1;
+    const start = (expertPage - 1) * EXPERT_PAGE_SIZE;
+    return {
+      pageItems: items.slice(start, start + EXPERT_PAGE_SIZE),
+      total: items.length,
+      page: expertPage,
+      totalPages
+    };
+  }
+
+  function renderExpertPagination(page, totalPages, total) {
+    if (total === 0) return "";
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+      .map(p => `
+        <button type="button" class="ai-expert-page-btn${p === page ? " is-active" : ""}" data-expert-page="${p}" aria-label="第 ${p} 页" aria-current="${p === page ? "page" : "false"}">${p}</button>`)
+      .join("");
+    return `
+    <div class="ai-expert-pagination" role="navigation" aria-label="数字员工分页">
+      <button type="button" class="ai-expert-page-nav" data-expert-page-nav="prev" aria-label="上一页" ${page <= 1 ? "disabled" : ""}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="ai-expert-page-list">${pages}</div>
+      <button type="button" class="ai-expert-page-nav" data-expert-page-nav="next" aria-label="下一页" ${page >= totalPages ? "disabled" : ""}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <span class="ai-expert-page-meta">共 ${total} 人 · ${page}/${totalPages} 页</span>
     </div>`;
   }
 
@@ -285,14 +356,43 @@
   }
 
   function renderList(items, type) {
+    if (type === "expert") return renderExpertGrid(items);
     if (!items.length) return `<div class="ai-picker-empty">暂无匹配结果</div>`;
     const renderMap = {
-      expert: renderExpertItem,
       mcp: renderMcpItem,
       knowledge: renderKnowledgeItem
     };
-    const render = renderMap[type] || renderSkillItem;
-    return items.map(render).join("");
+    const renderFn = renderMap[type] || renderSkillItem;
+    return items.map(renderFn).join("");
+  }
+
+  function renderExpertPicker(dialog, cfg, items) {
+    const { pageItems, page, totalPages, total } = paginateExperts(items);
+    dialog.classList.add("no-sidebar", "is-expert-picker");
+    dialog.innerHTML = `
+      <main class="ai-picker-main ai-expert-picker-main">
+        <div class="ai-expert-picker-header">
+          <div class="ai-expert-picker-title-row">
+            <h3 class="ai-expert-picker-title">
+              <span class="ai-expert-picker-title-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </span>
+              ${escapeHtml(cfg.listTitle)}
+            </h3>
+            <button type="button" class="ai-picker-close" id="aiPickerCloseBtn" aria-label="关闭">×</button>
+          </div>
+          <div class="ai-picker-search ai-expert-picker-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="aiPickerSearchInput" placeholder="${escapeHtml(cfg.searchPlaceholder)}" value="${escapeHtml(searchQuery)}" />
+          </div>
+        </div>
+        <div class="ai-picker-list ai-expert-picker-list">${renderExpertGrid(pageItems)}</div>
+        ${renderExpertPagination(page, totalPages, total)}
+      </main>`;
   }
 
   function render() {
@@ -302,6 +402,13 @@
     const selectedCount = getSelected(allItems).length;
     const dialog = ensureOverlay().querySelector(".ai-picker-dialog");
 
+    if (cfg.layout === "expert-grid") {
+      renderExpertPicker(dialog, cfg, items);
+      bindDialogEvents(dialog, allItems);
+      return;
+    }
+
+    dialog.classList.remove("is-expert-picker");
     const sidebarTitle = cfg.sidebarTitle
       ? `<div class="ai-picker-sidebar-title">${escapeHtml(cfg.sidebarTitle)}</div>`
       : "";
@@ -351,7 +458,14 @@
 
     dialog.querySelector("#aiPickerSearchInput")?.addEventListener("input", e => {
       searchQuery = e.target.value;
+      if (currentType === "expert") expertPage = 1;
       render();
+      const input = ensureOverlay().querySelector("#aiPickerSearchInput");
+      if (input) {
+        input.focus();
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
+      }
     });
 
     dialog.querySelectorAll("[data-nav]").forEach(btn => {
@@ -368,8 +482,7 @@
         const selected = getSelected(allItems);
         if (selected.length >= MAX_SELECT) return;
         item.selected = true;
-        if (currentType === "expert") setActiveExpert(item.id);
-        else if (currentType === "knowledge") notifyKnowledgeChange();
+        if (currentType === "knowledge") notifyKnowledgeChange();
         render();
       });
     });
@@ -379,24 +492,37 @@
         e.stopPropagation();
         const item = allItems.find(i => i.id === btn.dataset.remove);
         if (item) item.selected = false;
-        if (currentType === "expert") syncActiveExpertAfterSelection();
-        else if (currentType === "knowledge") notifyKnowledgeChange();
+        if (currentType === "knowledge") notifyKnowledgeChange();
         render();
       });
     });
 
     if (currentType === "expert") {
-      dialog.querySelectorAll(".ai-picker-item-selectable").forEach(row => {
-        row.addEventListener("click", () => {
-          const item = allItems.find(i => i.id === row.dataset.id);
-          if (item?.selected) setActiveExpert(item.id);
+      dialog.querySelectorAll("[data-expert-id]").forEach(card => {
+        card.addEventListener("click", () => {
+          setActiveExpert(card.dataset.expertId, { skipRender: true });
+          close();
         });
       });
 
-      dialog.querySelectorAll(".ai-picker-tag[data-id]").forEach(tag => {
-        tag.addEventListener("click", e => {
-          if (e.target.closest("[data-remove]")) return;
-          setActiveExpert(tag.dataset.id);
+      dialog.querySelectorAll("[data-expert-page]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const page = Number(btn.dataset.expertPage);
+          if (!Number.isFinite(page) || page === expertPage) return;
+          expertPage = page;
+          render();
+        });
+      });
+
+      dialog.querySelectorAll("[data-expert-page-nav]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          const dir = btn.dataset.expertPageNav;
+          const filtered = getItems();
+          const totalPages = getExpertPageCount(filtered.length);
+          if (dir === "prev") expertPage = Math.max(1, expertPage - 1);
+          if (dir === "next") expertPage = Math.min(totalPages, expertPage + 1);
+          render();
         });
       });
     }
@@ -408,6 +534,7 @@
     currentType = type;
     currentNav = cfg.nav[0].id;
     searchQuery = "";
+    expertPage = 1;
     ensureOverlay().classList.remove("hidden");
     document.body.style.overflow = "hidden";
     render();
