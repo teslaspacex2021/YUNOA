@@ -749,7 +749,7 @@ function openMentionPopover(triggerInfo) {
 
   if (chatMentionHead) {
     chatMentionHead.textContent = type === "expert"
-      ? "召唤专家 (@, 一次一位)"
+      ? "切换专家 (@, 一次一位)"
       : "添加技能 (/, 可多选)";
   }
   renderMentionList();

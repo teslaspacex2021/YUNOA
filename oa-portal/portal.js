@@ -129,6 +129,11 @@ function initHeaderComposer() {
   bindPlusMenu(headerAiPlusBtn, headerAiPlusMenu);
   bindPlusMenu(stickyAiPlusBtn, stickyAiPlusMenu);
   bindAiComposerModes();
+  syncHeaderPlusSelectionBadges();
+
+  window.addEventListener("ai-skill-change", syncHeaderPlusSelectionBadges);
+  window.addEventListener("ai-knowledge-change", syncHeaderPlusSelectionBadges);
+  window.addEventListener("ai-mcp-change", syncHeaderPlusSelectionBadges);
 
   // 整个切换容器（含图标、间隙、内边距）任意处点击都切换模式
   [headerAiEntry, stickyAiEntry].forEach(entry => {
@@ -715,6 +720,34 @@ function closeAllPlusMenus() {
   });
   [headerAiPlusBtn, stickyAiPlusBtn].forEach(btn => {
     btn?.setAttribute?.("aria-expanded", "false");
+  });
+}
+
+function getPlusSelectionCount(tool) {
+  const modals = window.AiToolModals;
+  if (!modals) return 0;
+  if (tool === "skill") return (modals.getSelectedSkills?.() || []).length;
+  if (tool === "knowledge") return (modals.getSelectedKnowledge?.() || []).length;
+  if (tool === "mcp") return (modals.getSelectedMcp?.() || []).length;
+  return 0;
+}
+
+function syncHeaderPlusSelectionBadges() {
+  document.querySelectorAll(".header-ai-plus-item").forEach(btn => {
+    const tool = btn.dataset.tool;
+    if (!["skill", "knowledge", "mcp"].includes(tool)) return;
+    const count = getPlusSelectionCount(tool);
+    let badge = btn.querySelector(".header-ai-plus-badge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "header-ai-plus-badge";
+      badge.setAttribute("aria-hidden", "true");
+      btn.appendChild(badge);
+    }
+    const active = count > 0;
+    btn.classList.toggle("has-selection", active);
+    badge.textContent = active ? String(count) : "";
+    badge.hidden = !active;
   });
 }
 

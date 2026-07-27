@@ -16,6 +16,10 @@
   const ytAiToolbar = document.getElementById("ytAiToolbar");
   const ytAiModeSlot = document.getElementById("ytAiModeSlot");
   const ytAiModelSlot = document.getElementById("ytAiModelSlot");
+  const welcomeTitle = document.querySelector(".yt-welcome-title");
+
+  let mentionApi = null;
+  let currentExpertName = "AI专家";
 
   const MODULE_META = {
     message: { title: "消息", desc: "即时消息与通知中心。" },
@@ -76,11 +80,23 @@
     mainContent?.classList.toggle("has-messages", hasMessages);
   }
 
+  function applyExpertToWelcome(expert) {
+    if (!expert?.name) return;
+    currentExpertName = expert.name;
+    if (welcomeTitle) {
+      welcomeTitle.innerHTML = `<span class="yt-hi">Hi</span> 我是${expert.name}`;
+    }
+    const panelTitle = document.querySelector(".yt-yxk-title");
+    if (panelTitle) panelTitle.textContent = expert.name;
+  }
+
   function resetChat() {
     chatMessages.innerHTML = "";
     chatMessages.classList.add("hidden");
     chatWelcome.classList.remove("hidden");
     chatInput.value = "";
+    mentionApi?.clearSkills?.();
+    mentionApi?.close?.();
     syncSendState();
     setChatStage(false);
     chatInput.focus();
@@ -99,19 +115,22 @@
 
   function syncSendState() {
     const hasText = Boolean(chatInput?.value.trim());
-    sendBtn?.classList.toggle("has-text", hasText);
+    const hasSkills = Boolean(mentionApi?.getSkills?.().length);
+    sendBtn?.classList.toggle("has-text", hasText || hasSkills);
   }
 
   function sendMessage(raw) {
+    mentionApi?.close?.();
     const text = (raw ?? chatInput.value).trim();
-    if (!text) return;
-    appendMessage("user", text);
+    const payload = mentionApi?.buildSendPayload?.(text) || text;
+    if (!payload) return;
+    appendMessage("user", payload);
     chatInput.value = "";
     syncSendState();
     setTimeout(() => {
       appendMessage(
         "ai",
-        `我是AI专家，已收到：「${text}」\n\n可继续提问，或从左侧进入智能体广场、日程与知识中心。`
+        `我是${currentExpertName}，已收到：「${payload}」\n\n可继续提问，或从左侧进入智能体广场、日程与知识中心。`
       );
     }, 350);
   }
@@ -130,6 +149,16 @@
       const modelLabel = ytAiModelSlot.querySelector(".ai-model-select-label");
       if (modelLabel) modelLabel.dataset.preferAuto = "true";
     }
+  }
+
+  function mountMention() {
+    if (!window.AiComposerMention || !chatInput) return;
+    mentionApi = AiComposerMention.bind({
+      textarea: chatInput,
+      popoverId: "ytMentionPopover",
+      onExpertSelect: applyExpertToWelcome,
+      onAfterChange: syncSendState
+    });
   }
 
   railItems.forEach((item) => {
@@ -159,6 +188,12 @@
   });
   chatInput?.addEventListener("input", syncSendState);
 
+  window.addEventListener("ai-expert-change", (e) => {
+    const expert = e.detail?.expert;
+    if (!expert || expert.id === "default") return;
+    applyExpertToWelcome(expert);
+  });
+
   document.querySelectorAll(".yt-suggest").forEach((btn) => {
     btn.addEventListener("click", () => sendMessage(btn.textContent.trim()));
   });
@@ -170,6 +205,7 @@
   });
 
   mountSharedAiTools();
+  mountMention();
   syncSendState();
   setChatStage(false);
   showYixiaoka();

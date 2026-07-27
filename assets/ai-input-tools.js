@@ -301,6 +301,32 @@ function syncKnowledgeBaseButtons() {
       btn.classList.toggle("active", hasSelected);
     });
   });
+  syncComposerPlusSelectionBadges();
+}
+
+function syncComposerPlusSelectionBadges() {
+  const counts = {
+    "add-skill": (window.AiToolModals?.getSelectedSkills?.() || []).length,
+    "knowledge-base": (window.AiToolModals?.getSelectedKnowledge?.() || []).length,
+    mcp: (window.AiToolModals?.getSelectedMcp?.() || []).length
+  };
+  document.querySelectorAll(".ai-composer-plus-item").forEach(btn => {
+    const tool = btn.dataset.tool;
+    if (!(tool in counts)) return;
+    const count = counts[tool];
+    let badge = btn.querySelector(".ai-composer-plus-badge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "ai-composer-plus-badge";
+      badge.setAttribute("aria-hidden", "true");
+      btn.appendChild(badge);
+    }
+    const active = count > 0;
+    btn.classList.toggle("has-selection", active);
+    btn.classList.toggle("active", active);
+    badge.textContent = active ? String(count) : "";
+    badge.hidden = !active;
+  });
 }
 
 function closeAllComposerModeMenus(except) {
@@ -382,6 +408,7 @@ function mountAiToolbar(container) {
   container.innerHTML = getAiToolbarHtml({ mode: selectedComposerMode });
   mountedToolbars.add(container);
   syncKnowledgeBaseButtons();
+  syncComposerPlusSelectionBadges();
 }
 
 function mountModeSelect(container) {
@@ -507,6 +534,8 @@ function bindGlobalMenuDismiss() {
 
 bindGlobalMenuDismiss();
 window.addEventListener("ai-knowledge-change", syncKnowledgeBaseButtons);
+window.addEventListener("ai-skill-change", syncComposerPlusSelectionBadges);
+window.addEventListener("ai-mcp-change", syncComposerPlusSelectionBadges);
 window.addEventListener("ai-composer-mode-change", e => {
   const mode = e.detail?.mode;
   if (!mode || e.detail?.source === "toolbar") {

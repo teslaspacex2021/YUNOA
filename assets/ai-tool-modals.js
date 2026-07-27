@@ -137,10 +137,36 @@
     return MOCK_KNOWLEDGE.filter(item => item.selected);
   }
 
+  function getSelectedSkills() {
+    return MOCK_SKILLS.filter(item => item.selected);
+  }
+
+  function getSelectedMcp() {
+    return MOCK_MCP.filter(item => item.selected);
+  }
+
   function notifyKnowledgeChange() {
     window.dispatchEvent(new CustomEvent("ai-knowledge-change", {
       detail: { selected: getSelectedKnowledge() }
     }));
+  }
+
+  function notifySkillChange() {
+    window.dispatchEvent(new CustomEvent("ai-skill-change", {
+      detail: { selected: getSelectedSkills() }
+    }));
+  }
+
+  function notifyMcpChange() {
+    window.dispatchEvent(new CustomEvent("ai-mcp-change", {
+      detail: { selected: getSelectedMcp() }
+    }));
+  }
+
+  function notifyTypeSelectionChange(type) {
+    if (type === "skill") notifySkillChange();
+    else if (type === "knowledge") notifyKnowledgeChange();
+    else if (type === "mcp") notifyMcpChange();
   }
 
   function getActiveExpert() {
@@ -482,7 +508,7 @@
         const selected = getSelected(allItems);
         if (selected.length >= MAX_SELECT) return;
         item.selected = true;
-        if (currentType === "knowledge") notifyKnowledgeChange();
+        notifyTypeSelectionChange(currentType);
         render();
       });
     });
@@ -492,7 +518,7 @@
         e.stopPropagation();
         const item = allItems.find(i => i.id === btn.dataset.remove);
         if (item) item.selected = false;
-        if (currentType === "knowledge") notifyKnowledgeChange();
+        notifyTypeSelectionChange(currentType);
         render();
       });
     });
@@ -546,13 +572,18 @@
     overlay.classList.add("hidden");
     document.body.style.overflow = "";
     if (closingType === "expert") syncActiveExpertAfterSelection();
-    if (closingType === "knowledge") notifyKnowledgeChange();
+    if (closingType === "skill" || closingType === "knowledge" || closingType === "mcp") {
+      notifyTypeSelectionChange(closingType);
+    }
     currentType = null;
   }
 
   function init() {
     ensureOverlay();
     syncActiveExpertAfterSelection();
+    notifySkillChange();
+    notifyKnowledgeChange();
+    notifyMcpChange();
   }
 
   window.AiToolModals = {
@@ -562,6 +593,8 @@
     getCurrentType: () => (overlay && !overlay.classList.contains("hidden") ? currentType : null),
     getSelectedExperts,
     getSelectedKnowledge,
+    getSelectedSkills,
+    getSelectedMcp,
     getExperts,
     getSkills,
     getActiveExpert,
