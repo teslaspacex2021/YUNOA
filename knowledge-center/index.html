@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>企业专属智库 - 知识中心</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 知识库列表视图 -->
+  <div class="app-layout" id="listView">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="user-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+        </div>
+        <span class="sidebar-title">天翼云数字人</span>
+        <button type="button" class="sidebar-collapse" aria-label="收起侧栏" title="收起">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M9 4v16" />
+          </svg>
+        </button>
+      </div>
+
+      <button type="button" class="new-chat-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        新对话
+      </button>
+
+      <nav class="sidebar-nav" aria-label="主导航">
+        <a href="#" class="nav-item">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+          </span>
+          智能体广场
+        </a>
+        <a href="#" class="nav-item has-chevron">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="5" width="18" height="16" rx="2" />
+              <path d="M3 10h18M8 3v4M16 3v4" />
+            </svg>
+          </span>
+          日程与任务
+          <span class="nav-chevron" aria-hidden="true">›</span>
+        </a>
+
+        <button type="button" class="section-toggle" aria-expanded="true">
+          收起
+          <span class="toggle-chevron" aria-hidden="true">▾</span>
+        </button>
+
+        <a href="#" class="nav-item sub">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 7h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z" />
+              <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </span>
+          技能商店
+        </a>
+        <a href="#" class="nav-item sub">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
+          </span>
+          MCP工具
+        </a>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <nav class="sidebar-nav" aria-label="知识导航">
+        <a href="#" class="nav-item active">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+          </span>
+          知识中心
+        </a>
+        <a href="#" class="nav-item has-chevron">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </span>
+          知识运营
+          <span class="nav-chevron" aria-hidden="true">›</span>
+        </a>
+        <a href="#" class="nav-item has-chevron">
+          <span class="nav-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </span>
+          最近对话
+          <span class="nav-chevron" aria-hidden="true">›</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="footer-user">
+          <span class="footer-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </span>
+          段磊
+        </div>
+      </div>
+    </aside>
+
+    <main class="kb-main">
+      <header class="kb-header">
+        <div class="kb-tabs" role="tablist" aria-label="智库类型">
+          <button type="button" class="kb-tab" role="tab" aria-selected="false" data-tab="personal">个人专属智库</button>
+          <button type="button" class="kb-tab active" role="tab" aria-selected="true" data-tab="enterprise">企业专属智库</button>
+          <button type="button" class="kb-tab" role="tab" aria-selected="false" data-tab="dataset">知识数据集</button>
+        </div>
+        <div class="role-switch" id="roleSwitch">
+          <span class="role-switch-label">角色切换</span>
+          <button
+            type="button"
+            class="role-switch-btn"
+            id="roleSwitchBtn"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="roleSwitchMenu"
+          >
+            <span class="role-switch-value" id="roleSwitchValue">系统专员</span>
+            <svg class="role-switch-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          <ul class="role-switch-menu" id="roleSwitchMenu" role="listbox" hidden>
+            <li role="option" class="role-option active" data-role="系统专员" aria-selected="true">系统专员</li>
+            <li role="option" class="role-option" data-role="部门数智化专员" aria-selected="false">部门数智化专员</li>
+            <li role="option" class="role-option" data-role="知识维护者" aria-selected="false">知识维护者</li>
+            <li role="option" class="role-option" data-role="知识使用者" aria-selected="false">知识使用者</li>
+            <li role="option" class="role-option" data-role="知识查看专员" aria-selected="false">知识查看专员</li>
+          </ul>
+        </div>
+      </header>
+
+      <div class="kb-toolbar">
+        <div class="kb-search">
+          <input
+            type="search"
+            id="kbSearch"
+            placeholder="请输入知识库名称"
+            aria-label="搜索知识库"
+          />
+          <button type="button" class="kb-search-btn" aria-label="搜索">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </button>
+        </div>
+        <button type="button" class="kb-create-btn" id="btnCreateKb">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          新建知识库
+        </button>
+      </div>
+
+      <section class="kb-grid" id="kbGrid" aria-label="知识库列表"></section>
+    </main>
+  </div>
+
+  <!-- 知识库详情视图 -->
+  <div class="detail-layout hidden" id="detailView">
+    <aside class="detail-sidebar">
+      <button type="button" class="detail-kb-title" id="backToList" title="返回知识库列表">
+        <span id="detailKbName">数字化运营部</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      <div class="detail-side-search">
+        <input type="search" id="dirSearch" placeholder="搜索知识库" aria-label="搜索知识库目录" />
+        <svg class="detail-side-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+      </div>
+
+      <div class="dir-header">
+        <span>知识库目录</span>
+        <button type="button" class="dir-add-btn" id="btnAddDir" title="新建目录" aria-label="新建目录">+</button>
+      </div>
+
+      <nav class="dir-tree" id="dirTree" aria-label="知识库目录"></nav>
+    </aside>
+
+    <main class="detail-main">
+      <!-- 文档列表 -->
+      <div id="detailListPanel">
+        <div class="detail-filter">
+          <label class="filter-label" for="titleFilter">标题</label>
+          <input type="text" id="titleFilter" class="filter-input" placeholder="请输入标题" />
+          <button type="button" class="btn-primary" id="btnQuery">查询</button>
+          <button type="button" class="btn-default" id="btnReset">重置</button>
+        </div>
+
+        <div class="detail-actions">
+          <div class="detail-actions-left">
+            <button type="button" class="btn-primary" id="btnCreate">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+              新建
+            </button>
+            <button type="button" class="btn-primary" id="btnUpload">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              上传文档
+            </button>
+          </div>
+          <div class="detail-actions-right">
+            <button type="button" class="btn-batch" id="btnBatchDelete">批量删除</button>
+            <button type="button" class="btn-icon" id="btnRefresh" title="刷新" aria-label="刷新">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+                <polyline points="21 3 21 9 15 9"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="detail-table-wrap">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th style="width:64px">序号</th>
+                <th>标题</th>
+                <th style="width:100px">作者</th>
+                <th style="width:110px">任务时间</th>
+                <th style="width:110px">状态</th>
+                <th style="width:170px">创建时间</th>
+                <th style="width:160px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="docTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="detail-pagination">
+          <span class="page-total" id="pageTotal">共 20 条</span>
+          <select class="page-size" id="pageSize" aria-label="每页条数">
+            <option value="20">20条/页</option>
+            <option value="50">50条/页</option>
+            <option value="100">100条/页</option>
+          </select>
+          <button type="button" class="page-btn" id="pagePrev" aria-label="上一页">‹</button>
+          <button type="button" class="page-num active">1</button>
+          <button type="button" class="page-btn" id="pageNext" aria-label="下一页">›</button>
+          <span class="page-jump">前往 <input type="text" value="1" aria-label="页码" /> 页</span>
+        </div>
+      </div>
+
+      <!-- 新建文章 -->
+      <div class="form-panel hidden" id="createPanel">
+        <div class="form-topbar">
+          <div class="form-topbar-left">
+            <button type="button" class="form-back" data-back="create">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              返回
+            </button>
+            <span class="form-topbar-divider"></span>
+            <h2 class="form-title">新建文章</h2>
+          </div>
+          <button type="button" class="btn-primary" id="btnSaveCreate">保存</button>
+        </div>
+
+        <div class="form-body">
+          <div class="form-radios" role="radiogroup" aria-label="创建方式">
+            <label class="form-radio">
+              <input type="radio" name="createMode" value="single" checked />
+              <span class="radio-dot"></span>
+              新增单篇文章
+            </label>
+            <label class="form-radio">
+              <input type="radio" name="createMode" value="batch" />
+              <span class="radio-dot"></span>
+              文章批量导入
+            </label>
+          </div>
+
+          <div id="createSingleFields">
+            <div class="form-field">
+              <label class="form-label required" for="createTitle">标题</label>
+              <input type="text" id="createTitle" class="form-control" placeholder="标题" />
+            </div>
+            <div class="form-field">
+              <label class="form-label required" for="createDir">所属目录</label>
+              <select id="createDir" class="form-control form-select">
+                <option value="" disabled selected>所属目录</option>
+              </select>
+            </div>
+            <div class="form-field form-field-editor">
+              <label class="form-label required">正文</label>
+              <div class="editor">
+                <div class="editor-toolbar" aria-hidden="true">
+                  <button type="button" class="ed-btn" title="加粗"><b>B</b></button>
+                  <button type="button" class="ed-btn" title="斜体"><i>I</i></button>
+                  <button type="button" class="ed-btn" title="下划线"><u>U</u></button>
+                  <button type="button" class="ed-btn" title="删除线"><s>S</s></button>
+                  <span class="ed-sep"></span>
+                  <select class="ed-select" aria-label="样式"><option>Normal</option><option>Heading 1</option><option>Heading 2</option></select>
+                  <select class="ed-select" aria-label="字号"><option>14</option><option>16</option><option>18</option></select>
+                  <span class="ed-sep"></span>
+                  <button type="button" class="ed-btn" title="文字颜色">A</button>
+                  <button type="button" class="ed-btn" title="背景色">▣</button>
+                  <button type="button" class="ed-btn" title="引用">❝</button>
+                  <button type="button" class="ed-btn" title="代码">&lt;/&gt;</button>
+                  <span class="ed-sep"></span>
+                  <button type="button" class="ed-btn" title="无序列表">≡</button>
+                  <button type="button" class="ed-btn" title="有序列表">≣</button>
+                  <button type="button" class="ed-btn" title="减少缩进">⇤</button>
+                  <button type="button" class="ed-btn" title="增加缩进">⇥</button>
+                  <span class="ed-sep"></span>
+                  <button type="button" class="ed-btn" title="左对齐">☰</button>
+                  <button type="button" class="ed-btn" title="居中">☰</button>
+                  <button type="button" class="ed-btn" title="右对齐">☰</button>
+                  <button type="button" class="ed-btn" title="两端对齐">☰</button>
+                  <span class="ed-sep"></span>
+                  <button type="button" class="ed-btn" title="清除格式">Tx</button>
+                  <button type="button" class="ed-btn" title="链接">🔗</button>
+                  <button type="button" class="ed-btn" title="图片">🖼</button>
+                </div>
+                <div class="editor-content" id="createBody" contenteditable="true" data-placeholder="请输入"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="createBatchFields" class="hidden">
+            <div class="form-field">
+              <label class="form-label required">附件</label>
+              <div class="upload-row">
+                <button type="button" class="btn-primary" id="btnCreateBatchPick">点击选择</button>
+                <input type="file" id="createBatchFile" class="hidden" multiple accept=".pdf,.xls,.xlsx,.doc,.docx,.ppt,.pptx,.md,.txt,.zip,.7z,.tar" />
+              </div>
+              <p class="form-hint">目前支持上传文件类型 PDF、EXCEL、DOCX、PPT、MD、TXT、ZIP、7Z、TAR文件，单个文件不得超过100M</p>
+              <ul class="file-list" id="createBatchFileList"></ul>
+            </div>
+            <div class="form-field">
+              <label class="form-label required" for="createBatchDir">所属目录</label>
+              <select id="createBatchDir" class="form-control form-select">
+                <option value="" disabled selected>所属目录</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 上传文档 -->
+      <div class="form-panel hidden" id="uploadPanel">
+        <div class="form-topbar">
+          <div class="form-topbar-left">
+            <button type="button" class="form-back" data-back="upload">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              返回
+            </button>
+            <span class="form-topbar-divider"></span>
+            <h2 class="form-title">上传文档</h2>
+          </div>
+          <button type="button" class="btn-primary" id="btnSaveUpload">保存</button>
+        </div>
+
+        <div class="form-body">
+          <div class="form-radios" role="radiogroup" aria-label="上传方式">
+            <label class="form-radio">
+              <input type="radio" name="uploadMode" value="single" checked />
+              <span class="radio-dot"></span>
+              单文件上传
+            </label>
+            <label class="form-radio">
+              <input type="radio" name="uploadMode" value="batch" />
+              <span class="radio-dot"></span>
+              文件批量上传
+            </label>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label required">附件</label>
+            <div class="upload-row">
+              <button type="button" class="btn-primary" id="btnUploadPick">点击选择</button>
+              <input type="file" id="uploadFile" class="hidden" accept=".pdf,.xls,.xlsx,.doc,.docx,.ppt,.pptx,.md,.txt,.zip,.7z,.tar" />
+            </div>
+            <p class="form-hint">目前支持上传文件类型 PDF、EXCEL、DOCX、PPT、MD、TXT、ZIP、7Z、TAR文件，单个文件不得超过100M</p>
+            <ul class="file-list" id="uploadFileList"></ul>
+          </div>
+
+          <div class="form-field" id="uploadTitleField">
+            <label class="form-label required" for="uploadTitle">标题</label>
+            <input type="text" id="uploadTitle" class="form-control" placeholder="标题" />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label required" for="uploadDir">所属目录</label>
+            <select id="uploadDir" class="form-control form-select">
+              <option value="" disabled selected>所属目录</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 目录项更多菜单 -->
+  <div class="dir-ctx-menu hidden" id="dirCtxMenu" role="menu">
+    <button type="button" class="dir-ctx-item" role="menuitem" data-action="edit">编辑</button>
+    <button type="button" class="dir-ctx-item danger" role="menuitem" data-action="delete">删除</button>
+    <button type="button" class="dir-ctx-item" role="menuitem" data-action="toggle-category">显示/隐藏分类</button>
+    <button type="button" class="dir-ctx-item" role="menuitem" data-action="view-perm">查看权限</button>
+    <button type="button" class="dir-ctx-item" role="menuitem" data-action="edit-perm">编辑权限</button>
+    <button type="button" class="dir-ctx-item" role="menuitem" data-action="qa-perm">问答权限</button>
+    <button type="button" class="dir-ctx-item" role="menuitem" data-action="add-child">新增子栏目</button>
+  </div>
+
+  <!-- 新建知识目录弹窗 -->
+  <div class="modal-mask hidden" id="dirModal" role="dialog" aria-modal="true" aria-labelledby="dirModalTitle">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 class="modal-title" id="dirModalTitle">新建知识目录</h3>
+        <button type="button" class="modal-close" id="dirModalClose" aria-label="关闭">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label class="form-label required" for="dirNameInput">目录名称</label>
+          <input type="text" id="dirNameInput" class="form-control" placeholder="请输入目录名称" />
+        </div>
+        <div class="modal-field">
+          <label class="form-label required" for="dirParentSelect">上级目录</label>
+          <select id="dirParentSelect" class="form-control form-select">
+            <option value="" disabled selected>请选择上级目录</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label class="form-label" for="dirDescInput">描述</label>
+          <input type="text" id="dirDescInput" class="form-control" placeholder="请输入描述" />
+        </div>
+        <div class="modal-field">
+          <label class="form-label" for="dirSortInput">排序</label>
+          <div class="sort-input-wrap">
+            <input type="number" id="dirSortInput" class="form-control sort-input" value="100" min="0" step="1" />
+            <div class="sort-steppers">
+              <button type="button" class="sort-step" id="dirSortUp" aria-label="增加">▴</button>
+              <button type="button" class="sort-step" id="dirSortDown" aria-label="减少">▾</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-default" id="dirModalCancel">取消</button>
+        <button type="button" class="btn-primary" id="dirModalConfirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 权限配置弹窗 -->
+  <div class="modal-mask hidden" id="permModal" role="dialog" aria-modal="true" aria-labelledby="permModalTitle">
+    <div class="modal-panel perm-modal-panel">
+      <div class="modal-header">
+        <h3 class="modal-title" id="permModalTitle">编辑权限配置</h3>
+        <button type="button" class="modal-close" id="permModalClose" aria-label="关闭">×</button>
+      </div>
+      <div class="modal-body perm-modal-body">
+        <div class="perm-picker">
+          <div class="perm-picker-left">
+            <div class="perm-search">
+              <input type="search" id="permUserSearch" placeholder="请输入关键词查询" aria-label="搜索人员" />
+              <button type="button" class="perm-search-btn" id="permUserSearchBtn" aria-label="搜索">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+              </button>
+            </div>
+            <div class="perm-tabs" role="tablist">
+              <button type="button" class="perm-tab active" role="tab" aria-selected="true" data-tab="ops">运营人员</button>
+            </div>
+            <div class="perm-user-list" id="permUserList" role="listbox" aria-label="可选人员"></div>
+          </div>
+          <div class="perm-picker-right">
+            <div class="perm-selected-head">
+              <span>已选</span>
+              <button type="button" class="perm-clear-btn" id="permClearSelected">清空列表</button>
+            </div>
+            <div class="perm-selected-group">
+              <div class="perm-selected-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                用户
+              </div>
+              <div class="perm-selected-list" id="permSelectedList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-default" id="permModalCancel">取消</button>
+        <button type="button" class="btn-primary btn-primary-blue" id="permModalConfirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
