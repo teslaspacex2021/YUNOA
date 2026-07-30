@@ -121,7 +121,7 @@
               <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
             </svg>
           </span>
-          段磊
+          沈启航
         </div>
       </div>
     </aside>
@@ -466,6 +466,9 @@
             </div>
           </div>
         </div>
+        <p class="dir-perm-note">
+          查看权限、编辑权限、问答权限可在目录创建后，点击目录右侧「⋯」进行配置；新建时默认与父知识库一致。
+        </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-default" id="dirModalCancel">取消</button>
@@ -478,7 +481,10 @@
   <div class="modal-mask hidden" id="permModal" role="dialog" aria-modal="true" aria-labelledby="permModalTitle">
     <div class="modal-panel perm-modal-panel">
       <div class="modal-header">
-        <h3 class="modal-title" id="permModalTitle">编辑权限配置</h3>
+        <div class="modal-header-text">
+          <h3 class="modal-title" id="permModalTitle">编辑权限配置</h3>
+          <p class="perm-modal-desc hidden" id="permModalDesc">赋予权限后可供翼答访问</p>
+        </div>
         <button type="button" class="modal-close" id="permModalClose" aria-label="关闭">×</button>
       </div>
       <div class="modal-body perm-modal-body">
@@ -493,26 +499,18 @@
                 </svg>
               </button>
             </div>
-            <div class="perm-tabs" role="tablist">
-              <button type="button" class="perm-tab active" role="tab" aria-selected="true" data-tab="ops">运营人员</button>
+            <div class="perm-tabs" id="permTabs" role="tablist">
+              <button type="button" class="perm-tab active" role="tab" aria-selected="true" data-tab="dept">部门</button>
+              <button type="button" class="perm-tab" role="tab" aria-selected="false" data-tab="group">分组</button>
             </div>
-            <div class="perm-user-list" id="permUserList" role="listbox" aria-label="可选人员"></div>
+            <div class="perm-user-list" id="permUserList" role="tree" aria-label="组织列表"></div>
           </div>
           <div class="perm-picker-right">
             <div class="perm-selected-head">
               <span>已选</span>
               <button type="button" class="perm-clear-btn" id="permClearSelected">清空列表</button>
             </div>
-            <div class="perm-selected-group">
-              <div class="perm-selected-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                用户
-              </div>
-              <div class="perm-selected-list" id="permSelectedList"></div>
-            </div>
+            <div class="perm-selected-list" id="permSelectedList"></div>
           </div>
         </div>
       </div>
@@ -523,6 +521,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=preview-viewer"></script>
 </body>
 </html>
