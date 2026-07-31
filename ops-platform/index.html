@@ -886,6 +886,9 @@
             <el-select v-model="statDept" clearable placeholder="部门: 请选择">
               <el-option v-for="d in askDeptOptions" :key="d" :label="d" :value="d"></el-option>
             </el-select>
+            <el-select v-model="statAgent" clearable filterable placeholder="智能体: 请选择">
+              <el-option v-for="a in statAgentOptions" :key="a" :label="a" :value="a"></el-option>
+            </el-select>
             <el-button @click="resetStatFilter">重置</el-button>
             <el-button type="primary" @click="queryStat">🔍 查询</el-button>
           </div>
@@ -1014,7 +1017,7 @@
           </el-table>
           <div style="display:flex;justify-content:flex-end;margin-top:14px">
             <el-pagination v-model:current-page="deptMorePage" :page-size="deptMorePgSize"
-              :total="deptMoreList.length"
+              :total="filteredDeptMoreList.length"
               layout="prev, pager, next"
               @current-change="deptMorePage=$event" small></el-pagination>
           </div>
@@ -1702,6 +1705,7 @@ createApp({
     /* ---- 统计分析 ---- */
     const statDateRange = ref(null);
     const statDept = ref('');
+    const statAgent = ref('');
     const agentUsageChartEl = ref(null);
     const todoStatChartEl = ref(null);
     const deptActivityChartEl = ref(null);
@@ -1736,7 +1740,71 @@ createApp({
       { name:'小翼·营销', dept:'业务拓展中心', count:150, users:58, tokens:2100000, likes:40, dislikes:8, noFeedback:25 },
       { name:'小翼·法务', dept:'法务部', count:130, users:36, tokens:1900000, likes:28, dislikes:6, noFeedback:18 },
       { name:'小翼·分析', dept:'经营分析部', count:110, users:45, tokens:1600000, likes:32, dislikes:5, noFeedback:20 },
+      { name:'小翼·智能助手', dept:'数据运营中心', count:200, users:70, tokens:3500000, likes:45, dislikes:10, noFeedback:28 },
     ]);
+
+    const statAgentOptions = computed(() => {
+      const fromDetail = agentUsageDetailList.value.map(x => x.name);
+      return [...new Set([...askAgentOptions, ...fromDetail])];
+    });
+
+    /** 按部门/智能体筛选后的图表数据（演示用 mock 过滤） */
+    function buildFilteredStatCharts() {
+      const dept = statDept.value;
+      const agent = statAgent.value;
+
+      let agentData = agentUsageDetailList.value.map(x => ({ name: x.name, count: x.count, dept: x.dept }));
+      if (dept) agentData = agentData.filter(x => x.dept === dept);
+      if (agent) agentData = agentData.filter(x => x.name === agent);
+      if (!agentData.length && !dept && !agent) {
+        agentData = agentUsageData.map(x => ({ ...x }));
+      } else if (!agentData.length) {
+        agentData = [{ name: agent || '暂无数据', count: 0 }];
+      }
+
+      let todoData = todoDetailList.value.map(x => ({
+        name: x.name, count: x.pending, dept: x.dept, agents: x.agents || '',
+      }));
+      if (dept) todoData = todoData.filter(x => x.dept === dept);
+      if (agent) todoData = todoData.filter(x => x.agents.includes(agent));
+      if (!todoData.length) {
+        todoData = dept || agent
+          ? [{ name: '暂无数据', count: 0 }]
+          : todoStatData.map(x => ({ ...x }));
+      } else {
+        todoData = todoData
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 19)
+          .map(x => ({ name: x.name, count: x.count }));
+      }
+
+      let deptData = deptActivityData.map(x => ({ ...x }));
+      if (dept) deptData = deptData.filter(x => x.name === dept);
+      if (agent) {
+        const factor = 0.35 + ((agent.length * 17) % 40) / 100;
+        deptData = deptData.map(x => ({ name: x.name, count: Math.max(1, Math.round(x.count * factor)) }));
+      }
+      if (!deptData.length) deptData = [{ name: dept || '暂无数据', count: 0 }];
+
+      let personData = personMoreList.value.map(x => ({ name: x.name, count: Math.round(x.askCount / 100), dept: x.dept }));
+      if (dept) personData = personData.filter(x => x.dept === dept);
+      if (agent) {
+        const factor = 0.4 + ((agent.charCodeAt(0) || 1) % 30) / 100;
+        personData = personData.map(x => ({ name: x.name, count: Math.max(1, Math.round(x.count * factor)), dept: x.dept }));
+      }
+      if (!personData.length) {
+        personData = dept || agent
+          ? [{ name: '暂无数据', count: 0 }]
+          : personActivityData.map(x => ({ ...x }));
+      } else {
+        personData = personData
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10)
+          .map(x => ({ name: x.name, count: x.count }));
+      }
+
+      return { agentData, todoData, deptData, personData };
+    }
 
     const agentMoreVisible = ref(false);
     const agentMoreDateRange = ref(null);
@@ -1748,6 +1816,8 @@ createApp({
     const filteredAgentMoreList = computed(() => {
       void agentMoreQueryTick.value;
       let r = agentUsageDetailList.value;
+      if (statDept.value) r = r.filter(x => x.dept === statDept.value);
+      if (statAgent.value) r = r.filter(x => x.name === statAgent.value);
       if (agentMoreKw.value.trim()) {
         const s = agentMoreKw.value.trim().toLowerCase();
         r = r.filter(x => x.name.toLowerCase().includes(s));
@@ -1765,7 +1835,7 @@ createApp({
       return String(n);
     }
     function openAgentUsageMore() {
-      agentMoreKw.value = '';
+      agentMoreKw.value = statAgent.value || '';
       agentMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
       agentMorePage.value = 1;
       agentMoreVisible.value = true;
@@ -1822,6 +1892,8 @@ createApp({
     const filteredTodoMoreList = computed(() => {
       void todoMoreQueryTick.value;
       let r = todoDetailList.value;
+      if (statDept.value) r = r.filter(x => x.dept === statDept.value);
+      if (statAgent.value) r = r.filter(x => (x.agents || '').includes(statAgent.value));
       if (todoMoreDeptKw.value.trim()) {
         const s = todoMoreDeptKw.value.trim();
         r = r.filter(x => x.dept.includes(s));
@@ -1834,7 +1906,7 @@ createApp({
     });
 
     function openTodoMore() {
-      todoMoreDeptKw.value = '';
+      todoMoreDeptKw.value = statDept.value || '';
       todoMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
       todoMorePage.value = 1;
       todoMoreVisible.value = true;
@@ -1883,9 +1955,18 @@ createApp({
     const deptMorePage = ref(1);
     const deptMorePgSize = ref(10);
 
+    const filteredDeptMoreList = computed(() => {
+      let list = deptMoreList.value;
+      if (statDept.value) list = list.filter(x => x.name === statDept.value);
+      if (statAgent.value) {
+        const factor = 0.35 + ((statAgent.value.length * 17) % 40) / 100;
+        list = list.map(x => ({ ...x, askCount: Math.max(1, Math.round(x.askCount * factor)) }));
+      }
+      return list;
+    });
     const pagedDeptMoreList = computed(() => {
       const s = (deptMorePage.value - 1) * deptMorePgSize.value;
-      return deptMoreList.value.slice(s, s + deptMorePgSize.value);
+      return filteredDeptMoreList.value.slice(s, s + deptMorePgSize.value);
     });
 
     function openDeptMore() {
@@ -1940,7 +2021,12 @@ createApp({
     const filteredPersonMoreList = computed(() => {
       void personMoreQueryTick.value;
       let r = personMoreList.value;
-      if (personMoreDept.value) r = r.filter(x => x.dept === personMoreDept.value);
+      const deptFilter = personMoreDept.value || statDept.value;
+      if (deptFilter) r = r.filter(x => x.dept === deptFilter);
+      if (statAgent.value) {
+        const factor = 0.4 + ((statAgent.value.charCodeAt(0) || 1) % 30) / 100;
+        r = r.map(x => ({ ...x, askCount: Math.max(1, Math.round(x.askCount * factor)) }));
+      }
       if (personMoreNameKw.value.trim()) {
         const s = personMoreNameKw.value.trim();
         r = r.filter(x => x.name.includes(s));
@@ -1953,7 +2039,7 @@ createApp({
     });
 
     function openPersonMore() {
-      personMoreDept.value = '';
+      personMoreDept.value = statDept.value || '';
       personMoreNameKw.value = '';
       personMoreDateRange.value = statDateRange.value ? [...statDateRange.value] : null;
       personMorePage.value = 1;
@@ -1978,6 +2064,8 @@ createApp({
     function resetStatFilter() {
       statDateRange.value = null;
       statDept.value = '';
+      statAgent.value = '';
+      nextTick(() => renderStatCharts());
     }
     function queryStat() {
       ElementPlus.ElMessage.success('已按条件刷新统计');
@@ -2016,10 +2104,11 @@ createApp({
 
     function renderStatCharts() {
       [agentUsageChart, todoStatChart, deptActivityChart, personActivityChart].forEach(c => c && c.dispose());
-      agentUsageChart = renderBar(agentUsageChartEl.value, agentUsageData, '#fa8c16', false);
-      todoStatChart = renderBar(todoStatChartEl.value, todoStatData, '#1677ff', false);
-      deptActivityChart = renderBar(deptActivityChartEl.value, deptActivityData, '#1677ff', true);
-      personActivityChart = renderBar(personActivityChartEl.value, personActivityData, '#1677ff', true);
+      const { agentData, todoData, deptData, personData } = buildFilteredStatCharts();
+      agentUsageChart = renderBar(agentUsageChartEl.value, agentData, '#fa8c16', false);
+      todoStatChart = renderBar(todoStatChartEl.value, todoData, '#1677ff', false);
+      deptActivityChart = renderBar(deptActivityChartEl.value, deptData, '#1677ff', true);
+      personActivityChart = renderBar(personActivityChartEl.value, personData, '#1677ff', true);
     }
 
     function resizeCharts() {
@@ -2033,6 +2122,10 @@ createApp({
     watch(activeMenu, (v) => {
       if (v === 'ask') nextTick(() => renderAskCharts());
       if (v === 'stat') nextTick(() => renderStatCharts());
+    });
+
+    watch([statDept, statAgent], () => {
+      if (activeMenu.value === 'stat') nextTick(() => renderStatCharts());
     });
 
     return {
@@ -2056,7 +2149,7 @@ createApp({
       askDetailVisible, askCur, openAskDetail,
       resetAskFilter, queryAsk, exportAsk, setAskFeedback,
       // stat
-      statDateRange, statDept,
+      statDateRange, statDept, statAgent, statAgentOptions,
       agentUsageChartEl, todoStatChartEl, deptActivityChartEl, personActivityChartEl,
       agentUsageData, todoStatData, deptActivityData, personActivityData,
       statMoreVisible, statMoreTitle, statMoreData,
@@ -2067,7 +2160,7 @@ createApp({
       filteredTodoMoreList, pagedTodoMoreList,
       openTodoMore, resetTodoMoreFilter, queryTodoMore, exportTodoMore,
       deptMoreVisible, deptMoreDateRange, deptMorePage, deptMorePgSize,
-      deptMoreList, pagedDeptMoreList,
+      deptMoreList, filteredDeptMoreList, pagedDeptMoreList,
       openDeptMore, resetDeptMoreFilter, queryDeptMore, exportDeptMore,
       personMoreVisible, personMoreDateRange, personMoreDept, personMoreNameKw,
       personMorePage, personMorePgSize, filteredPersonMoreList, pagedPersonMoreList,
