@@ -44,6 +44,7 @@
     .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .toolbar .el-input { width: 220px !important; flex-shrink: 0; }
     .toolbar .el-select { width: 110px !important; flex-shrink: 0; }
+    .toolbar .el-date-editor { width: 260px !important; flex-shrink: 0; }
     .toolbar .el-button { flex-shrink: 0; }
     .toolbar-right { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
     .selected-tip { font-size: 13px; color: #999; margin-bottom: 10px; }
@@ -438,7 +439,14 @@
             <el-option label="待处理" value="待处理"></el-option>
             <el-option label="已处理" value="已处理"></el-option>
           </el-select>
-          <el-button type="primary" @click="page=1">🔍 查询</el-button>
+          <el-select v-model="todoAgentFilter" clearable filterable placeholder="智能体: 请选择" style="width:140px!important">
+            <el-option v-for="a in todoAgentOptions" :key="a" :label="a" :value="a"></el-option>
+          </el-select>
+          <span style="color:#666;font-size:13px;flex-shrink:0">日期：</span>
+          <el-date-picker v-model="todoDateRange" type="daterange" range-separator="至"
+            start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+            style="width:260px"></el-date-picker>
+          <el-button type="primary" @click="queryTodoList">🔍 查询</el-button>
           <div class="toolbar-right">
             <el-button>批量转派</el-button>
             <el-button type="danger">批量删除</el-button>
@@ -749,7 +757,7 @@
             <el-select v-model="askSpeaker" clearable filterable placeholder="请选择发言人">
               <el-option v-for="s in askSpeakerOptions" :key="s" :label="s" :value="s"></el-option>
             </el-select>
-            <el-select v-model="askAgent" clearable filterable placeholder="请选择智能体">
+            <el-select v-model="askAgent" clearable filterable placeholder="智能体: 请选择">
               <el-option v-for="a in askAgentOptions" :key="a" :label="a" :value="a"></el-option>
             </el-select>
             <el-button @click="resetAskFilter">重置</el-button>
@@ -778,7 +786,7 @@
             <div class="stat-card-head">
               <div class="stat-card-title">Token统计<span class="stat-card-sub">合计 {{ askTokenTotal }} 亿</span></div>
               <div style="display:flex;gap:8px">
-                <el-select v-model="tokenAgent" clearable placeholder="请选择智能体" size="small" style="width:130px!important">
+                <el-select v-model="tokenAgent" clearable filterable placeholder="智能体: 请选择" size="small" style="width:140px!important">
                   <el-option v-for="a in askAgentOptions" :key="a" :label="a" :value="a"></el-option>
                 </el-select>
                 <el-date-picker v-model="tokenDateRange" type="daterange" range-separator="至"
@@ -1086,7 +1094,7 @@ createApp({
     /* ---- Data ---- */
     const list = ref([
       { id:1,  question:'我要拉一个会', qType:'点踩', time:'2026-05-13 17:28:54', status:'待处理', asker:'王婷', dept:'数据运营中心',
-        userFB:'耗时长', aiDiag:'能力有缺失', source:'暂无',
+        userFB:'耗时长', aiDiag:'能力有缺失', source:'翼答',
         answerHtml:`<p>"网元（Network Element, NE）"是通信与网络领域的核心概念，指网络中具备独立功能、可被管理的最小逻辑单元或物理设备。它通常是构成复杂网络架构的基础组件，负责特定任务的执行与数据流转的控制。以下从定义、分类、作用及实际应用场景展开详解：</p>
           <h3>一、网元的定义与核心特征</h3>
           <p><strong>1. 基本定义</strong></p>
@@ -1111,49 +1119,49 @@ createApp({
         records:[],
       },
       { id:2, question:'天翼云（2026）55号文件是什么内容？', qType:'点踩', time:'2026-04-23 09:06:44', status:'待处理', asker:'王樟贤', dept:'业务拓展中心',
-        userFB:'结果不准确', aiDiag:'知识库缺失', source:'暂无',
+        userFB:'结果不准确', aiDiag:'知识库缺失', source:'诊断助手',
         answerHtml:`<p>关于天翼云（2026）55号文件的查询结果如下：</p><p>抱歉，当前知识库中暂未收录该文件的具体内容。建议您联系行政部门或在OA系统文件管理中查询。</p>`,
         steps:[{title:'问题意图识别', desc:'用户查询特定编号的文件内容，属于精确信息检索类问题。'},{title:'知识库检索', desc:'在知识库中未检索到"天翼云（2026）55号文件"相关内容。'},{title:'诊断结论', desc:'知识库中缺少该文件信息，属于知识库覆盖不足。建议将该文件录入知识库。'}],
         fixes:[{text:'将天翼云（2026）55号文件内容录入知识库，建立文件编号索引', type:'knowledge'},{text:'建立文件类问题的检索通道，支持按文件编号精确查询', type:'record'}],
         records:[],
       },
       { id:3, question:'天翼云（2026）55号', qType:'点踩', time:'2026-04-23 09:06:38', status:'已处理', asker:'王樟贤', dept:'业务拓展中心',
-        userFB:'', aiDiag:'上下文关联错误', source:'暂无',
+        userFB:'', aiDiag:'上下文关联错误', source:'诊断助手',
         answerHtml:`<p>您好，您的提问信息不完整，无法确定具体需求。请问您是想了解天翼云（2026）55号文件的内容吗？</p>`,
         steps:[{title:'问题意图识别', desc:'用户输入不完整，仅提供了文件编号片段，意图不明确。'},{title:'上下文分析', desc:'检查该用户的历史对话记录，发现用户前一条问题为"天翼云（2026）55号文件是什么内容"，本次提问应为上下文关联。'},{title:'诊断结论', desc:'系统未能正确关联上下文，将用户的简短追问当作独立问题处理。属于上下文关联能力不足。'}],
         fixes:[{text:'优化多轮对话的上下文关联能力，识别用户简短追问与前序对话的关系', type:'bug'}],
         records:[{ kind:'record', handler:'李运营', time:'2026-04-24 10:30:00', summary:'已提交Bug工单，优化多轮对话上下文关联能力，工单号 BUG-2026-0423' }],
       },
       { id:4, question:'如何更换oa手机号', qType:'点踩', time:'2026-04-17 07:30:44', status:'待处理', asker:'张强', dept:'数据库产品线',
-        userFB:'方案模板化', aiDiag:'方案模板化', source:'暂无',
+        userFB:'方案模板化', aiDiag:'方案模板化', source:'小翼·智能助手',
         answerHtml:`<p>更换OA手机号的操作步骤：</p><ol><li>登录OA系统</li><li>进入个人设置</li><li>找到手机号修改入口</li><li>输入新手机号并验证</li></ol><p>如有问题请联系IT部门。</p>`,
         steps:[{title:'问题意图识别', desc:'用户需要更换OA系统绑定的手机号码。'},{title:'回答质量评估', desc:'回答过于模板化，缺少具体的OA系统截图和详细操作路径。'},{title:'诊断结论', desc:'回答内容为通用模板，缺乏针对性。需要补充具体的操作指南。'}],
         fixes:[{text:'更新知识库中"OA手机号更换"条目，补充详细操作路径和截图说明', type:'record'}],
         records:[],
       },
       { id:5, question:'如何更换oa手机号', qType:'点踩', time:'2026-04-17 07:30:30', status:'待处理', asker:'张强', dept:'数据库产品线',
-        userFB:'耗时长', aiDiag:'耗时长', source:'暂无',
+        userFB:'耗时长', aiDiag:'耗时长', source:'小翼·智能助手',
         answerHtml:`<p>更换OA手机号，请参考以下步骤...</p><p>（生成回答耗时过长）</p>`,
         steps:[{title:'性能分析', desc:'该问答的响应时间为15.3秒，远超正常响应时间（3-5秒）。'},{title:'原因分析', desc:'模型推理过程中触发了多次知识库检索，且部分检索超时重试。'},{title:'诊断结论', desc:'属于性能问题，回答生成时间过长影响用户体验。'}],
         fixes:[{text:'优化"OA手机号更换"类问题的知识检索路径，减少不必要的多轮检索', type:'bug'}],
         records:[],
       },
       { id:6, question:'我要预定会议', qType:'点踩', time:'2026-04-13 15:15:01', status:'待处理', asker:'郑鑫彬', dept:'审计部',
-        userFB:'答非所问', aiDiag:'知识库缺失', source:'暂无',
+        userFB:'答非所问', aiDiag:'知识库缺失', source:'小翼·文档',
         answerHtml:`<p>关于会议预定，您可以通过以下方式操作：</p><p>请联系行政部门进行会议室预约。</p>`,
         steps:[{title:'问题意图识别', desc:'用户需要预定会议，可能指预约会议室或发起会议邀请。'},{title:'知识库检索', desc:'知识库中未找到"会议预定"相关的操作指南。'},{title:'诊断结论', desc:'缺少会议预定流程的知识条目，需要新增SQL数据集或知识问答。'}],
         fixes:[{text:'新增"会议预定操作流程"知识问答，包含会议室预约系统的使用说明', type:'knowledge'},{text:'新增会议室查询SQL数据集，支持查看会议室可用状态', type:'knowledge'}],
         records:[],
       },
       { id:7, question:'如何解决token销售亏损问题？', qType:'点踩', time:'2026-04-01 00:15:59', status:'待处理', asker:'黄创光', dept:'数字化运营部',
-        userFB:'', aiDiag:'输出幻觉', source:'暂无',
+        userFB:'', aiDiag:'输出幻觉', source:'翼答',
         answerHtml:`<p>关于token销售亏损问题的解决方案如下：</p><p>1. 调整定价策略... 2. 优化成本结构...</p><p>（注：包含部分不准确信息）</p>`,
         steps:[{title:'问题意图识别', desc:'用户咨询token销售亏损的解决方案，属于业务策略类问题。'},{title:'回答质量评估', desc:'回答中包含虚假不存在的数据引用和策略建议，与实际业务情况不符。'},{title:'诊断结论', desc:'模型产生了幻觉输出，生成了看似合理但实际不准确的内容。'}],
         fixes:[{text:'在知识库中添加token销售相关的准确业务数据和策略文档', type:'knowledge'},{text:'针对业务敏感问题增加事实校验环节，减少幻觉输出', type:'bug'}],
         records:[],
       },
       { id:8, question:'如何解决token销售亏损问题？', qType:'点踩', time:'2026-03-31 10:19:53', status:'待处理', asker:'黄创光', dept:'数字化运营部',
-        userFB:'结果不准确', aiDiag:'结果不准确', source:'暂无',
+        userFB:'结果不准确', aiDiag:'结果不准确', source:'翼答',
         answerHtml:`<p>token销售亏损问题分析...</p><p>（回答内容与实际数据不符）</p>`,
         steps:[{title:'知识库检索', desc:'检索到相关知识条目，但数据已过期。'},{title:'诊断结论', desc:'知识库中的数据未及时更新，导致回答结果不准确。需要更新相关知识卡片。'}],
         fixes:[{text:'更新知识库中token销售相关的数据信息，确保数据时效性', type:'record'}],
@@ -1290,11 +1298,23 @@ createApp({
     const view = ref('list');
     const kw = ref('');
     const statusFilter = ref('全部');
+    const todoAgentFilter = ref('');
+    const todoDateRange = ref(null);
+    const todoQueryTick = ref(0);
     const sel = ref([]);
     const page = ref(1);
     const pgSize = ref(20);
 
+    const todoAgentOptions = computed(() => {
+      const set = new Set();
+      list.value.forEach(x => {
+        if (x.source && x.source !== '暂无') set.add(x.source);
+      });
+      return [...set].sort();
+    });
+
     const filtered = computed(() => {
+      void todoQueryTick.value;
       let r = list.value;
       if (kw.value) {
         const s = kw.value.toLowerCase();
@@ -1306,12 +1326,25 @@ createApp({
         );
       }
       if (statusFilter.value && statusFilter.value !== '全部') r = r.filter(x => x.status === statusFilter.value);
+      if (todoAgentFilter.value) r = r.filter(x => x.source === todoAgentFilter.value);
+      if (todoDateRange.value && todoDateRange.value.length === 2) {
+        const [start, end] = todoDateRange.value;
+        r = r.filter(x => {
+          const d = (x.time || '').slice(0, 10);
+          return d >= start && d <= end;
+        });
+      }
       return r;
     });
     const pagedList = computed(() => {
       const s = (page.value - 1) * pgSize.value;
       return filtered.value.slice(s, s + pgSize.value);
     });
+
+    function queryTodoList() {
+      page.value = 1;
+      todoQueryTick.value++;
+    }
 
     /* ---- Detail state ---- */
     const cur = ref({});
@@ -2130,8 +2163,9 @@ createApp({
 
     return {
       menus, activeMenu, isMenuEnabled, switchMenu,
-      list, view, kw, statusFilter, sel, page, pgSize,
-      filtered, pagedList,
+      list, view, kw, statusFilter, todoAgentFilter, todoDateRange, todoAgentOptions,
+      sel, page, pgSize,
+      filtered, pagedList, queryTodoList,
       cur, curIdx, tab,
       procPanelOpen, aiSectionExpanded, currentUser,
       backToList, openDetail, navItem, submitDetail,
