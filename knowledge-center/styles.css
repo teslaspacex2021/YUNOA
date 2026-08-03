@@ -1293,6 +1293,35 @@ input {
   gap: 10px;
 }
 
+.status-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+}
+
+.filter-select {
+  width: 140px;
+  height: 32px;
+  padding: 0 28px 0 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text);
+  background-color: #fff;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
 .detail-table-wrap {
   flex: 1;
   overflow: auto;

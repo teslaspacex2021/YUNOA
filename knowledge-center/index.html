@@ -231,6 +231,15 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               上传文档
             </button>
+            <div class="status-filter">
+              <label class="filter-label" for="statusFilter">解析状态</label>
+              <select id="statusFilter" class="filter-select" aria-label="解析状态">
+                <option value="">全部</option>
+                <option value="success">解析成功</option>
+                <option value="parsing">解析中</option>
+                <option value="fail">解析失败</option>
+              </select>
+            </div>
           </div>
           <div class="detail-actions-right">
             <button type="button" class="btn-batch" id="btnBatchDelete">批量删除</button>
@@ -356,7 +365,7 @@
                 <button type="button" class="btn-primary" id="btnCreateBatchPick">点击选择</button>
                 <input type="file" id="createBatchFile" class="hidden" multiple accept=".pdf,.xls,.xlsx,.doc,.docx,.ppt,.pptx,.md,.txt,.zip,.7z,.tar" />
               </div>
-              <p class="form-hint">目前支持上传文件类型 PDF、EXCEL、DOCX、PPT、MD、TXT、ZIP、7Z、TAR文件，单个文件不得超过100M</p>
+              <p class="form-hint">文档格式：PDF、EXCEL、DOCX、PPT、MD、TXT<br />压缩包格式：ZIP、7Z、TAR（不支持 RAR，不支持嵌套压缩包）；单个文件不得超过100M</p>
               <ul class="file-list" id="createBatchFileList"></ul>
             </div>
             <div class="form-field">
@@ -403,7 +412,7 @@
               <button type="button" class="btn-primary" id="btnUploadPick">点击选择</button>
               <input type="file" id="uploadFile" class="hidden" accept=".pdf,.xls,.xlsx,.doc,.docx,.ppt,.pptx,.md,.txt,.zip,.7z,.tar" />
             </div>
-            <p class="form-hint">目前支持上传文件类型 PDF、EXCEL、DOCX、PPT、MD、TXT、ZIP、7Z、TAR文件，单个文件不得超过100M</p>
+            <p class="form-hint">文档格式：PDF、EXCEL、DOCX、PPT、MD、TXT<br />压缩包格式：ZIP、7Z、TAR（不支持 RAR，不支持嵌套压缩包）；单个文件不得超过100M</p>
             <ul class="file-list" id="uploadFileList"></ul>
           </div>
 
@@ -483,7 +492,7 @@
       <div class="modal-header">
         <div class="modal-header-text">
           <h3 class="modal-title" id="permModalTitle">编辑权限配置</h3>
-          <p class="perm-modal-desc hidden" id="permModalDesc">赋予权限后可供翼答访问</p>
+          <p class="perm-modal-desc" id="permModalDesc">赋予后可新建/维护/删除目录与文档</p>
         </div>
         <button type="button" class="modal-close" id="permModalClose" aria-label="关闭">×</button>
       </div>

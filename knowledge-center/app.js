@@ -281,6 +281,7 @@ const detailKbName = document.getElementById("detailKbName");
 const dirTree = document.getElementById("dirTree");
 const dirSearch = document.getElementById("dirSearch");
 const titleFilter = document.getElementById("titleFilter");
+const statusFilter = document.getElementById("statusFilter");
 const docTableBody = document.getElementById("docTableBody");
 const pageTotal = document.getElementById("pageTotal");
 const pageSizeSelect = document.getElementById("pageSize");
@@ -586,6 +587,7 @@ function openKbDetail(item) {
   const tree = getDirTreeForKb(item.name);
   currentDir = tree[0]?.children?.[0] || item.name;
   titleFilter.value = "";
+  statusFilter.value = "";
   dirSearch.value = "";
   filteredDocs = [...DOCUMENTS];
   renderDirTree(tree);
@@ -680,8 +682,9 @@ function renderDirTree(tree) {
         currentDir = name;
         dirTree.querySelectorAll(".dir-item").forEach((el) => el.classList.remove("active"));
         itemBtn.classList.add("active");
-        filteredDocs = [...DOCUMENTS];
         titleFilter.value = "";
+        statusFilter.value = "";
+        filteredDocs = [...DOCUMENTS];
         renderDocTable();
         showDetailList();
       };
@@ -768,11 +771,18 @@ function renderDocTable() {
   });
 }
 
-function applyTitleFilter() {
+function getFilteredDocs() {
   const q = titleFilter.value.trim().toLowerCase();
-  filteredDocs = !q
-    ? [...DOCUMENTS]
-    : DOCUMENTS.filter((d) => d.title.toLowerCase().includes(q));
+  const status = statusFilter.value;
+  return DOCUMENTS.filter((d) => {
+    if (q && !d.title.toLowerCase().includes(q)) return false;
+    if (status && d.status !== status) return false;
+    return true;
+  });
+}
+
+function applyDocFilters() {
+  filteredDocs = getFilteredDocs();
   renderDocTable();
 }
 
@@ -836,9 +846,7 @@ function scheduleParseComplete(docIds) {
       updated = true;
     });
     if (!updated) return;
-    filteredDocs = titleFilter.value.trim()
-      ? DOCUMENTS.filter((d) => d.title.toLowerCase().includes(titleFilter.value.trim().toLowerCase()))
-      : [...DOCUMENTS];
+    filteredDocs = getFilteredDocs();
     if (!detailView.classList.contains("hidden") && createPanel.classList.contains("hidden") && uploadPanel.classList.contains("hidden")) {
       renderDocTable();
     }
@@ -954,20 +962,24 @@ dirSearch.addEventListener("input", () => {
   if (currentKb) renderDirTree(getDirTreeForKb(currentKb.name));
 });
 
-document.getElementById("btnQuery").addEventListener("click", applyTitleFilter);
+document.getElementById("btnQuery").addEventListener("click", applyDocFilters);
 document.getElementById("btnReset").addEventListener("click", () => {
   titleFilter.value = "";
+  statusFilter.value = "";
   filteredDocs = [...DOCUMENTS];
   renderDocTable();
 });
 
 titleFilter.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") applyTitleFilter();
+  if (e.key === "Enter") applyDocFilters();
 });
 
+statusFilter.addEventListener("change", applyDocFilters);
+
 document.getElementById("btnRefresh").addEventListener("click", () => {
-  filteredDocs = [...DOCUMENTS];
   titleFilter.value = "";
+  statusFilter.value = "";
+  filteredDocs = [...DOCUMENTS];
   renderDocTable();
 });
 
@@ -1443,9 +1455,9 @@ const PERM_TITLE_MAP = {
 };
 
 const PERM_DESC_MAP = {
-  "view-perm": "赋予后可在线查看该知识库/目录下的文档内容；列表为空代表全员可用",
-  "qa-perm": "赋予权限后可供翼答访问；列表为空代表全员可用",
-  "edit-perm": "赋予后可新建/维护/删除目录与文档；列表为空代表全员可用",
+  "view-perm": "赋予后可在线查看该知识库/目录下的文档内容",
+  "qa-perm": "赋予权限后可供翼答访问",
+  "edit-perm": "赋予后可新建/维护/删除目录与文档",
 };
 
 const DEFAULT_SELECTED_BY_TYPE = {
@@ -1475,7 +1487,7 @@ const EMPTY_ILLUSTRATION = `<div class="perm-empty-state">
     <ellipse cx="36" cy="54" rx="18" ry="3" fill="#F0F5FF"/>
   </svg>
   <div class="perm-empty-title">暂无已选用户</div>
-  <div class="perm-empty-hint">如果列表为空则代表全员可用</div>
+  <div class="perm-empty-hint">如果列表为空则代表全员具备该权限</div>
 </div>`;
 
 let permModalCtx = null;
@@ -1530,8 +1542,7 @@ function openPermModal(action, target, options = {}) {
   permModalCtx = { action, target, key };
   permOnSaveCallback = typeof options.onSave === "function" ? options.onSave : null;
   permModalTitle.textContent = PERM_TITLE_MAP[action] || "权限配置";
-  // 编辑权限弹窗与线上一致：仅标题，不展示说明文案
-  const desc = action === "edit-perm" ? "" : PERM_DESC_MAP[action] || "";
+  const desc = PERM_DESC_MAP[action] || "";
   permModalDesc.classList.toggle("hidden", !desc);
   permModalDesc.textContent = desc;
   if (Array.isArray(options.initialSelected)) {
