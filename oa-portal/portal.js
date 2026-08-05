@@ -52,6 +52,12 @@ let headerMode = "search";
 let aiComposerMode = "fast"; // fast | think | office
 let webSearchEnabled = false;
 let aiCompact = false;
+/** @type {Array<{id: string, name: string, size: string, ext: string, type: string, url?: string}>} */
+let composerAttachments = [];
+let attachSeq = 1;
+/** @type {Array<{id: string, name: string, icon: string}>} */
+let composerSkills = [];
+let syncingSkillsFromModal = false;
 
 let mentionState = {
   open: false,
@@ -131,7 +137,10 @@ function initHeaderComposer() {
   bindAiComposerModes();
   syncHeaderPlusSelectionBadges();
 
-  window.addEventListener("ai-skill-change", syncHeaderPlusSelectionBadges);
+  window.addEventListener("ai-skill-change", () => {
+    syncHeaderPlusSelectionBadges();
+    syncComposerSkillsFromModal();
+  });
   window.addEventListener("ai-knowledge-change", syncHeaderPlusSelectionBadges);
   window.addEventListener("ai-mcp-change", syncHeaderPlusSelectionBadges);
 
@@ -150,12 +159,7 @@ function initHeaderComposer() {
     window.AiToolModals?.open("expert");
   });
 
-  document.getElementById("headerAiAttachBtn")?.addEventListener("click", () => {
-    document.getElementById("aiUploadBtn")?.click();
-  });
-  document.getElementById("stickyAiAttachBtn")?.addEventListener("click", () => {
-    document.getElementById("aiUploadBtn")?.click();
-  });
+  bindHeaderAttachments();
 
   document.querySelectorAll(".header-ai-plus-item").forEach(item => {
     item.addEventListener("click", () => {
@@ -345,6 +349,19 @@ function toggleHeaderMode() {
   setHeaderMode(isAi ? "search" : "ai");
 }
 
+function hasComposerContent() {
+  return Boolean(
+    (headerAiTextarea?.value || "").trim() ||
+    (stickyAiTextarea?.value || "").trim() ||
+    composerAttachments.length ||
+    composerSkills.length
+  );
+}
+
+function isStickyAiFocused() {
+  return Boolean(stickyAiEntry?.contains(document.activeElement));
+}
+
 function setHeaderMode(mode) {
   headerMode = mode;
   const isAi = mode === "ai";
@@ -375,12 +392,16 @@ function setHeaderMode(mode) {
     syncText(headerAiTextarea, stickyAiTextarea);
     syncAiSendState();
     const stickyVisible = stickyAiEntry?.classList.contains("visible");
-    // 主动切换到 AI 时展开；吸顶出现时的收起由 sticky 滚动逻辑控制
-    setAiCompact(false);
-    requestAnimationFrame(() => {
-      const target = stickyVisible ? stickyAiTextarea : headerAiTextarea;
-      target?.focus();
-    });
+    // 吸顶且无内容：保持缩起；有内容或顶部输入时再展开
+    if (stickyVisible && !hasComposerContent()) {
+      setAiCompact(true);
+    } else {
+      setAiCompact(false);
+      requestAnimationFrame(() => {
+        const target = stickyVisible ? stickyAiTextarea : headerAiTextarea;
+        target?.focus();
+      });
+    }
   } else {
     setAiCompact(false);
     closeMentionPopover();
@@ -392,7 +413,13 @@ function setHeaderMode(mode) {
 }
 
 function setAiCompact(compact) {
-  aiCompact = Boolean(compact) && headerMode === "ai" && stickyAiEntry?.classList.contains("visible");
+  // 有附件/技能时保持展开；纯文本仍可缩成一行
+  aiCompact =
+    Boolean(compact) &&
+    headerMode === "ai" &&
+    stickyAiEntry?.classList.contains("visible") &&
+    composerAttachments.length === 0 &&
+    composerSkills.length === 0;
   stickyAiEntry?.classList.toggle("ai-compact", aiCompact);
   if (stickyAiTextarea) {
     stickyAiTextarea.placeholder = aiCompact ? AI_COMPACT_PLACEHOLDER : AI_PLACEHOLDER;
@@ -602,23 +629,16 @@ function selectMentionItem(index) {
   const before = value.slice(0, start);
   const after = value.slice(end);
 
-  let insert = "";
+  // 与数字人面板一致：清除触发词，技能回显为 chips，专家切换头像/标题
+  const next = `${before}${after}`.replace(/[ \t]{2,}/g, " ");
+  textarea.value = next;
+  const caret = Math.min(before.length, next.length);
+  textarea.setSelectionRange(caret, caret);
+
   if (mentionState.type === "expert") {
-    // 一次一位：清掉文本中已有的 @专家
-    const cleanedBefore = before.replace(/(^|[\s\n])@[^\s@／/]+/g, "$1");
-    const cleanedAfter = after.replace(/(^|[\s\n])@[^\s@／/]+/g, "$1");
-    insert = `@${item.name} `;
-    const next = `${cleanedBefore}${insert}${cleanedAfter}`.replace(/\s{2,}/g, " ");
-    textarea.value = next;
-    const caret = cleanedBefore.length + insert.length;
-    textarea.setSelectionRange(caret, caret);
     window.AiToolModals?.setActiveExpert?.(item.id);
   } else {
-    insert = `/${item.name} `;
-    const next = `${before}${insert}${after}`;
-    textarea.value = next;
-    const caret = before.length + insert.length;
-    textarea.setSelectionRange(caret, caret);
+    addComposerSkill(item);
   }
 
   // 同步双输入框
@@ -628,6 +648,7 @@ function selectMentionItem(index) {
   closeMentionPopover();
   autoResize(textarea);
   syncAiSendState();
+  setAiCompact(false);
   textarea.focus();
 }
 
@@ -669,9 +690,286 @@ function syncAiSendState() {
   const hasText = Boolean(
     (headerAiTextarea?.value || stickyAiTextarea?.value || "").trim()
   );
+  const hasAttach = composerAttachments.length > 0;
+  const hasSkills = composerSkills.length > 0;
+  const canSend = hasText || hasAttach || hasSkills;
   [headerAiSend, stickyAiSend].forEach(btn => {
-    btn?.classList.toggle("has-text", hasText);
+    btn?.classList.toggle("has-text", canSend);
   });
+}
+
+function formatAttachSize(bytes) {
+  if (bytes == null || Number.isNaN(bytes) || bytes < 0) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) {
+    const kb = bytes / 1024;
+    return `${kb >= 10 ? Math.round(kb) : kb.toFixed(1)} KB`;
+  }
+  const mb = bytes / (1024 * 1024);
+  return `${mb >= 10 ? Math.round(mb) : mb.toFixed(1)} MB`;
+}
+
+function getFileExtLabel(name) {
+  const i = name.lastIndexOf(".");
+  const ext = i >= 0 ? name.slice(i + 1).toUpperCase() : "FILE";
+  return ext.slice(0, 4) || "FILE";
+}
+
+function isImageFile(file) {
+  return Boolean(file?.type?.startsWith("image/"));
+}
+
+function escapeAttachHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function bindHeaderAttachments() {
+  const headerBtn = document.getElementById("headerAiAttachBtn");
+  const stickyBtn = document.getElementById("stickyAiAttachBtn");
+  const headerInput = document.getElementById("headerAiFileInput");
+  const stickyInput = document.getElementById("stickyAiFileInput");
+
+  const openPicker = (input) => {
+    if (headerMode !== "ai") setHeaderMode("ai");
+    setAiCompact(false);
+    input?.click();
+  };
+
+  headerBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openPicker(headerInput);
+  });
+  stickyBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openPicker(stickyInput);
+  });
+
+  const onFiles = (input) => {
+    const files = Array.from(input?.files || []);
+    input.value = "";
+    if (!files.length) return;
+    files.forEach((file) => addComposerAttachmentFromFile(file));
+  };
+
+  headerInput?.addEventListener("change", () => onFiles(headerInput));
+  stickyInput?.addEventListener("change", () => onFiles(stickyInput));
+
+  ["headerAiAttachRow", "stickyAiAttachRow"].forEach((id) => {
+    document.getElementById(id)?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-remove-attach]");
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      removeComposerAttachment(btn.dataset.removeAttach);
+    });
+  });
+}
+
+function addComposerAttachmentFromFile(file) {
+  const item = {
+    id: `att-${attachSeq++}`,
+    name: file.name || "附件",
+    size: formatAttachSize(file.size),
+    ext: getFileExtLabel(file.name || ""),
+    type: isImageFile(file) ? "image" : "file",
+    url: ""
+  };
+  if (item.type === "image") {
+    try {
+      item.url = URL.createObjectURL(file);
+    } catch (_) {
+      item.type = "file";
+    }
+  }
+  composerAttachments.push(item);
+  renderComposerAttachments();
+  syncAiSendState();
+  setAiCompact(false);
+}
+
+function removeComposerAttachment(id) {
+  const target = composerAttachments.find((a) => a.id === id);
+  if (target?.url) {
+    try {
+      URL.revokeObjectURL(target.url);
+    } catch (_) {}
+  }
+  composerAttachments = composerAttachments.filter((a) => a.id !== id);
+  renderComposerAttachments();
+  syncAiSendState();
+}
+
+function clearComposerAttachments() {
+  composerAttachments.forEach((a) => {
+    if (a.url) {
+      try {
+        URL.revokeObjectURL(a.url);
+      } catch (_) {}
+    }
+  });
+  composerAttachments = [];
+  renderComposerAttachments();
+  syncAiSendState();
+}
+
+function renderComposerAttachments() {
+  const rows = [
+    document.getElementById("headerAiAttachRow"),
+    document.getElementById("stickyAiAttachRow")
+  ];
+  const hasAttach = composerAttachments.length > 0;
+  const fileIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  // 输入框内部文件 chip（与参考稿一致）
+  const html = hasAttach
+    ? composerAttachments
+        .map(
+          (att) => `<div class="header-ai-file-chip" data-attach-id="${att.id}">
+            <span class="header-ai-file-icon">${fileIcon}</span>
+            <span class="header-ai-file-name" title="${escapeAttachHtml(att.name)}">${escapeAttachHtml(att.name)}</span>
+            <button type="button" class="header-ai-file-remove" data-remove-attach="${att.id}" aria-label="移除附件">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>`
+        )
+        .join("")
+    : "";
+
+  rows.forEach((row) => {
+    if (!row) return;
+    row.classList.toggle("hidden", !hasAttach);
+    row.innerHTML = html;
+  });
+
+  [headerAiEntry, stickyAiEntry].forEach((entry) => {
+    entry?.classList.toggle("has-attachments", hasAttach);
+  });
+  ["headerAiAttachBtn", "stickyAiAttachBtn"].forEach((id) => {
+    document.getElementById(id)?.classList.toggle("has-attach", hasAttach);
+  });
+
+  // 同步数字人面板附件条
+  const attachmentBar = document.getElementById("attachmentBar");
+  const attachmentText = document.getElementById("attachmentText");
+  if (attachmentBar && attachmentText) {
+    if (hasAttach) {
+      attachmentBar.classList.remove("hidden");
+      attachmentText.textContent = composerAttachments.map((a) => a.name).join("、");
+    } else {
+      attachmentBar.classList.add("hidden");
+    }
+  }
+}
+
+function addComposerSkill(item) {
+  if (!item?.id) return;
+  if (composerSkills.some((s) => s.id === item.id)) {
+    renderComposerSkills();
+    return;
+  }
+  composerSkills.push({
+    id: item.id,
+    name: item.name,
+    icon: item.icon || "🔧"
+  });
+  const skills = window.AiToolModals?.getSkills?.() || [];
+  const found = skills.find((s) => s.id === item.id);
+  if (found) found.selected = true;
+  renderComposerSkills();
+  syncAiSendState();
+  setAiCompact(false);
+}
+
+function removeComposerSkill(id) {
+  composerSkills = composerSkills.filter((s) => s.id !== id);
+  const skills = window.AiToolModals?.getSkills?.() || [];
+  const found = skills.find((s) => s.id === id);
+  if (found) found.selected = false;
+  renderComposerSkills();
+  syncAiSendState();
+}
+
+function clearComposerSkills() {
+  composerSkills.forEach((s) => {
+    const skills = window.AiToolModals?.getSkills?.() || [];
+    const found = skills.find((x) => x.id === s.id);
+    if (found) found.selected = false;
+  });
+  composerSkills = [];
+  renderComposerSkills();
+  syncAiSendState();
+}
+
+function syncComposerSkillsFromModal() {
+  if (syncingSkillsFromModal) return;
+  if (!window.AiToolModals?.getSelectedSkills) return;
+  syncingSkillsFromModal = true;
+  try {
+    const selected = window.AiToolModals.getSelectedSkills() || [];
+    composerSkills = selected.map((s) => ({
+      id: s.id,
+      name: s.name,
+      icon: s.icon || "🔧"
+    }));
+    renderComposerSkills();
+    syncAiSendState();
+    if (composerSkills.length) setAiCompact(false);
+  } finally {
+    syncingSkillsFromModal = false;
+  }
+}
+
+function renderComposerSkills() {
+  const rows = [
+    document.getElementById("headerAiSkillChips"),
+    document.getElementById("stickyAiSkillChips")
+  ];
+  const hasSkills = composerSkills.length > 0;
+  const html = hasSkills
+    ? composerSkills
+        .map(
+          (s) => `
+      <span class="ai-skill-chip" data-skill-id="${escapeAttachHtml(s.id)}">
+        <span class="ai-skill-chip-icon" aria-hidden="true">${s.icon || "🔧"}</span>
+        <span class="ai-skill-chip-name">${escapeAttachHtml(s.name)}</span>
+        <button type="button" class="ai-skill-chip-remove" data-remove-skill="${escapeAttachHtml(s.id)}" aria-label="移除技能 ${escapeAttachHtml(s.name)}">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </span>`
+        )
+        .join("")
+    : "";
+
+  rows.forEach((row) => {
+    if (!row) return;
+    row.classList.toggle("hidden", !hasSkills);
+    row.innerHTML = html;
+    row.querySelectorAll("[data-remove-skill]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        removeComposerSkill(btn.dataset.removeSkill);
+      });
+    });
+  });
+
+  [headerAiEntry, stickyAiEntry].forEach((entry) => {
+    entry?.classList.toggle("has-skills", hasSkills);
+  });
+  syncHeaderPlusSelectionBadges();
+}
+
+function buildHeaderSendPayload(text) {
+  const skillNames = composerSkills.map((s) => s.name).filter(Boolean);
+  const attachNames = composerAttachments.map((a) => a.name).filter(Boolean);
+  const parts = [];
+  if (text) parts.push(text);
+  if (skillNames.length) parts.push(`[技能] ${skillNames.join("、")}`);
+  if (attachNames.length) parts.push(`[附件] ${attachNames.join("、")}`);
+  return parts.join("\n");
 }
 
 function autoResize(el) {
@@ -691,14 +989,18 @@ function submitSearch(input) {
 }
 
 function submitAi(textarea) {
-  const text = textarea?.value.trim();
-  if (!text) return;
+  const text = textarea?.value.trim() || "";
+  const message = buildHeaderSendPayload(text);
+  if (!message) return;
+
   if (headerAiTextarea) headerAiTextarea.value = "";
   if (stickyAiTextarea) stickyAiTextarea.value = "";
+  clearComposerAttachments();
+  clearComposerSkills();
   autoResize(headerAiTextarea);
   autoResize(stickyAiTextarea);
   syncAiSendState();
-  AiChatPanel.openWithMessage(text);
+  AiChatPanel.openWithMessage(message);
 }
 
 function bindPlusMenu(btn, menu) {
@@ -760,9 +1062,14 @@ function initStickyAiBar() {
     const visible = headerAiEntry.getBoundingClientRect().bottom < 0;
     stickyAiEntry.classList.toggle("visible", visible);
 
-    // 吸顶栏出现时：保持当前模式；若是 AI，仅收成一行，不切回公文搜索
-    if (visible && !wasVisible && headerMode === "ai") {
-      setAiCompact(true);
+    if (visible && headerMode === "ai") {
+      // 无内容且未聚焦：滚动后始终保持缩起
+      if (!hasComposerContent() && !isStickyAiFocused()) {
+        setAiCompact(true);
+      } else if (visible && !wasVisible) {
+        // 首次吸顶：有附件/技能则展开，否则缩起
+        setAiCompact(!composerAttachments.length && !composerSkills.length);
+      }
     }
     if (!visible) {
       setAiCompact(false);
@@ -787,9 +1094,8 @@ function initStickyAiBar() {
   stickyAiEntry.addEventListener("focusout", () => {
     if (headerMode !== "ai" || !stickyAiEntry.classList.contains("visible")) return;
     requestAnimationFrame(() => {
-      if (!stickyAiEntry.contains(document.activeElement)) {
-        setAiCompact(true);
-      }
+      // 失焦后缩回；有附件/技能时 setAiCompact 会拒绝收起
+      if (!isStickyAiFocused()) setAiCompact(true);
     });
   });
 

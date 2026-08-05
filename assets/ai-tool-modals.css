@@ -348,7 +348,7 @@
   font-size: 14px;
 }
 
-/* ===== 选择数字员工（卡片网格） ===== */
+/* ===== 智能体广场（卡片网格） ===== */
 .ai-picker-dialog.is-expert-picker {
   width: min(860px, 100%);
   height: min(680px, calc(100vh - 48px));

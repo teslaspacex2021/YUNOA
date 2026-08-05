@@ -814,10 +814,12 @@ html.ai-chat-scroll-lock body {
 }
 
 .ai-attachment-bar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  max-width: 100%;
+  width: fit-content;
+  padding: 6px 10px;
   margin-bottom: 8px;
   background: #fff5f5;
   border: 1px solid #ffe0e6;
@@ -828,11 +830,12 @@ html.ai-chat-scroll-lock body {
 
 .ai-attachment-icon {
   font-size: 14px;
+  flex-shrink: 0;
 }
 
 .ai-attachment-text {
-  flex: 1;
   min-width: 0;
+  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -844,8 +847,9 @@ html.ai-chat-scroll-lock body {
   font-size: 16px;
   color: #999;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 2px;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .ai-input-box {

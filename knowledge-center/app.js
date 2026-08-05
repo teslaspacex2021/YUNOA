@@ -34,7 +34,7 @@ const ROLE_DEFS = {
       "kb.doc.qa.auth": true,
     },
   },
-  部门数智化专员: {
+  "部门 AIBP": {
     code: "kb.role.dept_admin",
     data: "dept",
     perms: {
@@ -167,7 +167,7 @@ function getVisibleKnowledgeBases() {
   const role = getRole();
   if (role.data === "all") return KNOWLEDGE_BASES;
   return KNOWLEDGE_BASES.filter((kb) => {
-    // 部门数智化专员：仅本部门知识库
+    // 部门 AIBP：仅本部门知识库
     if (role.data === "dept") return !!kb.scope.dept;
     // 知识维护者：个人维护 + 被授权
     if (role.data === "personal") return !!(kb.scope.personal || kb.scope.authorized);
@@ -249,26 +249,26 @@ function getParentDirOptions() {
 }
 
 const DOCUMENTS = [
-  { title: "产品订购量top100.xlsx", author: "林晓舟", duration: "222.04s", status: "success", createdAt: "2026-07-22 17:47:08" },
-  { title: "BCP系统已加载云产品数据.xlsx", author: "林晓舟", duration: "18.83s", status: "success", createdAt: "2026-07-22 17:46:17" },
-  { title: "2026年巡视提供资料-数字化运营部.xlsx", author: "林晓舟", duration: "-", status: "parsing", createdAt: "2026-07-22 17:41:54" },
-  { title: "2025年云电脑订购量排名.xlsx", author: "林晓舟", duration: "13.48s", status: "success", createdAt: "2026-07-22 17:40:59" },
-  { title: "云电脑订购量top100.xlsx", author: "林晓舟", duration: "-", status: "parsing", createdAt: "2026-07-22 17:36:55" },
-  { title: "2025年巡视提供资料.xlsx", author: "江沐白", duration: "1秒", status: "success", createdAt: "2026-05-21 14:52:39" },
-  { title: "产品订购量明细表.xlsx", author: "江沐白", duration: "1秒", status: "success", createdAt: "2026-05-21 14:52:39" },
-  { title: "运营指标月度汇总.xlsx", author: "江沐白", duration: "-", status: "parsing", createdAt: "2026-05-21 14:52:39" },
-  { title: "客户活跃度分析报告.xlsx", author: "江沐白", duration: "1秒", status: "success", createdAt: "2026-05-21 14:52:39" },
-  { title: "云资源使用统计.xlsx", author: "林晓舟", duration: "8.21s", status: "success", createdAt: "2026-05-18 10:12:03" },
-  { title: "政企客户清单.xlsx", author: "林晓舟", duration: "25.40s", status: "success", createdAt: "2026-05-18 09:55:11" },
-  { title: "数智产品发布计划.docx", author: "江沐白", duration: "3.12s", status: "success", createdAt: "2026-05-10 16:20:44" },
-  { title: "数据质量巡检结果.xlsx", author: "林晓舟", duration: "41.67s", status: "fail", createdAt: "2026-05-09 11:08:22" },
-  { title: "知识库建设规范.pdf", author: "江沐白", duration: "6.90s", status: "success", createdAt: "2026-04-28 15:33:01" },
-  { title: "SQL数据集说明文档.md", author: "林晓舟", duration: "2.05s", status: "success", createdAt: "2026-04-22 09:14:50" },
-  { title: "业务术语字典.xlsx", author: "江沐白", duration: "11.33s", status: "success", createdAt: "2026-04-15 18:02:17" },
-  { title: "资产元数据清单.xlsx", author: "林晓舟", duration: "19.88s", status: "success", createdAt: "2026-04-10 13:27:39" },
-  { title: "翼析平台操作手册.pdf", author: "江沐白", duration: "7.54s", status: "success", createdAt: "2026-03-28 10:41:05" },
-  { title: "数据运营周报-第12周.xlsx", author: "林晓舟", duration: "4.16s", status: "success", createdAt: "2026-03-20 17:09:28" },
-  { title: "测试上传样例.csv", author: "江沐白", duration: "1秒", status: "fail", createdAt: "2026-03-12 08:55:46" },
+  { title: "产品订购量top100.xlsx", size: "2.4 MB", author: "林晓舟", duration: "222.04s", status: "success", createdAt: "2026-07-22 17:47:08" },
+  { title: "BCP系统已加载云产品数据.xlsx", size: "856 KB", author: "林晓舟", duration: "18.83s", status: "success", createdAt: "2026-07-22 17:46:17" },
+  { title: "2026年巡视提供资料-数字化运营部.xlsx", size: "12.6 MB", author: "林晓舟", duration: "-", status: "parsing", createdAt: "2026-07-22 17:41:54" },
+  { title: "2025年云电脑订购量排名.xlsx", size: "1.1 MB", author: "林晓舟", duration: "13.48s", status: "success", createdAt: "2026-07-22 17:40:59" },
+  { title: "云电脑订购量top100.xlsx", size: "3.2 MB", author: "林晓舟", duration: "-", status: "parsing", createdAt: "2026-07-22 17:36:55" },
+  { title: "2025年巡视提供资料.xlsx", size: "8.7 MB", author: "江沐白", duration: "1秒", status: "success", createdAt: "2026-05-21 14:52:39" },
+  { title: "产品订购量明细表.xlsx", size: "5.3 MB", author: "江沐白", duration: "1秒", status: "success", createdAt: "2026-05-21 14:52:39" },
+  { title: "运营指标月度汇总.xlsx", size: "428 KB", author: "江沐白", duration: "-", status: "parsing", createdAt: "2026-05-21 14:52:39" },
+  { title: "客户活跃度分析报告.xlsx", size: "976 KB", author: "江沐白", duration: "1秒", status: "success", createdAt: "2026-05-21 14:52:39" },
+  { title: "云资源使用统计.xlsx", size: "1.8 MB", author: "林晓舟", duration: "8.21s", status: "success", createdAt: "2026-05-18 10:12:03" },
+  { title: "政企客户清单.xlsx", size: "4.5 MB", author: "林晓舟", duration: "25.40s", status: "success", createdAt: "2026-05-18 09:55:11" },
+  { title: "数智产品发布计划.docx", size: "312 KB", author: "江沐白", duration: "3.12s", status: "success", createdAt: "2026-05-10 16:20:44" },
+  { title: "数据质量巡检结果.xlsx", size: "2.1 MB", author: "林晓舟", duration: "41.67s", status: "fail", createdAt: "2026-05-09 11:08:22" },
+  { title: "知识库建设规范.pdf", size: "1.5 MB", author: "江沐白", duration: "6.90s", status: "success", createdAt: "2026-04-28 15:33:01" },
+  { title: "SQL数据集说明文档.md", size: "48 KB", author: "林晓舟", duration: "2.05s", status: "success", createdAt: "2026-04-22 09:14:50" },
+  { title: "业务术语字典.xlsx", size: "624 KB", author: "江沐白", duration: "11.33s", status: "success", createdAt: "2026-04-15 18:02:17" },
+  { title: "资产元数据清单.xlsx", size: "3.8 MB", author: "林晓舟", duration: "19.88s", status: "success", createdAt: "2026-04-10 13:27:39" },
+  { title: "翼析平台操作手册.pdf", size: "6.2 MB", author: "江沐白", duration: "7.54s", status: "success", createdAt: "2026-03-28 10:41:05" },
+  { title: "数据运营周报-第12周.xlsx", size: "215 KB", author: "林晓舟", duration: "4.16s", status: "success", createdAt: "2026-03-20 17:09:28" },
+  { title: "测试上传样例.csv", size: "36 KB", author: "江沐白", duration: "1秒", status: "fail", createdAt: "2026-03-12 08:55:46" },
 ];
 
 /* ===== DOM ===== */
@@ -282,6 +282,8 @@ const dirTree = document.getElementById("dirTree");
 const dirSearch = document.getElementById("dirSearch");
 const titleFilter = document.getElementById("titleFilter");
 const statusFilter = document.getElementById("statusFilter");
+const createdFrom = document.getElementById("createdFrom");
+const createdTo = document.getElementById("createdTo");
 const docTableBody = document.getElementById("docTableBody");
 const pageTotal = document.getElementById("pageTotal");
 const pageSizeSelect = document.getElementById("pageSize");
@@ -586,8 +588,7 @@ function openKbDetail(item) {
   detailKbName.textContent = item.name;
   const tree = getDirTreeForKb(item.name);
   currentDir = tree[0]?.children?.[0] || item.name;
-  titleFilter.value = "";
-  statusFilter.value = "";
+  resetDocFilters(false);
   dirSearch.value = "";
   filteredDocs = [...DOCUMENTS];
   renderDirTree(tree);
@@ -682,8 +683,7 @@ function renderDirTree(tree) {
         currentDir = name;
         dirTree.querySelectorAll(".dir-item").forEach((el) => el.classList.remove("active"));
         itemBtn.classList.add("active");
-        titleFilter.value = "";
-        statusFilter.value = "";
+        resetDocFilters(false);
         filteredDocs = [...DOCUMENTS];
         renderDocTable();
         showDetailList();
@@ -705,6 +705,17 @@ function renderDirTree(tree) {
   });
 }
 
+function formatFileSize(bytes) {
+  if (bytes == null || Number.isNaN(bytes) || bytes < 0) return "-";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) {
+    const kb = bytes / 1024;
+    return `${kb >= 100 ? Math.round(kb) : kb.toFixed(kb >= 10 ? 0 : 1)} KB`;
+  }
+  const mb = bytes / (1024 * 1024);
+  return `${mb >= 100 ? Math.round(mb) : mb.toFixed(1)} MB`;
+}
+
 function renderDocTable() {
   const docs = filteredDocs.slice(0, pageSize);
   pageTotal.textContent = `共 ${filteredDocs.length} 条`;
@@ -723,12 +734,19 @@ function renderDocTable() {
       <tr data-doc-title="${doc.title}">
         <td>${i + 1}</td>
         <td class="td-title" title="${doc.title}">${doc.title}</td>
+        <td>${doc.size || "-"}</td>
         <td>${doc.author}</td>
         <td>${doc.duration}</td>
         <td>
           <span class="status-tag ${
             doc.status === "success" ? "success" : doc.status === "parsing" ? "parsing" : "fail"
-          }"${doc.status === "parsing" ? ' data-tip="解析成功后会邮件通知" tabindex="0"' : ""}>
+          }"${
+            doc.status === "parsing"
+              ? ' data-tip="解析成功后会邮件通知" tabindex="0"'
+              : doc.status === "fail"
+                ? ' data-tip="解析失败，请检查文件后重新上传" tabindex="0"'
+                : ""
+          }>
             ${
               doc.status === "success"
                 ? "解析成功"
@@ -771,12 +789,28 @@ function renderDocTable() {
   });
 }
 
+function resetDocFilters(apply = true) {
+  titleFilter.value = "";
+  statusFilter.value = "";
+  createdFrom.value = "";
+  createdTo.value = "";
+  if (apply) {
+    filteredDocs = [...DOCUMENTS];
+    renderDocTable();
+  }
+}
+
 function getFilteredDocs() {
   const q = titleFilter.value.trim().toLowerCase();
   const status = statusFilter.value;
+  const from = createdFrom.value;
+  const to = createdTo.value;
   return DOCUMENTS.filter((d) => {
     if (q && !d.title.toLowerCase().includes(q)) return false;
     if (status && d.status !== status) return false;
+    const day = (d.createdAt || "").slice(0, 10);
+    if (from && day < from) return false;
+    if (to && day > to) return false;
     return true;
   });
 }
@@ -811,17 +845,41 @@ function validateUploadFiles(fileList) {
     if (file.size > MAX_UPLOAD_SIZE) oversize.push(file.name);
   });
   if (invalidFormat.length) {
-    alert(
+    showUploadFailModal(
       `以下文件格式不支持，请重新选择：\n${invalidFormat.join("\n")}\n\n支持类型：PDF、EXCEL、DOCX、PPT、MD、TXT、ZIP、7Z、TAR`
     );
     return false;
   }
   if (oversize.length) {
-    alert(`以下文件超过 100M，请压缩后重试：\n${oversize.join("\n")}`);
+    showUploadFailModal(`以下文件超过 100M，请压缩后重试：\n${oversize.join("\n")}`);
     return false;
   }
   return true;
 }
+
+const alertModal = document.getElementById("alertModal");
+const alertModalTitle = document.getElementById("alertModalTitle");
+const alertModalMessage = document.getElementById("alertModalMessage");
+
+function showUploadFailModal(message, title = "上传失败") {
+  if (!alertModal) {
+    alert(message);
+    return;
+  }
+  alertModalTitle.textContent = title;
+  alertModalMessage.textContent = message;
+  alertModal.classList.remove("hidden");
+}
+
+function closeUploadFailModal() {
+  alertModal?.classList.add("hidden");
+}
+
+alertModal?.querySelector("#alertModalClose")?.addEventListener("click", closeUploadFailModal);
+alertModal?.querySelector("#alertModalOk")?.addEventListener("click", closeUploadFailModal);
+alertModal?.addEventListener("click", (e) => {
+  if (e.target === alertModal) closeUploadFailModal();
+});
 
 function showToast(title, message, variant = "success") {
   const el = document.createElement("div");
@@ -841,8 +899,15 @@ function scheduleParseComplete(docIds) {
     docIds.forEach((id) => {
       const doc = DOCUMENTS.find((d) => d.id === id);
       if (!doc || doc.status !== "parsing") return;
-      doc.status = "success";
-      doc.duration = `${(Math.random() * 8 + 2).toFixed(2)}s`;
+      // 演示：文件名含「失败」时解析失败；与上传失败相互独立
+      const shouldFail = /失败|fail/i.test(doc.title);
+      if (shouldFail) {
+        doc.status = "fail";
+        doc.duration = "-";
+      } else {
+        doc.status = "success";
+        doc.duration = `${(Math.random() * 8 + 2).toFixed(2)}s`;
+      }
       updated = true;
     });
     if (!updated) return;
@@ -857,7 +922,7 @@ function saveCreate() {
   const mode = document.querySelector('input[name="createMode"]:checked')?.value;
   if (mode === "batch") {
     if (!createBatchFile.files.length) {
-      alert("请选择要导入的文件");
+      showUploadFailModal("请选择要导入的文件");
       return;
     }
     if (!validateUploadFiles(createBatchFile.files)) return;
@@ -868,6 +933,7 @@ function saveCreate() {
       DOCUMENTS.unshift({
         id,
         title: file.name,
+        size: formatFileSize(file.size),
         author: CURRENT_UPLOADER,
         duration: "-",
         status: "parsing",
@@ -885,6 +951,7 @@ function saveCreate() {
     DOCUMENTS.unshift({
       id: `doc-${Date.now()}`,
       title,
+      size: "-",
       author: CURRENT_UPLOADER,
       duration: "1秒",
       status: "success",
@@ -905,10 +972,20 @@ function saveCreate() {
 
 function saveUpload() {
   if (!uploadFile.files.length) {
-    alert("请选择附件");
+    showUploadFailModal("请选择要上传的附件");
     return;
   }
   if (!validateUploadFiles(uploadFile.files)) return;
+
+  // 演示：文件名含「上传失败」时模拟上传失败（尚未进入解析）
+  const files = Array.from(uploadFile.files);
+  const uploadFailed = files.filter((f) => /上传失败/.test(f.name));
+  if (uploadFailed.length) {
+    showUploadFailModal(
+      `以下文件上传失败，请稍后重试：\n${uploadFailed.map((f) => f.name).join("\n")}`
+    );
+    return;
+  }
 
   const mode = document.querySelector('input[name="uploadMode"]:checked')?.value;
   const ids = [];
@@ -919,6 +996,7 @@ function saveUpload() {
     DOCUMENTS.unshift({
       id,
       title,
+      size: formatFileSize(uploadFile.files[0].size),
       author: CURRENT_UPLOADER,
       duration: "-",
       status: "parsing",
@@ -931,6 +1009,7 @@ function saveUpload() {
       DOCUMENTS.unshift({
         id,
         title: file.name,
+        size: formatFileSize(file.size),
         author: CURRENT_UPLOADER,
         duration: "-",
         status: "parsing",
@@ -963,25 +1042,17 @@ dirSearch.addEventListener("input", () => {
 });
 
 document.getElementById("btnQuery").addEventListener("click", applyDocFilters);
-document.getElementById("btnReset").addEventListener("click", () => {
-  titleFilter.value = "";
-  statusFilter.value = "";
-  filteredDocs = [...DOCUMENTS];
-  renderDocTable();
-});
+document.getElementById("btnReset").addEventListener("click", () => resetDocFilters(true));
 
 titleFilter.addEventListener("keydown", (e) => {
   if (e.key === "Enter") applyDocFilters();
 });
 
 statusFilter.addEventListener("change", applyDocFilters);
+createdFrom.addEventListener("change", applyDocFilters);
+createdTo.addEventListener("change", applyDocFilters);
 
-document.getElementById("btnRefresh").addEventListener("click", () => {
-  titleFilter.value = "";
-  statusFilter.value = "";
-  filteredDocs = [...DOCUMENTS];
-  renderDocTable();
-});
+document.getElementById("btnRefresh").addEventListener("click", () => resetDocFilters(true));
 
 pageSizeSelect.addEventListener("change", () => {
   pageSize = Number(pageSizeSelect.value) || 20;
@@ -1433,21 +1504,6 @@ function collectOrgs(nodes, out = []) {
 const PERM_USERS = collectUsers([...PERM_DEPT_TREE, ...PERM_GROUP_TREE]);
 const PERM_ORGS = collectOrgs([...PERM_DEPT_TREE, ...PERM_GROUP_TREE]);
 
-/** 编辑权限：仅运营人员扁平列表（无组织/分组树） */
-const PERM_OPS_USERS = [
-  { id: "op01", name: "顾言溪", org: "天翼云科技有限公司/数字化运营部/数据分析组" },
-  { id: "op02", name: "夏知秋", org: "天翼云科技有限公司/数字化运营部/数字化赋能中心" },
-  { id: "op03", name: "叶清禾", org: "天翼云科技有限公司/数字化运营部/数字化赋能中心" },
-  { id: "op04", name: "陆星野", org: "天翼云科技有限公司/数字化运营部/数字化赋能中心" },
-  { id: "op05", name: "苏晚晴", org: "天翼云科技有限公司/数字化运营部/数字化赋能中心" },
-  { id: "op06", name: "沈启航", org: "天翼云科技有限公司/数字化运营部/知识中心" },
-  { id: "op07", name: "林晓舟", org: "天翼云科技有限公司/数字化运营部/数据运营中心" },
-  { id: "op08", name: "江沐白", org: "天翼云科技有限公司/数字化运营部/知识中心" },
-  { id: "op09", name: "白予安", org: "天翼云科技有限公司/云网运营部/运营支撑组" },
-  { id: "op10", name: "方景行", org: "天翼云科技有限公司/政企客户中心/解决方案组" },
-  { id: "op11", name: "程予安（领导视角）", org: "天翼云科技有限公司/数字化运营部" },
-];
-
 const PERM_TITLE_MAP = {
   "view-perm": "选择用户",
   "edit-perm": "编辑权限配置",
@@ -1462,7 +1518,7 @@ const PERM_DESC_MAP = {
 
 const DEFAULT_SELECTED_BY_TYPE = {
   "view-perm": [],
-  "edit-perm": ["op03", "op04", "op06", "op07"],
+  "edit-perm": ["u5", "u6", "u8", "u9"],
   "qa-perm": [],
 };
 
@@ -1499,16 +1555,12 @@ let permOnSaveCallback = null;
 /** @type {Set<string>} */
 const permExpandedNodes = new Set(["org-tianyiyun"]);
 
-function isEditPermMode() {
-  return permModalCtx?.action === "edit-perm";
-}
-
 function permStoreKey(action, target) {
   return `${action}::${target.type}::${target.name}`;
 }
 
 function getUserById(id) {
-  return PERM_USERS.find((u) => u.id === id) || PERM_OPS_USERS.find((u) => u.id === id);
+  return PERM_USERS.find((u) => u.id === id);
 }
 
 function getOrgById(id) {
@@ -1519,22 +1571,14 @@ function getSelectableById(id) {
   return getUserById(id) || getOrgById(id);
 }
 
-function syncPermTabs(action) {
-  if (action === "edit-perm") {
-    permTabsEl.innerHTML = `<button type="button" class="perm-tab active" role="tab" aria-selected="true" data-tab="ops">运营人员</button>`;
-    permActiveTab = "ops";
-    permUserList.setAttribute("role", "listbox");
-    permUserList.setAttribute("aria-label", "运营人员列表");
-    permModal.classList.add("perm-mode-ops");
-  } else {
-    permTabsEl.innerHTML = `
-      <button type="button" class="perm-tab active" role="tab" aria-selected="true" data-tab="dept">部门</button>
-      <button type="button" class="perm-tab" role="tab" aria-selected="false" data-tab="group">分组</button>`;
-    permActiveTab = "dept";
-    permUserList.setAttribute("role", "tree");
-    permUserList.setAttribute("aria-label", "组织列表");
-    permModal.classList.remove("perm-mode-ops");
-  }
+function syncPermTabs() {
+  permTabsEl.innerHTML = `
+    <button type="button" class="perm-tab active" role="tab" aria-selected="true" data-tab="dept">部门</button>
+    <button type="button" class="perm-tab" role="tab" aria-selected="false" data-tab="group">分组</button>`;
+  permActiveTab = "dept";
+  permUserList.setAttribute("role", "tree");
+  permUserList.setAttribute("aria-label", "组织列表");
+  permModal.classList.remove("perm-mode-ops");
 }
 
 function openPermModal(action, target, options = {}) {
@@ -1551,7 +1595,7 @@ function openPermModal(action, target, options = {}) {
     permDraftSelected = [...(permStore[key] || DEFAULT_SELECTED_BY_TYPE[action] || [])];
   }
   permActiveId = null;
-  syncPermTabs(action);
+  syncPermTabs();
   permUserSearch.value = "";
   renderPermUserList();
   renderPermSelectedList();
@@ -1624,28 +1668,7 @@ function renderTreeNodes(nodes, depth, searching) {
   return html;
 }
 
-function renderOpsUserList() {
-  const q = permUserSearch.value.trim().toLowerCase();
-  const list = PERM_OPS_USERS.filter(
-    (u) => !q || u.name.toLowerCase().includes(q) || (u.org || "").toLowerCase().includes(q)
-  );
-  permUserList.innerHTML =
-    list
-      .map((u) => {
-        const selected = permDraftSelected.includes(u.id);
-        const active = permActiveId === u.id;
-        return `<button type="button" class="perm-user-item perm-ops-item${selected ? " is-selected" : ""}${active ? " is-active" : ""}" data-id="${u.id}" role="option" aria-selected="${selected}">
-          ${PERSON_ICON}<span>${u.name}</span>
-        </button>`;
-      })
-      .join("") || `<div class="perm-empty">未找到匹配人员</div>`;
-}
-
 function renderPermUserList() {
-  if (isEditPermMode()) {
-    renderOpsUserList();
-    return;
-  }
   const q = permUserSearch.value.trim().toLowerCase();
   const searching = !!q;
   const source = permActiveTab === "group" ? PERM_GROUP_TREE : PERM_DEPT_TREE;
@@ -1675,13 +1698,6 @@ function renderPermSelectedList() {
     })
     .join("");
 
-  if (isEditPermMode()) {
-    permSelectedList.innerHTML = `<div class="perm-selected-section">
-      <div class="perm-selected-section-title">${PERSON_ICON}<span>用户</span></div>
-      ${cards}
-    </div>`;
-    return;
-  }
   permSelectedList.innerHTML = cards;
 }
 
@@ -1698,7 +1714,7 @@ function togglePermSelect(id) {
 
 permTabsEl.addEventListener("click", (e) => {
   const tab = e.target.closest(".perm-tab");
-  if (!tab || isEditPermMode()) return;
+  if (!tab) return;
   permActiveTab = tab.dataset.tab;
   permTabsEl.querySelectorAll(".perm-tab").forEach((t) => {
     const active = t === tab;
@@ -1777,3 +1793,58 @@ document.addEventListener("keydown", (e) => {
 
 filterAndRender();
 applyRoleUI();
+
+/* ===== 授权须知 ===== */
+const AIBP_CONTACTS = [
+  { dept: "数字化运营部", name: "陆星野", phone: "138-0013-8001" },
+  { dept: "云网运营部", name: "白予安", phone: "139-0013-9002" },
+  { dept: "政企客户中心", name: "方景行", phone: "137-0013-7003" },
+  { dept: "数智产品事业部", name: "苏晚晴", phone: "136-0013-6004" },
+  { dept: "云网产品事业部", name: "叶清禾", phone: "135-0013-5005" },
+  { dept: "云网发展部", name: "程予安", phone: "134-0013-4006" },
+  { dept: "客户服务部", name: "顾言溪", phone: "133-0013-3007" },
+  { dept: "云电脑产品部", name: "夏知秋", phone: "132-0013-2008" },
+  { dept: "安全产品部", name: "江沐白", phone: "131-0013-1009" },
+  { dept: "端云平台事业部", name: "林晓舟", phone: "130-0013-0010" },
+];
+
+const authNoticeModal = document.getElementById("authNoticeModal");
+const authNoticeTableBody = document.getElementById("authNoticeTableBody");
+
+function renderAuthNoticeTable() {
+  if (!authNoticeTableBody) return;
+  authNoticeTableBody.innerHTML = AIBP_CONTACTS.map(
+    (item) => `<tr>
+      <td>${item.dept}</td>
+      <td>${item.name}</td>
+      <td><a class="auth-notice-phone" href="tel:${item.phone.replace(/-/g, "")}">${item.phone}</a></td>
+    </tr>`
+  ).join("");
+}
+
+function openAuthNoticeModal() {
+  renderAuthNoticeTable();
+  authNoticeModal?.classList.remove("hidden");
+}
+
+function closeAuthNoticeModal() {
+  authNoticeModal?.classList.add("hidden");
+}
+
+document.getElementById("btnAuthNotice")?.addEventListener("click", openAuthNoticeModal);
+document.getElementById("authNoticeModalClose")?.addEventListener("click", closeAuthNoticeModal);
+document.getElementById("authNoticeModalOk")?.addEventListener("click", closeAuthNoticeModal);
+authNoticeModal?.addEventListener("click", (e) => {
+  if (e.target === authNoticeModal) closeAuthNoticeModal();
+});
+
+document.addEventListener(
+  "keydown",
+  (e) => {
+    if (e.key === "Escape" && authNoticeModal && !authNoticeModal.classList.contains("hidden")) {
+      e.stopImmediatePropagation();
+      closeAuthNoticeModal();
+    }
+  },
+  true
+);

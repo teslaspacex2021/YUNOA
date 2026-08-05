@@ -88,7 +88,7 @@
         { id: "digital", label: "数字员工", icon: "👤" },
         { id: "agent", label: "智能体市场", icon: "🤖" }
       ],
-      listTitle: "选择数字员工",
+      listTitle: "智能体广场",
       searchPlaceholder: "搜索数字员工名称、岗位、部门...",
       items: () => MOCK_EXPERTS,
       type: "expert"

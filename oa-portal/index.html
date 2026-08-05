@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>天翼云 OA 门户</title>
-  <link rel="stylesheet" href="portal.css?v=36" />
+  <link rel="stylesheet" href="portal.css?v=40" />
   <link rel="stylesheet" href="../assets/third-panel.css" />
-  <link rel="stylesheet" href="../assets/ai-chat-panel.css?v=11" />
-  <link rel="stylesheet" href="../assets/ai-tool-modals.css?v=4" />
+  <link rel="stylesheet" href="../assets/ai-chat-panel.css?v=13" />
+  <link rel="stylesheet" href="../assets/ai-tool-modals.css?v=6" />
 </head>
 <body>
   <!-- 顶部工具栏 -->
@@ -46,7 +46,12 @@
         </div>
         <div class="header-ai-main">
           <input type="text" class="header-ai-input" id="headerAiInput" placeholder="搜索公文、信息" autocomplete="off" />
-          <textarea class="header-ai-textarea" id="headerAiTextarea" placeholder="向 AI 专家提问，@切换专家，/添加技能" rows="2"></textarea>
+          <div class="header-ai-compose">
+            <div class="header-ai-attach-row hidden" id="headerAiAttachRow" aria-label="已选附件"></div>
+            <div class="ai-skill-chips hidden" id="headerAiSkillChips" aria-label="已选技能"></div>
+            <textarea class="header-ai-textarea" id="headerAiTextarea" placeholder="向 AI 专家提问，@切换专家，/添加技能" rows="2"></textarea>
+          </div>
+          <input type="file" class="header-ai-file-input" id="headerAiFileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.zip" hidden />
           <div class="header-ai-composer-bar" id="headerAiComposerBar">
             <div class="header-ai-tools-left">
               <button type="button" class="header-ai-tool-btn" id="headerAiAttachBtn" aria-label="上传附件">
@@ -144,7 +149,12 @@
     </div>
     <div class="header-ai-main">
       <input type="text" class="header-ai-input" id="stickyAiInput" placeholder="搜索公文、信息" autocomplete="off" />
-      <textarea class="header-ai-textarea" id="stickyAiTextarea" placeholder="向 AI 专家提问，@切换专家，/添加技能" rows="2"></textarea>
+      <div class="header-ai-compose">
+        <div class="header-ai-attach-row hidden" id="stickyAiAttachRow" aria-label="已选附件"></div>
+        <div class="ai-skill-chips hidden" id="stickyAiSkillChips" aria-label="已选技能"></div>
+        <textarea class="header-ai-textarea" id="stickyAiTextarea" placeholder="向 AI 专家提问，@切换专家，/添加技能" rows="2"></textarea>
+      </div>
+      <input type="file" class="header-ai-file-input" id="stickyAiFileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.zip" hidden />
       <div class="header-ai-composer-bar" id="stickyAiComposerBar">
         <div class="header-ai-tools-left">
           <button type="button" class="header-ai-tool-btn" id="stickyAiAttachBtn" aria-label="上传附件">
@@ -763,7 +773,7 @@
 
   <script src="../assets/public-files.js"></script>
   <script src="../assets/third-panel.js"></script>
-  <script src="../assets/ai-tool-modals.js?v=9"></script>
+  <script src="../assets/ai-tool-modals.js?v=11"></script>
   <script src="../assets/ai-input-tools.js?v=15"></script>
   <script src="../assets/ai-chat-panel.js?v=9"></script>
   <script>
@@ -818,6 +828,6 @@
       }, true);
     })();
   </script>
-  <script src="portal.js?v=19"></script>
+  <script src="portal.js?v=23"></script>
 </body>
 </html>
