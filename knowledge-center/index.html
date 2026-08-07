@@ -133,28 +133,31 @@
           <button type="button" class="kb-tab active" role="tab" aria-selected="true" data-tab="enterprise">企业专属智库</button>
           <button type="button" class="kb-tab" role="tab" aria-selected="false" data-tab="dataset">知识数据集</button>
         </div>
-        <div class="role-switch" id="roleSwitch">
-          <span class="role-switch-label">角色切换</span>
-          <button
-            type="button"
-            class="role-switch-btn"
-            id="roleSwitchBtn"
-            aria-haspopup="listbox"
-            aria-expanded="false"
-            aria-controls="roleSwitchMenu"
-          >
-            <span class="role-switch-value" id="roleSwitchValue">系统专员</span>
-            <svg class="role-switch-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </button>
-          <ul class="role-switch-menu" id="roleSwitchMenu" role="listbox" hidden>
-            <li role="option" class="role-option active" data-role="系统专员" aria-selected="true">系统专员</li>
-            <li role="option" class="role-option" data-role="部门 AIBP" aria-selected="false">部门 AIBP</li>
-            <li role="option" class="role-option" data-role="知识维护者" aria-selected="false">知识维护者</li>
-            <li role="option" class="role-option" data-role="知识使用者" aria-selected="false">知识使用者</li>
-            <li role="option" class="role-option" data-role="知识查看专员" aria-selected="false">知识查看专员</li>
-          </ul>
+        <div class="role-switch-wrap">
+          <div class="role-switch" id="roleSwitch">
+            <span class="role-switch-label">角色切换</span>
+            <button
+              type="button"
+              class="role-switch-btn"
+              id="roleSwitchBtn"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="roleSwitchMenu"
+            >
+              <span class="role-switch-value" id="roleSwitchValue">系统专员</span>
+              <svg class="role-switch-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <ul class="role-switch-menu" id="roleSwitchMenu" role="listbox" hidden>
+              <li role="option" class="role-option active" data-role="系统专员" aria-selected="true">系统专员</li>
+              <li role="option" class="role-option" data-role="部门 AIBP" aria-selected="false">部门 AIBP</li>
+              <li role="option" class="role-option" data-role="知识维护者" aria-selected="false">知识维护者</li>
+              <li role="option" class="role-option" data-role="知识使用者" aria-selected="false">知识使用者</li>
+              <li role="option" class="role-option" data-role="知识查看专员" aria-selected="false">知识查看专员</li>
+            </ul>
+          </div>
+          <p class="role-switch-hint">供演示使用，无需开发该切换功能</p>
         </div>
       </header>
 
@@ -580,19 +583,11 @@
         <button type="button" class="modal-close" id="authNoticeModalClose" aria-label="关闭">×</button>
       </div>
       <div class="modal-body auth-notice-modal-body">
-        <p class="auth-notice-hint">如需开通知识库访问权限，请联系对应部门 AIBP：</p>
-        <div class="auth-notice-table-wrap">
-          <table class="auth-notice-table">
-            <thead>
-              <tr>
-                <th>部门</th>
-                <th>AIBP</th>
-                <th>手机号</th>
-              </tr>
-            </thead>
-            <tbody id="authNoticeTableBody"></tbody>
-          </table>
-        </div>
+        <p class="auth-notice-hint">
+          如需开通知识库访问或编辑权限，请联系本部门 AIBP。若不清楚本部门 AIBP，可联系管理员：数字化运营部/数据运营中心-刘伟（
+          <a class="auth-notice-phone" href="tel:13316029186">13316029186</a>）。
+        </p>
+        <p class="auth-notice-warning">严禁上传涉及机密、敏感信息等相关文件。</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-primary" id="authNoticeModalOk">知道了</button>

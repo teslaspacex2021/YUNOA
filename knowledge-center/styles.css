@@ -280,12 +280,28 @@ input {
   border-radius: 1px;
 }
 
+.role-switch-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .role-switch {
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.role-switch-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted, #999);
+  white-space: nowrap;
 }
 
 .role-switch-label {
@@ -2181,7 +2197,7 @@ input {
 }
 
 .auth-notice-modal-panel {
-  width: min(560px, 100%);
+  width: min(480px, 100%);
 }
 
 .auth-notice-modal-body {
@@ -2190,55 +2206,27 @@ input {
 
 .auth-notice-hint {
   margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.auth-notice-warning {
+  margin: 0;
   font-size: 13px;
   line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-.auth-notice-table-wrap {
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.auth-notice-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.auth-notice-table th,
-.auth-notice-table td {
-  padding: 10px 12px;
-  text-align: left;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.auth-notice-table th {
-  background: #fafafa;
-  color: var(--text-secondary);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.auth-notice-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.auth-notice-table td {
-  color: var(--text);
-  vertical-align: middle;
+  color: #cf1322;
 }
 
 .auth-notice-phone {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
-  color: var(--text);
+  color: var(--blue);
   text-decoration: none;
 }
 
 .auth-notice-phone:hover {
-  color: var(--blue);
+  text-decoration: underline;
 }
 
 .sort-input-wrap {

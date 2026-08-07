@@ -964,7 +964,7 @@ function saveCreate() {
   if (mode === "batch") {
     showToast(
       "上传成功",
-      "文件已上传，当前状态为「解析中」。解析成功后将通过邮件通知您。",
+      "文件上传成功，正在解析中，完成会邮件通知",
       "success"
     );
   }
@@ -1020,10 +1020,9 @@ function saveUpload() {
   filteredDocs = [...DOCUMENTS];
   renderDocTable();
   showDetailList();
-  const count = ids.length;
   showToast(
     "上传成功",
-    `${count} 个文件已上传，当前状态为「解析中」。解析成功后将通过邮件通知您。`,
+    "文件上传成功，正在解析中，完成会邮件通知",
     "success"
   );
   scheduleParseComplete(ids);
@@ -1795,35 +1794,9 @@ filterAndRender();
 applyRoleUI();
 
 /* ===== 授权须知 ===== */
-const AIBP_CONTACTS = [
-  { dept: "数字化运营部", name: "陆星野", phone: "138-0013-8001" },
-  { dept: "云网运营部", name: "白予安", phone: "139-0013-9002" },
-  { dept: "政企客户中心", name: "方景行", phone: "137-0013-7003" },
-  { dept: "数智产品事业部", name: "苏晚晴", phone: "136-0013-6004" },
-  { dept: "云网产品事业部", name: "叶清禾", phone: "135-0013-5005" },
-  { dept: "云网发展部", name: "程予安", phone: "134-0013-4006" },
-  { dept: "客户服务部", name: "顾言溪", phone: "133-0013-3007" },
-  { dept: "云电脑产品部", name: "夏知秋", phone: "132-0013-2008" },
-  { dept: "安全产品部", name: "江沐白", phone: "131-0013-1009" },
-  { dept: "端云平台事业部", name: "林晓舟", phone: "130-0013-0010" },
-];
-
 const authNoticeModal = document.getElementById("authNoticeModal");
-const authNoticeTableBody = document.getElementById("authNoticeTableBody");
-
-function renderAuthNoticeTable() {
-  if (!authNoticeTableBody) return;
-  authNoticeTableBody.innerHTML = AIBP_CONTACTS.map(
-    (item) => `<tr>
-      <td>${item.dept}</td>
-      <td>${item.name}</td>
-      <td><a class="auth-notice-phone" href="tel:${item.phone.replace(/-/g, "")}">${item.phone}</a></td>
-    </tr>`
-  ).join("");
-}
 
 function openAuthNoticeModal() {
-  renderAuthNoticeTable();
   authNoticeModal?.classList.remove("hidden");
 }
 
