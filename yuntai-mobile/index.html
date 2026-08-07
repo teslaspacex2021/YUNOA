@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>云台手机端</title>
-  <link rel="stylesheet" href="mobile.css?v=27" />
+  <link rel="stylesheet" href="mobile.css?v=28" />
 </head>
 <body>
   <div class="phone-shell">
@@ -133,11 +133,23 @@
         </div>
 
         <div class="yxk-composer" id="yxkComposer" data-ai-mode="fast">
+          <!-- 仅新对话 / AI专家首页展示：子智能体或相关能力入口；进入指定智能体后隐藏 -->
           <div class="yxk-expert-bar" id="yxkExpertBar">
-            <button type="button" class="yxk-expert-more" id="yxkExpertMore" aria-label="更多专家">
+            <button type="button" class="yxk-expert-more" id="yxkExpertMore" aria-label="更多能力">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
             </button>
-            <div class="yxk-expert-scroller" id="yxkExpertScroller" role="listbox" aria-label="推荐专家"></div>
+            <div class="yxk-expert-scroller" id="yxkExpertScroller" role="listbox" aria-label="子智能体与相关能力"></div>
+          </div>
+          <!-- 审计整改填报：对话框上方可选项 -->
+          <div class="yxk-agent-options-bar hidden" id="yxkAgentOptionsBar" aria-label="审计整改可选项" aria-hidden="true">
+            <button type="button" class="yxk-agent-option-chip" id="yxkOptSubAgents" data-action="sub-agents" aria-haspopup="dialog" aria-controls="yxkSubAgentSheet">
+              <span>子智能体</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button type="button" class="yxk-agent-option-chip" id="yxkOptMoreCaps" data-action="more-capabilities">
+              <span>获取其他能力</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
           </div>
           <div class="yxk-composer-card">
             <div class="yxk-composer-extras hidden" id="yxkComposerExtras">
@@ -449,6 +461,17 @@
         </div>
       </div>
 
+      <!-- 审计整改 · 子智能体选择 -->
+      <div class="yxk-sheet" id="yxkSubAgentSheet" hidden aria-hidden="true">
+        <button type="button" class="yxk-sheet-mask" id="yxkSubAgentSheetMask" aria-label="关闭"></button>
+        <div class="yxk-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="yxkSubAgentSheetTitle">
+          <div class="yxk-sheet-handle" aria-hidden="true"></div>
+          <h2 class="yxk-subagent-title" id="yxkSubAgentSheetTitle">子智能体</h2>
+          <p class="yxk-subagent-desc">选择审计整改填报相关子能力</p>
+          <div class="yxk-sheet-list" id="yxkSubAgentList"></div>
+        </div>
+      </div>
+
       <!-- 历史对话：左侧拉起 -->
       <div class="yxk-history-drawer" id="yxkHistoryDrawer" hidden aria-hidden="true">
         <button type="button" class="yxk-history-mask" id="yxkHistoryMask" aria-label="关闭历史"></button>
@@ -476,6 +499,6 @@
     </div>
   </div>
 
-  <script src="mobile.js?v=23"></script>
+  <script src="mobile.js?v=24"></script>
 </body>
 </html>

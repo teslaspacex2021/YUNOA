@@ -720,6 +720,77 @@ button {
   background: #f0f7ff;
 }
 
+.yxk-agent-options-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 1px 2px;
+}
+
+.yxk-agent-options-bar.hidden {
+  display: none;
+}
+
+.yxk-agent-options-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.yxk-agent-option-chip {
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 10px 0 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fff;
+  color: #595959;
+  font-size: 12px;
+  font-family: inherit;
+  line-height: 1;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.yxk-agent-option-chip svg {
+  color: #bfbfbf;
+  flex-shrink: 0;
+}
+
+.yxk-agent-option-chip:active {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+}
+
+.yxk-agent-option-chip.is-active {
+  border-color: #91caff;
+  color: #1677ff;
+  background: #f0f7ff;
+}
+
+.yxk-agent-option-chip.is-active svg {
+  color: #1677ff;
+}
+
+.yxk-subagent-title {
+  margin: 4px 16px 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.yxk-subagent-desc {
+  margin: 0 16px 10px;
+  font-size: 12px;
+  color: #8c8c8c;
+  line-height: 1.4;
+}
+
 .yxk-composer-extras {
   display: flex;
   flex-direction: column;

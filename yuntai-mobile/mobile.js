@@ -97,7 +97,14 @@
   const yxkHoldSpeak = document.getElementById("yxkHoldSpeak");
   const yxkVoiceOverlay = document.getElementById("yxkVoiceOverlay");
   const yxkVoiceTip = document.getElementById("yxkVoiceTip");
+  const yxkExpertBar = document.getElementById("yxkExpertBar");
   const yxkExpertScroller = document.getElementById("yxkExpertScroller");
+  const yxkAgentOptionsBar = document.getElementById("yxkAgentOptionsBar");
+  const yxkOptSubAgents = document.getElementById("yxkOptSubAgents");
+  const yxkOptMoreCaps = document.getElementById("yxkOptMoreCaps");
+  const yxkSubAgentSheet = document.getElementById("yxkSubAgentSheet");
+  const yxkSubAgentSheetMask = document.getElementById("yxkSubAgentSheetMask");
+  const yxkSubAgentList = document.getElementById("yxkSubAgentList");
   const yxkComposerExtras = document.getElementById("yxkComposerExtras");
   const yxkAttachRow = document.getElementById("yxkAttachRow");
   const yxkSkillRow = document.getElementById("yxkSkillRow");
@@ -175,7 +182,31 @@
       cat: "ops",
       avatar: "审",
       color: "#52c41a",
-      chip: true
+      chip: true,
+      options: ["sub-agents", "more-capabilities"],
+      subAgents: [
+        {
+          id: "audit-fill",
+          name: "整改填报助手",
+          desc: "问题登记、整改措施与材料填报",
+          avatar: "填",
+          color: "#52c41a"
+        },
+        {
+          id: "audit-track",
+          name: "整改跟踪助手",
+          desc: "进度催办、超期提醒与闭环确认",
+          avatar: "跟",
+          color: "#13c2c2"
+        },
+        {
+          id: "audit-archive",
+          name: "材料归档助手",
+          desc: "整改佐证材料整理与归档核对",
+          avatar: "档",
+          color: "#1677ff"
+        }
+      ]
     },
     {
       id: "datalake",
@@ -548,16 +579,95 @@
   }
 
   function getChipExperts() {
+    // AI 专家首页快捷入口：子智能体 / 相关能力（仅新对话态展示）
     const pinned = EXPERTS.filter((e) => e.chip);
     return pinned.length ? pinned : EXPERTS.slice(0, 5);
   }
 
+  function syncExpertBarVisibility() {
+    if (!yxkExpertBar) return;
+    // 仅「新对话 / AI专家」欢迎页展示；进入指定智能体或已有会话后隐藏
+    const onNewChatHome =
+      activeExpertId == null && Boolean(yxkWelcome) && !yxkWelcome.classList.contains("hidden");
+    yxkExpertBar.classList.toggle("hidden", !onNewChatHome);
+    yxkExpertBar.setAttribute("aria-hidden", onNewChatHome ? "false" : "true");
+    syncAgentOptionsBar();
+  }
+
+  function syncAgentOptionsBar() {
+    if (!yxkAgentOptionsBar) return;
+    // 审计整改填报：对话框上方展示「子智能体 / 获取其他能力」
+    const expert = getActiveExpert();
+    const show = activeExpertId === "audit" && Array.isArray(expert.options) && expert.options.length > 0;
+    yxkAgentOptionsBar.classList.toggle("hidden", !show);
+    yxkAgentOptionsBar.setAttribute("aria-hidden", show ? "false" : "true");
+    if (!show) closeSubAgentSheet();
+  }
+
+  function renderSubAgentList() {
+    if (!yxkSubAgentList) return;
+    const expert = EXPERTS.find((e) => e.id === "audit");
+    const list = expert?.subAgents || [];
+    if (!list.length) {
+      yxkSubAgentList.innerHTML = `<p class="experts-empty">暂无子智能体</p>`;
+      return;
+    }
+    yxkSubAgentList.innerHTML = list
+      .map(
+        (s) => `
+      <button type="button" class="yxk-sheet-list-item" data-sub-agent-id="${s.id}">
+        <span class="yxk-sheet-list-icon"><span class="yxk-mode-badge" style="background:${s.color}">${s.avatar}</span></span>
+        <span class="yxk-sheet-list-text">
+          <span class="yxk-sheet-list-label">${s.name}</span>
+          <span class="yxk-sheet-list-desc">${s.desc}</span>
+        </span>
+      </button>`
+      )
+      .join("");
+    yxkSubAgentList.querySelectorAll("[data-sub-agent-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const sub = list.find((s) => s.id === btn.dataset.subAgentId);
+        closeSubAgentSheet();
+        if (!sub) return;
+        yxkOptSubAgents?.classList.add("is-active");
+        appendBubble("ai", `已切换到子智能体「${sub.name}」。\n${sub.desc}\n\n可以直接描述你的审计整改需求。`);
+        if (yxkNavTitle) yxkNavTitle.textContent = `${getActiveExpert().name} · ${sub.name}`;
+      });
+    });
+  }
+
+  function openSubAgentSheet() {
+    if (!yxkSubAgentSheet) return;
+    closePlusSheet();
+    closeComposerMenus();
+    setVoiceMode(false);
+    toggleTitleSwitcher(false);
+    renderSubAgentList();
+    yxkSubAgentSheet.hidden = false;
+    yxkSubAgentSheet.setAttribute("aria-hidden", "false");
+    yxkOptSubAgents?.setAttribute("aria-expanded", "true");
+    requestAnimationFrame(() => yxkSubAgentSheet.classList.add("is-open"));
+  }
+
+  function closeSubAgentSheet() {
+    if (!yxkSubAgentSheet || yxkSubAgentSheet.hidden) return;
+    yxkSubAgentSheet.classList.remove("is-open");
+    yxkOptSubAgents?.setAttribute("aria-expanded", "false");
+    yxkSubAgentSheet.setAttribute("aria-hidden", "true");
+    window.setTimeout(() => {
+      if (!yxkSubAgentSheet.classList.contains("is-open")) {
+        yxkSubAgentSheet.hidden = true;
+      }
+    }, 280);
+  }
+
   function renderExpertChips() {
     if (!yxkExpertScroller) return;
+    syncExpertBarVisibility();
     yxkExpertScroller.innerHTML = getChipExperts()
       .map(
         (e) => `
-      <button type="button" class="yxk-expert-chip${e.id === activeExpertId ? " is-active" : ""}" data-expert-id="${e.id}" role="option" aria-selected="${e.id === activeExpertId}">
+      <button type="button" class="yxk-expert-chip" data-expert-id="${e.id}" role="option" aria-selected="false">
         ${e.name}
       </button>`
       )
@@ -988,6 +1098,9 @@
     if (!expert) return;
     activeExpertId = expert.id;
     currentSessionId = null;
+    yxkOptSubAgents?.classList.remove("is-active");
+    yxkOptMoreCaps?.classList.remove("is-active");
+    closeSubAgentSheet();
     renderExpertChips();
     syncExpertHeader();
     setVoiceMode(false);
@@ -1008,6 +1121,9 @@
 
   function clearExpertSelection() {
     activeExpertId = null;
+    yxkOptSubAgents?.classList.remove("is-active");
+    yxkOptMoreCaps?.classList.remove("is-active");
+    closeSubAgentSheet();
     renderExpertChips();
     syncExpertHeader();
     toggleTitleSwitcher(false);
@@ -1016,6 +1132,7 @@
   function appendBubble(role, text) {
     yxkWelcome.classList.add("hidden");
     yxkMessages.classList.remove("hidden");
+    syncExpertBarVisibility();
     const el = document.createElement("div");
     el.className = `yxk-bubble ${role}`;
     el.textContent = text;
@@ -1057,6 +1174,7 @@
     yxkMessages.innerHTML = "";
     yxkMessages.classList.add("hidden");
     yxkWelcome.classList.remove("hidden");
+    syncExpertBarVisibility();
     yxkInput.value = "";
     syncSendState();
     setVoiceMode(false);
@@ -1175,6 +1293,7 @@
     clearExpertSelection();
     yxkWelcome.classList.add("hidden");
     yxkMessages.classList.remove("hidden");
+    syncExpertBarVisibility();
     yxkMessages.innerHTML = "";
     session.messages.forEach((m) => {
       const el = document.createElement("div");
@@ -1329,6 +1448,7 @@
 
   function openPlusSheet() {
     if (!yxkPlusSheet) return;
+    closeSubAgentSheet();
     toggleTitleSwitcher(false);
     closeHistoryDrawer();
     setSheetView("main");
@@ -1563,6 +1683,10 @@
       setSheetView("main");
       return;
     }
+    if (yxkSubAgentSheet?.classList.contains("is-open")) {
+      closeSubAgentSheet();
+      return;
+    }
     closePlusSheet();
   });
 
@@ -1707,6 +1831,21 @@
     e.stopPropagation();
     openExpertList();
   });
+
+  yxkOptSubAgents?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (yxkSubAgentSheet?.classList.contains("is-open")) closeSubAgentSheet();
+    else openSubAgentSheet();
+  });
+
+  yxkOptMoreCaps?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    yxkOptMoreCaps.classList.add("is-active");
+    closeSubAgentSheet();
+    openExpertList();
+  });
+
+  yxkSubAgentSheetMask?.addEventListener("click", () => closeSubAgentSheet());
 
   document.getElementById("expertsBackBtn")?.addEventListener("click", () => {
     showPage(expertsReturnPage || "yxk");
